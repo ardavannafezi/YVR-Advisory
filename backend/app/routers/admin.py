@@ -1,0 +1,229 @@
+from datetime import datetime, timezone
+
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy import func, select
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
+
+from app.dependencies import get_current_admin, get_db
+from app.models.admin_user import AdminUser
+from app.models.blog import BlogPost
+from app.models.event import Event
+from app.models.guestlist import GuestlistEntry
+from app.models.reservation import TableReservation
+from app.models.venue import Venue
+from app.schemas.auth import LoginRequest, TokenResponse
+from app.schemas.blog import BlogPostCreate, BlogPostOut, BlogPostUpdate
+from app.schemas.event import EventCreate, EventOut, EventUpdate
+from app.schemas.guestlist import GuestlistOut
+from app.schemas.reservation import ReservationOut, ReservationUpdate
+from app.schemas.venue import VenueCreate, VenueOut, VenueUpdate
+from app.services.analytics_service import get_summary
+from app.utils.security import create_access_token, hash_password, verify_password
+from app.utils.slugify import slugify
+
+router = APIRouter(prefix="/api/admin", tags=["admin"])
+
+
+# ─── Auth ────────────────────────────────────────────────────────────────────
+
+@router.post("/auth/login", response_model=TokenResponse)
+async def login(req: LoginRequest, db: AsyncSession = Depends(get_db)):
+    admin = await db.scalar(select(AdminUser).where(AdminUser.email == req.email, AdminUser.is_active == True))
+    if not admin or not verify_password(req.password, admin.hashed_password):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+    return TokenResponse(access_token=create_access_token(admin.email))
+
+
+# ─── Venues ──────────────────────────────────────────────────────────────────
+
+@router.get("/venues", response_model=list[VenueOut], dependencies=[Depends(get_current_admin)])
+async def admin_list_venues(
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=100),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(select(Venue).order_by(Venue.created_at.desc()).offset((page - 1) * limit).limit(limit))
+    return result.scalars().all()
+
+
+@router.post("/venues", response_model=VenueOut, status_code=status.HTTP_201_CREATED, dependencies=[Depends(get_current_admin)])
+async def admin_create_venue(data: VenueCreate, db: AsyncSession = Depends(get_db)):
+    slug = slugify(data.name)
+    venue = Venue(**data.model_dump(), slug=slug)
+    db.add(venue)
+    await db.commit()
+    await db.refresh(venue)
+    return venue
+
+
+@router.put("/venues/{venue_id}", response_model=VenueOut, dependencies=[Depends(get_current_admin)])
+async def admin_update_venue(venue_id: int, data: VenueUpdate, db: AsyncSession = Depends(get_db)):
+    venue = await db.get(Venue, venue_id)
+    if not venue:
+        raise HTTPException(status_code=404, detail="Venue not found")
+    for k, v in data.model_dump(exclude_unset=True).items():
+        setattr(venue, k, v)
+    await db.commit()
+    await db.refresh(venue)
+    return venue
+
+
+@router.delete("/venues/{venue_id}", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(get_current_admin)])
+async def admin_delete_venue(venue_id: int, db: AsyncSession = Depends(get_db)):
+    venue = await db.get(Venue, venue_id)
+    if not venue:
+        raise HTTPException(status_code=404, detail="Venue not found")
+    await db.delete(venue)
+    await db.commit()
+
+
+# ─── Events ──────────────────────────────────────────────────────────────────
+
+@router.get("/events", response_model=list[EventOut], dependencies=[Depends(get_current_admin)])
+async def admin_list_events(
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=100),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(
+        select(Event).options(selectinload(Event.venue)).order_by(Event.date.desc()).offset((page - 1) * limit).limit(limit)
+    )
+    return result.scalars().all()
+
+
+@router.post("/events", response_model=EventOut, status_code=status.HTTP_201_CREATED, dependencies=[Depends(get_current_admin)])
+async def admin_create_event(data: EventCreate, db: AsyncSession = Depends(get_db)):
+    slug = slugify(f"{data.name} {data.date.strftime('%Y-%m-%d')}")
+    event = Event(**data.model_dump(), slug=slug, source="manual")
+    db.add(event)
+    await db.commit()
+    await db.refresh(event)
+    return event
+
+
+@router.put("/events/{event_id}", response_model=EventOut, dependencies=[Depends(get_current_admin)])
+async def admin_update_event(event_id: int, data: EventUpdate, db: AsyncSession = Depends(get_db)):
+    event = await db.get(Event, event_id)
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+    for k, v in data.model_dump(exclude_unset=True).items():
+        setattr(event, k, v)
+    await db.commit()
+    await db.refresh(event)
+    return event
+
+
+@router.delete("/events/{event_id}", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(get_current_admin)])
+async def admin_delete_event(event_id: int, db: AsyncSession = Depends(get_db)):
+    event = await db.get(Event, event_id)
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+    await db.delete(event)
+    await db.commit()
+
+
+# ─── Blog ────────────────────────────────────────────────────────────────────
+
+@router.get("/blog", response_model=list[BlogPostOut], dependencies=[Depends(get_current_admin)])
+async def admin_list_posts(
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=100),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(
+        select(BlogPost).order_by(BlogPost.created_at.desc()).offset((page - 1) * limit).limit(limit)
+    )
+    return result.scalars().all()
+
+
+@router.post("/blog", response_model=BlogPostOut, status_code=status.HTTP_201_CREATED, dependencies=[Depends(get_current_admin)])
+async def admin_create_post(data: BlogPostCreate, db: AsyncSession = Depends(get_db)):
+    slug = slugify(data.title)
+    post = BlogPost(**data.model_dump(), slug=slug)
+    if data.is_published and not post.published_at:
+        post.published_at = datetime.now(timezone.utc)
+    db.add(post)
+    await db.commit()
+    await db.refresh(post)
+    return post
+
+
+@router.put("/blog/{post_id}", response_model=BlogPostOut, dependencies=[Depends(get_current_admin)])
+async def admin_update_post(post_id: int, data: BlogPostUpdate, db: AsyncSession = Depends(get_db)):
+    post = await db.get(BlogPost, post_id)
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+    for k, v in data.model_dump(exclude_unset=True).items():
+        setattr(post, k, v)
+    if data.is_published and not post.published_at:
+        post.published_at = datetime.now(timezone.utc)
+    await db.commit()
+    await db.refresh(post)
+    return post
+
+
+@router.delete("/blog/{post_id}", status_code=status.HTTP_204_NO_CONTENT, dependencies=[Depends(get_current_admin)])
+async def admin_delete_post(post_id: int, db: AsyncSession = Depends(get_db)):
+    post = await db.get(BlogPost, post_id)
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+    await db.delete(post)
+    await db.commit()
+
+
+# ─── Guestlist ───────────────────────────────────────────────────────────────
+
+@router.get("/guestlist", response_model=list[GuestlistOut], dependencies=[Depends(get_current_admin)])
+async def admin_list_guestlist(
+    page: int = Query(1, ge=1),
+    limit: int = Query(50, ge=1, le=200),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(
+        select(GuestlistEntry).order_by(GuestlistEntry.created_at.desc()).offset((page - 1) * limit).limit(limit)
+    )
+    return result.scalars().all()
+
+
+# ─── Reservations ────────────────────────────────────────────────────────────
+
+@router.get("/reservations", response_model=list[ReservationOut], dependencies=[Depends(get_current_admin)])
+async def admin_list_reservations(
+    page: int = Query(1, ge=1),
+    limit: int = Query(50, ge=1, le=200),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(
+        select(TableReservation).order_by(TableReservation.created_at.desc()).offset((page - 1) * limit).limit(limit)
+    )
+    return result.scalars().all()
+
+
+@router.put("/reservations/{res_id}", response_model=ReservationOut, dependencies=[Depends(get_current_admin)])
+async def admin_update_reservation(res_id: int, data: ReservationUpdate, db: AsyncSession = Depends(get_db)):
+    res = await db.get(TableReservation, res_id)
+    if not res:
+        raise HTTPException(status_code=404, detail="Reservation not found")
+    res.status = data.status
+    await db.commit()
+    await db.refresh(res)
+    return res
+
+
+# ─── Analytics ───────────────────────────────────────────────────────────────
+
+@router.get("/analytics/summary", dependencies=[Depends(get_current_admin)])
+async def admin_analytics_summary(db: AsyncSession = Depends(get_db)):
+    return await get_summary(db)
+
+
+@router.get("/analytics/emails", dependencies=[Depends(get_current_admin)])
+async def admin_analytics_emails(db: AsyncSession = Depends(get_db)):
+    result = await db.execute(
+        select(GuestlistEntry.email, func.count(GuestlistEntry.id).label("submissions"))
+        .group_by(GuestlistEntry.email)
+        .order_by(func.count(GuestlistEntry.id).desc())
+        .limit(100)
+    )
+    return [{"email": r.email, "submissions": r.submissions} for r in result]
