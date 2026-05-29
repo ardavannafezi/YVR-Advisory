@@ -1,7 +1,7 @@
 "use client";
 
 const TOKEN_KEY = "yvr_admin_token";
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://back.yvradvisory.ca";
 
 export function getToken(): string | null {
   if (typeof window === "undefined") return null;

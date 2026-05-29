@@ -1,4 +1,4 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://back.yvradvisory.ca";
 
 class ApiError extends Error {
   constructor(public status: number, message: string) {

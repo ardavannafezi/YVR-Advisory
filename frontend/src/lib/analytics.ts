@@ -2,7 +2,7 @@
 
 const SESSION_KEY = "yvr_session_id";
 const EMAIL_KEY = "yvr_email";
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://back.yvradvisory.ca";
 
 function getSessionId(): string {
   if (typeof window === "undefined") return "";
