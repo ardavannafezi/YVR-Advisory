@@ -13,7 +13,6 @@ export const revalidate = 600;
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   try {
     const venue = await api.get<Venue>(`/api/venues/${params.slug}`);
-    const SITE = process.env.NEXT_PUBLIC_SITE_URL || "";
     return {
       title: `${venue.name} — Vancouver Nightclub`,
       description: venue.description || `Discover ${venue.name}, one of Vancouver's top nightlife destinations.`,

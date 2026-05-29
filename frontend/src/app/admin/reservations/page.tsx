@@ -5,7 +5,6 @@ import { format } from "date-fns";
 import { adminFetch } from "@/lib/auth";
 import { DataTable } from "@/components/admin/DataTable";
 import { ErrorState } from "@/components/ui/ErrorState";
-import { Badge } from "@/components/ui/Badge";
 
 export default function AdminReservationsPage() {
   const [data, setData] = useState<any[]>([]);

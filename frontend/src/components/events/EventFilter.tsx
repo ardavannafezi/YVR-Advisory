@@ -13,7 +13,7 @@ export function EventFilter() {
   const setFilter = useCallback(
     (key: string, value: string) => {
       const p = new URLSearchParams(params.toString());
-      p.get(key) === value ? p.delete(key) : p.set(key, value);
+      if (p.get(key) === value) { p.delete(key); } else { p.set(key, value); }
       router.push(`/events?${p.toString()}`);
     },
     [params, router]
