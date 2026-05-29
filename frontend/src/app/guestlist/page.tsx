@@ -1,8 +1,6 @@
 "use client";
 
-export const dynamic = "force-dynamic";
-
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -23,7 +21,7 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
-export default function GuestlistPage() {
+function GuestlistForm() {
   const params = useSearchParams();
   const [submitted, setSubmitted] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
@@ -99,5 +97,13 @@ export default function GuestlistPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function GuestlistPage() {
+  return (
+    <Suspense>
+      <GuestlistForm />
+    </Suspense>
   );
 }
