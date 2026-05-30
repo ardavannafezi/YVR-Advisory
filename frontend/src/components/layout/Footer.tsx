@@ -55,6 +55,15 @@ export function Footer() {
       </div>
 
       <div className="border-t border-white/5">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <p className="text-text-dim text-[11px] leading-relaxed text-center">
+            Venue information, hours, pricing, and event details are provided for general guidance only and may not reflect current conditions.
+            YVR Advisory is not responsible for inaccurate, incomplete, or outdated information. Always confirm details directly with the venue before visiting.
+          </p>
+        </div>
+      </div>
+
+      <div className="border-t border-white/5">
         <div className="max-w-7xl mx-auto px-6 py-5 flex flex-col md:flex-row justify-between items-center gap-2">
           <p className="text-text-dim text-xs">© {year} YVR Advisory. All rights reserved.</p>
           <p className="text-text-dim text-xs">Vancouver, BC</p>
