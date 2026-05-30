@@ -228,6 +228,16 @@ export default async function VenueDetailPage({ params }: { params: { slug: stri
                 </div>
               )}
 
+              {/* Special occasions */}
+              {venue.special_occasion && (
+                <div>
+                  <p className="text-xs uppercase tracking-widest text-gold mb-3">Special Occasions</p>
+                  <div className="card-surface p-5">
+                    <p className="text-text-muted text-sm leading-relaxed">{venue.special_occasion}</p>
+                  </div>
+                </div>
+              )}
+
               {/* Hours */}
               {venue.hours && (
                 <div>

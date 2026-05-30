@@ -30,6 +30,7 @@ class Venue(Base):
     primary_nights: Mapped[list[str]] = mapped_column(ARRAY(String), default=list)
     hours: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
     special_nights: Mapped[list[str]] = mapped_column(ARRAY(String), default=list)
+    special_occasion: Mapped[str | None] = mapped_column(Text)
 
     # Pricing
     price_tier: Mapped[str | None] = mapped_column(String(10))

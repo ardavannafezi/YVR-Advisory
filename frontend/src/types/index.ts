@@ -30,6 +30,7 @@ export interface Venue {
   primary_nights: string[];
   hours?: VenueHours | null;
   special_nights: string[];
+  special_occasion?: string | null;
 
   // Pricing
   price_tier?: string | null;

@@ -1,6 +1,7 @@
 # Venue Schema Reference
 
 Full column reference for the `venues` PostgreSQL table. Managed via SQLAlchemy in `backend/app/models/venue.py`.
+Migrations live in `backend/alembic/versions/` (001 → 005).
 
 ---
 
@@ -25,6 +26,14 @@ Full column reference for the `venues` PostgreSQL table. Managed via SQLAlchemy 
 
 ---
 
+## Classification
+
+| Column | Type | Notes |
+|--------|------|-------|
+| `establishment_type` | `varchar(100)` | Category label shown as a badge and used as a filter. Supported values: `Nightclub`, `Cocktail Bar`, `Bar & Restaurant`, `Rooftop Lounge` |
+
+---
+
 ## Music & Vibe
 
 | Column | Type | Notes |
@@ -41,7 +50,7 @@ Full column reference for the `venues` PostgreSQL table. Managed via SQLAlchemy 
 | `primary_nights` | `text[]` | Best nights to visit (e.g. `["friday", "saturday"]`) — used for filtering |
 | `hours` | `jsonb` | Weekly hours keyed by day name; `null` = closed. Schema: `{"monday": null, "friday": "9:00 PM – 3:00 AM", ...}` |
 | `special_nights` | `text[]` | Recurring themed nights (e.g. `"Mansion Fridays — Hip-Hop & House with VIP from $500"`) |
-| `establishment_type` | `varchar(100)` | Category label shown as a badge (e.g. "Nightclub", "Lounge", "Bar") |
+| `special_occasion` | `text` | **Optional.** Free-text description of any ongoing special occasion packages the venue offers (e.g. birthday booths, bachelorette packages, anniversary dinners). Leave `null` if not applicable. |
 
 ---
 
@@ -70,8 +79,8 @@ Full column reference for the `venues` PostgreSQL table. Managed via SQLAlchemy 
 
 | Column | Type | Notes |
 |--------|------|-------|
-| `image_url` | `varchar(1000)` | Hero image URL — displayed full-width at the top of the detail page and as the card thumbnail |
-| `logo_url` | `varchar(1000)` | Venue logo URL — shown as a small icon overlay on the card and beside the venue name on the detail page |
+| `image_url` | `varchar(1000)` | Hero image URL — shown full-width at the top of the detail page and as the card thumbnail |
+| `logo_url` | `varchar(1000)` | **Optional.** Venue brand logo URL — shown as a small icon overlay on the venue card and beside the venue name on the detail page |
 | `gallery_urls` | `text[]` | Additional photo URLs — rendered as a 2–3 column photo grid on the detail page |
 
 ---
@@ -119,7 +128,7 @@ Example value:
 
 | Column | Type | Notes |
 |--------|------|-------|
-| `is_featured` | `boolean` | If `true`, venue appears on the home page featured section |
+| `is_featured` | `boolean` | If `true`, venue appears on the home page featured section (max 4 shown) |
 | `is_active` | `boolean` | If `false`, venue is hidden from all public listings |
 | `created_at` | `timestamp` | Set automatically on insert |
 | `updated_at` | `timestamp` | Updated automatically on every write |
@@ -139,12 +148,47 @@ The venue detail page at `/venues/{slug}` emits `schema.org/NightClub` structure
 
 ---
 
+## Filter API
+
+`GET /api/venues` accepts these query params (all optional, combinable):
+
+| Param | Matches on |
+|-------|-----------|
+| `establishment_type` | `establishment_type` ilike match |
+| `music_type` | any element of `music_types` array |
+| `neighbourhood` | `neighbourhood` ilike match |
+| `price_tier` | exact match on `price_tier` |
+| `primary_night` | any element of `primary_nights` array |
+| `vibe` | any element of `vibe_tags` array |
+| `dress_code` | `dress_code` ilike match |
+
+---
+
+## Migration History
+
+| Migration | What it adds |
+|-----------|-------------|
+| `001_initial_schema` | Core venue fields: `id`, `slug`, `name`, `description`, `address`, `neighbourhood`, `music_types`, `vibe_tags`, `image_url`, `website_url`, `instagram_url`, `is_featured`, `is_active`, `capacity`, `establishment_type` |
+| `002_venue_extended_fields` | `phone`, `primary_nights`, `hours`, `special_nights`, `price_tier`, `cover_charge_info`, `bottle_minimum`, `dress_code`, `age_restriction`, `hospitality_company`, `reservation_link` |
+| `003_venue_maps_gallery_faq` | `establishment_type` (moved here), `gallery_urls`, `latitude`, `longitude`, `faqs` |
+| `004_venue_logo_url` | `logo_url` |
+| `005_venue_special_occasion` | `special_occasion` |
+
+---
+
 ## Adding a New Venue
 
-Use `backend/app/utils/seed_venues.py` — add an entry to the `VENUES` list and run:
+Add an entry to the `VENUES` list in `backend/app/utils/seed_venues.py`. The seed runs automatically on every Railway deploy (idempotent — skips slugs that already exist). To run manually:
 
 ```bash
 python -m app.utils.seed_venues
 ```
 
-The script is idempotent — it skips venues whose slug already exists.
+### Supported `establishment_type` values
+
+| Value | Description |
+|-------|-------------|
+| `Nightclub` | Full-service nightclub with DJ and dance floor |
+| `Cocktail Bar` | Craft cocktail focused, typically smaller and more intimate |
+| `Bar & Restaurant` | Full food menu alongside a bar program |
+| `Rooftop Lounge` | Open-air or partially covered rooftop venue |

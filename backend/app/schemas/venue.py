@@ -19,6 +19,7 @@ class VenueBase(BaseModel):
     primary_nights: list[str] = []
     hours: dict[str, Any] | None = None
     special_nights: list[str] = []
+    special_occasion: str | None = None
 
     # Pricing
     price_tier: str | None = None
