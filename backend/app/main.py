@@ -1,10 +1,38 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import select
 
 from app.config import settings
+from app.database import AsyncSessionLocal
+from app.models.admin_user import AdminUser
 from app.routers import admin, analytics, blog, events, guestlist, music, reservations, seo, tonight, venues, webhooks
+from app.utils.security import hash_password, verify_password
+
+
+async def _seed_admin() -> None:
+    if not settings.admin_password:
+        return
+    async with AsyncSessionLocal() as session:
+        existing = await session.scalar(select(AdminUser).where(AdminUser.email == settings.admin_email))
+        if existing:
+            if not verify_password(settings.admin_password, existing.hashed_password):
+                existing.hashed_password = hash_password(settings.admin_password)
+                await session.commit()
+        else:
+            session.add(AdminUser(email=settings.admin_email, hashed_password=hash_password(settings.admin_password)))
+            await session.commit()
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await _seed_admin()
+    yield
+
 
 app = FastAPI(
+    lifespan=lifespan,
     title="YVR Advisory API",
     description="Vancouver nightlife and events advisory platform",
     version="1.0.0",
