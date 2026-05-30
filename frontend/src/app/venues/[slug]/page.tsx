@@ -6,7 +6,7 @@ import { api } from "@/lib/api";
 import { Badge } from "@/components/ui/Badge";
 import { GoldButton } from "@/components/ui/GoldButton";
 import { VenueJsonLd } from "@/components/venues/VenueJsonLd";
-import type { Venue } from "@/types";
+import type { Venue, VenueHours } from "@/types";
 
 export const revalidate = 600;
 
@@ -27,6 +27,34 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   } catch {
     return { title: "Venue Not Found" };
   }
+}
+
+const DAY_ORDER: (keyof VenueHours)[] = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
+
+function HoursTable({ hours }: { hours: VenueHours }) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      {DAY_ORDER.map((day) => {
+        const val = hours[day];
+        return (
+          <div key={day} className="flex justify-between text-sm">
+            <span className="text-text-dim capitalize">{day}</span>
+            <span className={val ? "text-text-primary" : "text-text-dim"}>{val || "Closed"}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
+  if (!value) return null;
+  return (
+    <div>
+      <p className="text-xs uppercase tracking-widest text-gold mb-1">{label}</p>
+      <p className="text-text-muted text-sm">{value}</p>
+    </div>
+  );
 }
 
 export default async function VenueDetailPage({ params }: { params: { slug: string } }) {
@@ -52,48 +80,142 @@ export default async function VenueDetailPage({ params }: { params: { slug: stri
         </div>
 
         <div className="max-w-5xl mx-auto px-6 -mt-20 pb-24 relative z-10">
+          {/* Music type badges */}
           <div className="flex flex-wrap gap-2 mb-4">
             {venue.music_types.map((t) => <Badge key={t} label={t} variant="gold" />)}
+            {venue.price_tier && (
+              <span className="text-[10px] uppercase tracking-widest text-gold border border-gold/40 px-2.5 py-1">
+                {venue.price_tier}
+              </span>
+            )}
           </div>
-          <h1 className="font-serif text-5xl md:text-6xl text-text-primary mb-2">{venue.name}</h1>
+
+          <h1 className="font-serif text-5xl md:text-6xl text-text-primary mb-1">{venue.name}</h1>
+          {venue.hospitality_company && (
+            <p className="text-xs uppercase tracking-widest text-text-dim mb-1">{venue.hospitality_company}</p>
+          )}
           {venue.neighbourhood && (
             <p className="text-text-muted text-sm uppercase tracking-widest mb-6">{venue.neighbourhood}</p>
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mt-10">
-            <div className="md:col-span-2">
+            {/* Left: main info */}
+            <div className="md:col-span-2 flex flex-col gap-8">
               {venue.description && (
-                <p className="text-text-muted leading-relaxed mb-8">{venue.description}</p>
+                <p className="text-text-muted leading-relaxed">{venue.description}</p>
               )}
-              {venue.address && (
-                <div className="mb-4">
-                  <p className="text-xs uppercase tracking-widest text-gold mb-1">Address</p>
-                  <p className="text-text-muted">{venue.address}</p>
+
+              {/* Quick stats row */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                {venue.primary_nights.length > 0 && (
+                  <div className="card-surface p-4">
+                    <p className="text-[10px] uppercase tracking-widest text-gold mb-1">Best Nights</p>
+                    <p className="text-text-primary text-sm capitalize">{venue.primary_nights.join(", ")}</p>
+                  </div>
+                )}
+                {venue.dress_code && (
+                  <div className="card-surface p-4">
+                    <p className="text-[10px] uppercase tracking-widest text-gold mb-1">Dress Code</p>
+                    <p className="text-text-primary text-sm">{venue.dress_code}</p>
+                  </div>
+                )}
+                {venue.age_restriction && (
+                  <div className="card-surface p-4">
+                    <p className="text-[10px] uppercase tracking-widest text-gold mb-1">Age</p>
+                    <p className="text-text-primary text-sm">{venue.age_restriction}+</p>
+                  </div>
+                )}
+                {venue.capacity && (
+                  <div className="card-surface p-4">
+                    <p className="text-[10px] uppercase tracking-widest text-gold mb-1">Capacity</p>
+                    <p className="text-text-primary text-sm">{venue.capacity.toLocaleString()}</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Pricing details */}
+              {(venue.cover_charge_info || venue.bottle_minimum) && (
+                <div className="flex flex-col gap-4">
+                  <p className="text-xs uppercase tracking-widest text-gold">Pricing</p>
+                  <div className="card-surface p-5 flex flex-col gap-3">
+                    <InfoRow label="Cover Charge" value={venue.cover_charge_info} />
+                    <InfoRow
+                      label="Bottle Minimum"
+                      value={venue.bottle_minimum ? `$${venue.bottle_minimum.toLocaleString()} CAD` : null}
+                    />
+                  </div>
                 </div>
               )}
-              <div className="mt-4 flex flex-wrap gap-2">
-                {venue.vibe_tags.map((tag) => <Badge key={tag} label={tag} />)}
-              </div>
+
+              {/* Special nights */}
+              {venue.special_nights.length > 0 && (
+                <div>
+                  <p className="text-xs uppercase tracking-widest text-gold mb-3">Special Nights</p>
+                  <ul className="card-surface p-5 flex flex-col gap-2">
+                    {venue.special_nights.map((night) => (
+                      <li key={night} className="text-text-muted text-sm flex items-start gap-2">
+                        <span className="text-gold mt-0.5">›</span>
+                        {night}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Hours */}
+              {venue.hours && (
+                <div>
+                  <p className="text-xs uppercase tracking-widest text-gold mb-3">Hours</p>
+                  <div className="card-surface p-5">
+                    <HoursTable hours={venue.hours} />
+                  </div>
+                </div>
+              )}
+
+              {/* Location */}
+              {venue.address && (
+                <InfoRow label="Address" value={venue.address} />
+              )}
+
+              {/* Vibe tags */}
+              {venue.vibe_tags.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {venue.vibe_tags.map((tag) => <Badge key={tag} label={tag} />)}
+                </div>
+              )}
             </div>
 
-            <div className="card-surface p-6 flex flex-col gap-4">
-              <p className="text-xs uppercase tracking-widest text-gold">Reserve or Join</p>
-              <Link href={`/reserve?venue_id=${venue.id}`}>
-                <GoldButton className="w-full">Reserve a Table</GoldButton>
-              </Link>
-              <Link href={`/guestlist?venue_id=${venue.id}`}>
-                <GoldButton variant="outline" className="w-full">Join Guestlist</GoldButton>
-              </Link>
-              {venue.website_url && (
-                <a href={venue.website_url} target="_blank" rel="noopener noreferrer" className="text-center text-xs uppercase tracking-widest text-text-muted hover:text-gold transition-colors">
-                  Official Website
-                </a>
-              )}
-              {venue.instagram_url && (
-                <a href={venue.instagram_url} target="_blank" rel="noopener noreferrer" className="text-center text-xs uppercase tracking-widest text-text-muted hover:text-gold transition-colors">
-                  Instagram
-                </a>
-              )}
+            {/* Right: CTA panel */}
+            <div className="flex flex-col gap-4">
+              <div className="card-surface p-6 flex flex-col gap-4">
+                <p className="text-xs uppercase tracking-widest text-gold">Reserve or Join</p>
+                <Link href={`/reserve?venue_id=${venue.id}`}>
+                  <GoldButton className="w-full">Reserve a Table</GoldButton>
+                </Link>
+                <Link href={`/guestlist?venue_id=${venue.id}`}>
+                  <GoldButton variant="outline" className="w-full">Join Guestlist</GoldButton>
+                </Link>
+                {venue.reservation_link && (
+                  <a href={venue.reservation_link} target="_blank" rel="noopener noreferrer" className="text-center text-xs uppercase tracking-widest text-text-muted hover:text-gold transition-colors">
+                    Book Directly
+                  </a>
+                )}
+                {venue.website_url && (
+                  <a href={venue.website_url} target="_blank" rel="noopener noreferrer" className="text-center text-xs uppercase tracking-widest text-text-muted hover:text-gold transition-colors">
+                    Official Website
+                  </a>
+                )}
+                {venue.instagram_url && (
+                  <a href={venue.instagram_url} target="_blank" rel="noopener noreferrer" className="text-center text-xs uppercase tracking-widest text-text-muted hover:text-gold transition-colors">
+                    Instagram
+                  </a>
+                )}
+                {venue.phone && (
+                  <a href={`tel:${venue.phone}`} className="text-center text-xs uppercase tracking-widest text-text-muted hover:text-gold transition-colors">
+                    {venue.phone}
+                  </a>
+                )}
+              </div>
             </div>
           </div>
         </div>

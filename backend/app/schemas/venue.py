@@ -1,6 +1,7 @@
 from datetime import datetime
+from typing import Any
 
-from pydantic import BaseModel, HttpUrl
+from pydantic import BaseModel
 
 
 class VenueBase(BaseModel):
@@ -8,12 +9,32 @@ class VenueBase(BaseModel):
     description: str | None = None
     address: str | None = None
     neighbourhood: str | None = None
+    phone: str | None = None
+
+    # Music & vibe
     music_types: list[str] = []
     vibe_tags: list[str] = []
+
+    # Operational
+    primary_nights: list[str] = []
+    hours: dict[str, Any] | None = None
+    special_nights: list[str] = []
+
+    # Pricing
+    price_tier: str | None = None
+    cover_charge_info: str | None = None
+    bottle_minimum: int | None = None
+
+    # Access & atmosphere
+    dress_code: str | None = None
+    age_restriction: int | None = None
+    hospitality_company: str | None = None
+
     capacity: int | None = None
     image_url: str | None = None
     website_url: str | None = None
     instagram_url: str | None = None
+    reservation_link: str | None = None
     is_featured: bool = False
     is_active: bool = True
 

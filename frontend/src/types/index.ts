@@ -1,3 +1,13 @@
+export interface VenueHours {
+  monday?: string | null;
+  tuesday?: string | null;
+  wednesday?: string | null;
+  thursday?: string | null;
+  friday?: string | null;
+  saturday?: string | null;
+  sunday?: string | null;
+}
+
 export interface Venue {
   id: number;
   name: string;
@@ -5,12 +15,32 @@ export interface Venue {
   description?: string;
   address?: string;
   neighbourhood?: string;
+  phone?: string;
+
+  // Music & vibe
   music_types: string[];
   vibe_tags: string[];
+
+  // Operational
+  primary_nights: string[];
+  hours?: VenueHours | null;
+  special_nights: string[];
+
+  // Pricing
+  price_tier?: string | null;
+  cover_charge_info?: string | null;
+  bottle_minimum?: number | null;
+
+  // Access & atmosphere
+  dress_code?: string | null;
+  age_restriction?: number | null;
+  hospitality_company?: string | null;
+
   capacity?: number;
   image_url?: string;
   website_url?: string;
   instagram_url?: string;
+  reservation_link?: string | null;
   is_featured: boolean;
   is_active: boolean;
   created_at: string;

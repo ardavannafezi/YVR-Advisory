@@ -22,6 +22,9 @@ async def list_venues(
     music_type: str | None = Query(None),
     neighbourhood: str | None = Query(None),
     vibe: str | None = Query(None),
+    price_tier: str | None = Query(None),
+    primary_night: str | None = Query(None),
+    dress_code: str | None = Query(None),
     page: int = Query(1, ge=1),
     limit: int = Query(12, ge=1, le=50),
     db: AsyncSession = Depends(get_db),
@@ -33,6 +36,12 @@ async def list_venues(
         q = q.where(Venue.neighbourhood.ilike(f"%{neighbourhood}%"))
     if vibe:
         q = q.where(Venue.vibe_tags.any(vibe))
+    if price_tier:
+        q = q.where(Venue.price_tier == price_tier)
+    if primary_night:
+        q = q.where(Venue.primary_nights.any(primary_night))
+    if dress_code:
+        q = q.where(Venue.dress_code.ilike(f"%{dress_code}%"))
 
     total = await db.scalar(select(func.count()).select_from(q.subquery()))
     result = await db.execute(q.offset((page - 1) * limit).limit(limit))

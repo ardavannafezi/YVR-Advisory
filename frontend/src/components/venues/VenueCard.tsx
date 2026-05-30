@@ -35,6 +35,13 @@ export function VenueCard({ venue, index = 0 }: VenueCardProps) {
             <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent" />
           )}
           <div className="absolute inset-0 bg-dark-gradient" />
+          <div className="absolute top-3 right-3 flex gap-1.5">
+            {venue.price_tier && (
+              <span className="text-[10px] uppercase tracking-widest text-gold bg-background/80 border border-gold/30 px-2 py-0.5">
+                {venue.price_tier}
+              </span>
+            )}
+          </div>
           <div className="absolute bottom-3 left-3 flex gap-1.5 flex-wrap">
             {venue.music_types.slice(0, 2).map((type) => (
               <Badge key={type} label={type} variant="gold" />
@@ -43,10 +50,20 @@ export function VenueCard({ venue, index = 0 }: VenueCardProps) {
         </div>
 
         <div className="p-5">
-          <p className="text-text-dim text-[10px] uppercase tracking-widest mb-1">{venue.neighbourhood}</p>
+          <div className="flex items-center justify-between mb-1">
+            <p className="text-text-dim text-[10px] uppercase tracking-widest">{venue.neighbourhood}</p>
+            {venue.primary_nights.length > 0 && (
+              <p className="text-[10px] uppercase tracking-widest text-text-muted">
+                {venue.primary_nights.slice(0, 2).join(" · ")}
+              </p>
+            )}
+          </div>
           <h3 className="font-serif text-xl text-text-primary group-hover:text-gold transition-colors">
             {venue.name}
           </h3>
+          {venue.hospitality_company && (
+            <p className="text-[10px] uppercase tracking-widest text-text-dim mt-0.5">{venue.hospitality_company}</p>
+          )}
           {venue.description && (
             <p className="mt-2 text-text-muted text-sm line-clamp-2 leading-relaxed">{venue.description}</p>
           )}
