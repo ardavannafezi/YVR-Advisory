@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy import select
+from sqlalchemy.dialects.postgresql import insert as pg_insert
 
 from app.config import settings
 from app.database import AsyncSessionLocal
@@ -12,31 +12,31 @@ from app.routers import admin, analytics, blog, events, guestlist, music, reserv
 from app.utils.security import hash_password
 from app.utils.seed_venues import seed as seed_venues
 
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
 async def _seed_admin() -> None:
     if not settings.admin_password:
-        logger.warning("ADMIN_PASSWORD not set — skipping admin seed")
+        logger.warning("ADMIN_PASSWORD env var not set — skipping admin seed")
         return
-    async with AsyncSessionLocal() as session:
-        existing = await session.scalar(
-            select(AdminUser).where(AdminUser.email == settings.admin_email)
-        )
-        if existing:
-            existing.hashed_password = hash_password(settings.admin_password)
-            existing.is_active = True
-            await session.commit()
-            logger.info("Admin user updated: %s", settings.admin_email)
-        else:
-            session.add(
-                AdminUser(
-                    email=settings.admin_email,
-                    hashed_password=hash_password(settings.admin_password),
+    logger.info("Seeding admin: email=%s", settings.admin_email)
+    try:
+        hashed = hash_password(settings.admin_password)
+        async with AsyncSessionLocal() as session:
+            stmt = (
+                pg_insert(AdminUser)
+                .values(email=settings.admin_email, hashed_password=hashed, is_active=True)
+                .on_conflict_do_update(
+                    index_elements=["email"],
+                    set_={"hashed_password": hashed, "is_active": True},
                 )
             )
+            await session.execute(stmt)
             await session.commit()
-            logger.info("Admin user created: %s", settings.admin_email)
+            logger.info("Admin upserted OK: %s", settings.admin_email)
+    except Exception:
+        logger.exception("CRITICAL — failed to seed admin user")
 
 
 @asynccontextmanager
@@ -85,4 +85,8 @@ app.include_router(seo.router)
 
 @app.get("/health")
 async def health():
-    return {"status": "ok"}
+    return {
+        "status": "ok",
+        "admin_email_configured": settings.admin_email,
+        "admin_password_set": bool(settings.admin_password),
+    }
