@@ -320,6 +320,237 @@ VENUES = [
             },
         ],
     },
+    {
+        "name": "The Keefer Bar",
+        "establishment_type": "Cocktail Bar",
+        "description": (
+            "One of Vancouver's most celebrated cocktail bars, The Keefer Bar sits at the edge of Chinatown "
+            "and draws a discerning crowd with its inventive, herb-forward cocktail menu and low-lit, intimate "
+            "atmosphere. The bar is known for blending Eastern botanicals and traditional apothecary inspiration "
+            "into each drink. On select nights, live DJs and musicians take the small stage — making it as much "
+            "a late-night haunt as a pre-dinner destination."
+        ),
+        "address": "135 Keefer St, Vancouver, BC V6A 1X3",
+        "neighbourhood": "Gastown",
+        "phone": "(604) 688-1961",
+        "latitude": 49.2799,
+        "longitude": -123.1028,
+        "music_types": ["r&b", "live"],
+        "vibe_tags": ["intimate", "craft cocktails", "dim lighting", "apothecary", "date night"],
+        "primary_nights": ["thursday", "friday", "saturday"],
+        "hours": {
+            "monday": None,
+            "tuesday": "5:00 PM – 12:00 AM",
+            "wednesday": "5:00 PM – 12:00 AM",
+            "thursday": "5:00 PM – 1:00 AM",
+            "friday": "5:00 PM – 2:00 AM",
+            "saturday": "5:00 PM – 2:00 AM",
+            "sunday": "5:00 PM – 12:00 AM",
+        },
+        "special_nights": [
+            "Thursdays — Guest bartender nights and seasonal menu previews",
+            "Weekends — Live DJ sets from 9 PM",
+        ],
+        "price_tier": "$$",
+        "cover_charge_info": "No cover charge. Walk-in and reservations welcome.",
+        "bottle_minimum": None,
+        "dress_code": "Smart casual — come as you are, dress with intention",
+        "age_restriction": 19,
+        "hospitality_company": None,
+        "capacity": 80,
+        "image_url": "https://images.unsplash.com/photo-1575444758702-4a6b9222336e?w=1600&q=80",
+        "logo_url": None,
+        "gallery_urls": [
+            "https://images.unsplash.com/photo-1560512823-829485b8bf24?w=800&q=80",
+            "https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=800&q=80",
+        ],
+        "website_url": "https://www.thekeeferbar.com",
+        "instagram_url": "https://www.instagram.com/thekeeferbar",
+        "reservation_link": None,
+        "is_featured": True,
+        "is_active": True,
+        "faqs": [
+            {
+                "question": "What makes The Keefer Bar unique?",
+                "answer": (
+                    "The cocktail menu is inspired by traditional Chinese apothecary — ingredients like "
+                    "chrysanthemum, lychee, and goji berry feature alongside classic spirits. Every drink "
+                    "is crafted to balance flavour with botanical intention."
+                ),
+            },
+            {
+                "question": "Do I need a reservation?",
+                "answer": (
+                    "Reservations are recommended Thursday through Saturday, especially for groups of 4 or more. "
+                    "Walk-ins are always welcome at the bar."
+                ),
+            },
+            {
+                "question": "Is there live music?",
+                "answer": (
+                    "Yes — select Thursday evenings feature guest bartenders and live sets. Weekends often have "
+                    "a resident DJ from 9 PM onwards. Check Instagram for the current lineup."
+                ),
+            },
+        ],
+    },
+    {
+        "name": "Juniper Restaurant & Bar",
+        "establishment_type": "Bar & Restaurant",
+        "description": (
+            "Perched on the edge of Coal Harbour with sweeping views of the North Shore mountains and Burrard Inlet, "
+            "Juniper is the city's most scenic dining and cocktail destination. The menu centres on Pacific Northwest "
+            "cuisine — fresh, seasonal, and locally sourced — while the bar program elevates classic cocktails with "
+            "foraged BC ingredients. Whether you're booking for dinner or arriving for late-night drinks, the space "
+            "transitions effortlessly from restaurant to bar as the evening unfolds."
+        ),
+        "address": "185 Victory Ship Way, Vancouver, BC V6B 0B6",
+        "neighbourhood": "Coal Harbour",
+        "phone": "(604) 566-3977",
+        "latitude": 49.2882,
+        "longitude": -123.1215,
+        "music_types": ["pop", "live"],
+        "vibe_tags": ["waterfront views", "upscale dining", "seasonal menu", "date night", "scenic"],
+        "primary_nights": ["friday", "saturday", "sunday"],
+        "hours": {
+            "monday": "11:30 AM – 10:00 PM",
+            "tuesday": "11:30 AM – 10:00 PM",
+            "wednesday": "11:30 AM – 10:00 PM",
+            "thursday": "11:30 AM – 11:00 PM",
+            "friday": "11:30 AM – 12:00 AM",
+            "saturday": "10:00 AM – 12:00 AM",
+            "sunday": "10:00 AM – 10:00 PM",
+        },
+        "special_nights": [
+            "Friday & Saturday — Late-night bar menu and cocktails until midnight",
+            "Sunday Brunch — 10 AM to 3 PM with weekend cocktail specials",
+        ],
+        "price_tier": "$$$",
+        "cover_charge_info": "No cover. Reservations strongly recommended for dinner.",
+        "bottle_minimum": None,
+        "dress_code": "Smart casual — polished but relaxed",
+        "age_restriction": 19,
+        "hospitality_company": None,
+        "capacity": 180,
+        "image_url": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1600&q=80",
+        "logo_url": None,
+        "gallery_urls": [
+            "https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?w=800&q=80",
+            "https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&q=80",
+            "https://images.unsplash.com/photo-1572116469696-31de0f17cc34?w=800&q=80",
+        ],
+        "website_url": "https://www.junipervancouver.com",
+        "instagram_url": "https://www.instagram.com/junipervancouver",
+        "reservation_link": "https://www.opentable.com/juniper-restaurant-and-bar",
+        "is_featured": True,
+        "is_active": True,
+        "faqs": [
+            {
+                "question": "Do I need a reservation for dinner?",
+                "answer": (
+                    "Yes — dinner reservations are strongly recommended, especially on weekends. "
+                    "Bar seating is available on a walk-in basis."
+                ),
+            },
+            {
+                "question": "Can I come just for drinks?",
+                "answer": (
+                    "Absolutely. The bar is open to walk-ins and the full cocktail menu is available "
+                    "all evening. The bar area has spectacular harbour views."
+                ),
+            },
+            {
+                "question": "What kind of food do you serve?",
+                "answer": (
+                    "Pacific Northwest cuisine — seasonal ingredients sourced from BC farms and waters. "
+                    "The menu changes regularly to reflect what's at its peak."
+                ),
+            },
+        ],
+    },
+    {
+        "name": "Reflections: The Garden Terrace",
+        "establishment_type": "Rooftop Lounge",
+        "description": (
+            "Perched atop the historic Hotel Georgia in the heart of downtown Vancouver, Reflections is the city's "
+            "premier rooftop lounge — an open-air terrace wrapped in lush greenery, warm lighting, and unobstructed "
+            "views of the Vancouver skyline. The menu spans elevated small plates, seasonal cocktails, and an "
+            "extensive wine list. As one of the only true rooftop lounges in the downtown core, it draws a "
+            "sophisticated crowd for after-work drinks, private events, and summer evening gatherings that stretch "
+            "well past midnight."
+        ),
+        "address": "801 W Georgia St, Vancouver, BC V6C 1P7",
+        "neighbourhood": "Granville Strip",
+        "phone": "(604) 682-5566",
+        "latitude": 49.2830,
+        "longitude": -123.1208,
+        "music_types": ["house", "pop"],
+        "vibe_tags": ["rooftop", "open-air", "skyline views", "upscale", "summer terrace", "intimate"],
+        "primary_nights": ["thursday", "friday", "saturday", "sunday"],
+        "hours": {
+            "monday": None,
+            "tuesday": None,
+            "wednesday": "4:00 PM – 11:00 PM",
+            "thursday": "4:00 PM – 12:00 AM",
+            "friday": "3:00 PM – 1:00 AM",
+            "saturday": "12:00 PM – 1:00 AM",
+            "sunday": "12:00 PM – 10:00 PM",
+        },
+        "special_nights": [
+            "Thursdays — Sunset cocktail hour from 4–6 PM with half-price selected drinks",
+            "Friday & Saturday — DJ sets from 9 PM with late-night small plates",
+            "Sunday Sessions — Afternoon drinks and light bites from noon",
+        ],
+        "price_tier": "$$$",
+        "cover_charge_info": "No cover. Reservations recommended Thursday–Sunday evenings.",
+        "bottle_minimum": None,
+        "dress_code": "Smart casual — no athletic wear or flip-flops",
+        "age_restriction": 19,
+        "hospitality_company": "Hotel Georgia",
+        "capacity": 150,
+        "image_url": "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=1600&q=80",
+        "logo_url": None,
+        "gallery_urls": [
+            "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?w=800&q=80",
+            "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=800&q=80",
+        ],
+        "website_url": "https://www.hotelgeorgia.ca/reflections",
+        "instagram_url": "https://www.instagram.com/hotelgeorgia",
+        "reservation_link": None,
+        "is_featured": True,
+        "is_active": True,
+        "faqs": [
+            {
+                "question": "Is Reflections open year-round?",
+                "answer": (
+                    "The terrace operates seasonally — primarily spring through fall (May to October). "
+                    "Hours and availability vary; check the website or Instagram before visiting in "
+                    "shoulder seasons."
+                ),
+            },
+            {
+                "question": "Can I book for a private event?",
+                "answer": (
+                    "Yes — Reflections is available for private buyouts and corporate events. "
+                    "Contact the Hotel Georgia events team directly for pricing and availability."
+                ),
+            },
+            {
+                "question": "Is food available?",
+                "answer": (
+                    "Yes — an elevated small plates menu is available all evening, including charcuterie, "
+                    "fresh oysters, and seasonal shared plates designed for grazing alongside cocktails."
+                ),
+            },
+            {
+                "question": "What is the best time to visit for the view?",
+                "answer": (
+                    "Arrive at sunset — roughly 8–9 PM in summer — for the best light over the downtown "
+                    "skyline. The terrace is warmest mid-evening and fills up quickly after 9 PM on weekends."
+                ),
+            },
+        ],
+    },
 ]
 
 

@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
 import { usePreferenceTracker } from "@/hooks/usePreferenceTracker";
 
+const ESTABLISHMENT_TYPES = ["Nightclub", "Cocktail Bar", "Bar & Restaurant", "Rooftop Lounge"];
 const MUSIC_TYPES = ["techno", "house", "hip-hop", "latin", "r&b", "pop", "edm", "live"];
 const NEIGHBOURHOODS = [
   "Granville Strip",
@@ -55,6 +56,23 @@ export function VenueFilter() {
             ✕ Clear filters
           </button>
         )}
+        <div>
+          <p className="text-xs uppercase tracking-widest text-gold mb-3">Venue Type</p>
+          <div className="flex flex-col gap-2">
+            {ESTABLISHMENT_TYPES.map((t) => (
+              <button
+                key={t}
+                onClick={() => setFilter("establishment_type", t)}
+                className={`text-left text-sm transition-colors ${
+                  active("establishment_type", t) ? "text-gold" : "text-text-muted hover:text-text-primary"
+                }`}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div>
           <p className="text-xs uppercase tracking-widest text-gold mb-3">Music</p>
           <div className="flex flex-wrap gap-2">

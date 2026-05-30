@@ -21,6 +21,7 @@ async def get_featured(db: AsyncSession = Depends(get_db)):
 async def list_venues(
     music_type: str | None = Query(None),
     neighbourhood: str | None = Query(None),
+    establishment_type: str | None = Query(None),
     vibe: str | None = Query(None),
     price_tier: str | None = Query(None),
     primary_night: str | None = Query(None),
@@ -32,6 +33,8 @@ async def list_venues(
     q = select(Venue).where(Venue.is_active == True)
     if music_type:
         q = q.where(Venue.music_types.any(music_type))
+    if establishment_type:
+        q = q.where(Venue.establishment_type.ilike(f"%{establishment_type}%"))
     if neighbourhood:
         q = q.where(Venue.neighbourhood.ilike(f"%{neighbourhood}%"))
     if vibe:
