@@ -1,10 +1,10 @@
 # CLAUDE.md
 
-Guidance for Claude Code (claude.ai/code) working in this repo.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
 
-YVR Advisory — high-end Vancouver nightlife advisory platform. Venue discovery, event listings, quiz-based recommendations ("Where to Go Tonight"), guestlist signups, table reservations. Railway deployment, Next.js 14 frontend, FastAPI backend.
+YVR Advisory is a high-end Vancouver nightlife advisory platform — venue discovery, event listings, a quiz-based recommendation engine ("Where to Go Tonight"), guestlist signups, and table reservations. Deployed on Railway with a Next.js 14 frontend and FastAPI backend.
 
 ## Commands
 
@@ -35,7 +35,7 @@ python -m app.utils.seed_venues
 npx tsc --noEmit   # TypeScript type check without emitting files
 ```
 
-No test suite yet.
+No test suite exists yet.
 
 ## Architecture
 
@@ -51,24 +51,24 @@ User Browser
 
 ### Frontend (`frontend/`)
 
-- **Framework:** Next.js 14 App Router + TypeScript
-- **Styling:** Tailwind CSS (gold `#c9a84c` / black `#0a0a0a`) + Framer Motion
+- **Framework:** Next.js 14 App Router with TypeScript
+- **Styling:** Tailwind CSS (gold `#c9a84c` / black `#0a0a0a` theme) + Framer Motion
 - **Fonts:** Playfair Display (headings), Inter (body)
-- **Key pages:** `src/app/` — home, `venues/`, `events/`, `blog/`, `music/`, `tonight/`, `guestlist/`, `reserve/`, `admin/`
-- **Components:** `src/components/` — subfolders: `admin/`, `blog/`, `events/`, `forms/`, `home/`, `layout/`, `music/`, `tonight/`, `ui/`, `venues/`
+- **Key pages:** `src/app/` — home, `venues/`, `events/`, `blog/`, `music/` (genre pages), `tonight/` (quiz), `guestlist/`, `reserve/`, `admin/`
+- **Components:** `src/components/` — subfolders by domain: `admin/`, `blog/`, `events/`, `forms/`, `home/`, `layout/`, `music/`, `tonight/`, `ui/`, `venues/`
 - **API layer:** `src/lib/api.ts` — thin fetch wrapper over `NEXT_PUBLIC_API_URL`
 - **Auth:** `src/lib/auth.ts` — JWT token storage for admin routes
 - **Shared types:** `src/types/index.ts`
-- **Animations:** `src/styles/animations.ts`, via Framer Motion
+- **Animations:** defined in `src/styles/animations.ts`, used via Framer Motion
 - **ISR revalidation:** venue detail 10 min, event detail 5 min, blog 60 min; triggered via `/api/revalidate` with `REVALIDATE_SECRET`
 
 ### Backend (`backend/`)
 
-- **Framework:** FastAPI (async), SQLAlchemy 2.0 + asyncpg
+- **Framework:** FastAPI (async) with SQLAlchemy 2.0 + asyncpg
 - **Entry point:** `app/main.py` — mounts all routers, configures CORS
 - **Settings:** `app/config.py` via Pydantic-Settings (reads env vars)
 - **DB session:** `app/database.py` — async engine; injected via `app/dependencies.py`
-- **Migrations:** Alembic; versions `001`–`008` in `alembic/versions/`; run `alembic upgrade head` before start; new: `alembic revision --autogenerate -m "description"`
+- **Migrations:** Alembic; versions `001`–`008` in `alembic/versions/`; run `alembic upgrade head` before starting; create new: `alembic revision --autogenerate -m "description"`
 - **Auth:** JWT Bearer via python-jose; `get_current_admin` dependency gates all `/api/admin/*` routes
 
 ### Data Models
@@ -83,23 +83,23 @@ User Browser
 | `UserPreference` | `session_id` (unique), `quiz_answers` (JSON), arrays of viewed items |
 | `AdminUser` | `email` (unique), `hashed_password` |
 | `VenueView` | `venue_id` (unique FK), `view_count` — one row per venue, upserted on each page load |
-| `VenueAdvisoryRating` | `venue_id` (unique FK), `rating` (float) — editorial score on venue detail |
+| `VenueAdvisoryRating` | `venue_id` (unique FK), `rating` (float) — editorial score shown on venue detail |
 
 ### Adding a Venue
 
-Add entry to `VENUES` list in `backend/app/utils/seed_venues.py`, run `python -m app.utils.seed_venues`. Non-obvious field formats:
+Add entry to `VENUES` list in `backend/app/utils/seed_venues.py`, then run `python -m app.utils.seed_venues`. Non-obvious field formats:
 
-- `dress_code`: `"Label — detail"` — part before ` — ` shown in quick-stats card
-- `hours`: JSONB keyed by lowercase day; `null` = closed. Example: `{"monday": null, "friday": "9:00 PM – 3:00 AM"}`
+- `dress_code`: `"Label — detail"` — the part before ` — ` is extracted and shown in the quick-stats card
+- `hours`: JSONB keyed by lowercase day name; `null` = closed. Example: `{"monday": null, "friday": "9:00 PM – 3:00 AM"}`
 - `faqs`: JSONB array of `{"question": "...", "answer": "..."}` objects
 - `establishment_type`: must be one of `Nightclub`, `Cocktail Bar`, `Bar & Restaurant`, `Rooftop Lounge`
-- `primary_category`: optional free-text override for venue's primary category label (migration 008)
+- `primary_category`: optional free-text override for the venue's primary category label (migration 008)
 
 ### Key API Flows
 
 **Quiz recommendations** (`POST /api/tonight/recommend`): scores venues by music match (+40), vibe overlap (+20 each), event tonight (+20).
 
-**n8n event ingestion** (`POST /api/webhooks/n8n`, `X-API-Key` required): upserts events by `external_id` or name+venue+date match; auto-creates venue if missing; triggers ISR revalidation on frontend.
+**n8n event ingestion** (`POST /api/webhooks/n8n`, `X-API-Key` required): upserts events by `external_id` or name+venue+date match; auto-creates venue if missing; triggers ISR revalidation on the frontend.
 
 **Admin CRUD**: all `/api/admin/*` endpoints require JWT Bearer. Login via `POST /api/admin/auth/login`.
 
@@ -126,22 +126,22 @@ ENVIRONMENT=development
 ## SEO Architecture
 
 - `generateMetadata()` on every server page — required for all new pages
-- JSON-LD structured data on venue (`NightClub`), event, blog detail pages
+- JSON-LD structured data on venue (`NightClub`), event, and blog detail pages
 - Dynamic OG images via `app/api/og/route.tsx`
 - `sitemap.ts` fetches all slugs from API at build time
-- ISR: venue 10 min, event 5 min, blog 60 min; on-demand via `POST /api/revalidate` (requires `REVALIDATE_SECRET`)
+- ISR: venue detail 10 min, event detail 5 min, blog 60 min; on-demand via `POST /api/revalidate` (requires `REVALIDATE_SECRET`)
 
 ## Analytics
 
-Anonymous by default — `session_id` in `localStorage`. Linked to email when user submits guestlist/reservation. Each quiz step fires `POST /api/analytics/track`. All data in `user_preferences` table, aggregated in admin dashboard.
+Anonymous by default — `session_id` stored in `localStorage`. Linked to email when user submits guestlist/reservation form. Each quiz step fires `POST /api/analytics/track`. All data lands in `user_preferences` table, aggregated in admin dashboard.
 
 ## UI Conventions
 
-- **Loading states:** Skeleton loading (animated placeholder boxes), not spinners or text, for card/list/grid content. Match skeleton shape to actual content layout.
+- **Loading states:** Use skeleton loading (animated placeholder boxes) instead of spinners or text for card/list/grid content. Match skeleton shape to actual content layout.
 
 ## Local Development
 
-**Do not run app locally.** Frontend, backend, database all run on Railway. Changes deploy on `git push`. Never run `python`, `python3`, `uvicorn`, `npm run dev`, or any server/migration commands locally.
+**Do not run the app locally.** Frontend, backend, and database all run on Railway. Changes deploy on `git push`. Never run `python`, `python3`, `uvicorn`, `npm run dev`, or any server/migration commands locally.
 
 ## Deployment (Railway)
 
@@ -149,13 +149,13 @@ Anonymous by default — `session_id` in `localStorage`. Linked to email when us
 - **Backend:** Dockerfile (Python 3.12-slim); pre-deploy `alembic upgrade head`; start `sh -c 'uvicorn app.main:app --host 0.0.0.0 --port $PORT'`; health check `/health`
 - **Database:** Railway Postgres add-on; connection string injected as `DATABASE_URL`
 
-CORS locked to `https://yvradvisory.ca`, `https://www.yvradvisory.ca`, `http://localhost:3000`, `FRONTEND_URL`.
+CORS is locked to `https://yvradvisory.ca`, `https://www.yvradvisory.ca`, `http://localhost:3000`, and `FRONTEND_URL`.
 
 ## Reference Docs
 
-Deeper docs in `docs/`:
+Deeper documentation lives in `docs/`:
 - `architecture.md` — data flow diagrams
 - `api-reference.md` — full endpoint table (public + admin)
-- `venue-schema.md` — complete `venues` column reference
+- `venue-schema.md` — complete column reference for the `venues` table
 - `deployment.md` — Railway deploy details
 - `n8n-integration.md` — n8n webhook payload format
