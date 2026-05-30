@@ -30,8 +30,20 @@ class VenueBase(BaseModel):
     age_restriction: int | None = None
     hospitality_company: str | None = None
 
+    establishment_type: str | None = None
+
+    # Media
     capacity: int | None = None
     image_url: str | None = None
+    gallery_urls: list[str] = []
+
+    # Maps
+    latitude: float | None = None
+    longitude: float | None = None
+
+    # FAQs
+    faqs: list[dict[str, Any]] | None = None
+
     website_url: str | None = None
     instagram_url: str | None = None
     reservation_link: str | None = None

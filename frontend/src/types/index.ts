@@ -8,6 +8,11 @@ export interface VenueHours {
   sunday?: string | null;
 }
 
+export interface VenueFaq {
+  question: string;
+  answer: string;
+}
+
 export interface Venue {
   id: number;
   name: string;
@@ -35,9 +40,20 @@ export interface Venue {
   dress_code?: string | null;
   age_restriction?: number | null;
   hospitality_company?: string | null;
+  establishment_type?: string | null;
 
+  // Media
   capacity?: number;
   image_url?: string;
+  gallery_urls: string[];
+
+  // Maps
+  latitude?: number | null;
+  longitude?: number | null;
+
+  // FAQs
+  faqs?: VenueFaq[] | null;
+
   website_url?: string;
   instagram_url?: string;
   reservation_link?: string | null;

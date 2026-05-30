@@ -41,8 +41,20 @@ class Venue(Base):
     age_restriction: Mapped[int | None] = mapped_column(Integer)
     hospitality_company: Mapped[str | None] = mapped_column(String(200))
 
+    establishment_type: Mapped[str | None] = mapped_column(String(100))
+
+    # Media
     capacity: Mapped[int | None] = mapped_column(Integer)
     image_url: Mapped[str | None] = mapped_column(String(1000))
+    gallery_urls: Mapped[list[str]] = mapped_column(ARRAY(String), default=list)
+
+    # Maps
+    latitude: Mapped[float | None] = mapped_column()
+    longitude: Mapped[float | None] = mapped_column()
+
+    # FAQs
+    faqs: Mapped[list[dict[str, Any]] | None] = mapped_column(JSONB)
+
     website_url: Mapped[str | None] = mapped_column(String(1000))
     instagram_url: Mapped[str | None] = mapped_column(String(1000))
     reservation_link: Mapped[str | None] = mapped_column(String(1000))
