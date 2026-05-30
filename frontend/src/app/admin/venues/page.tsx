@@ -10,6 +10,9 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://back.yvradvisory.ca"
 const ESTABLISHMENT_TYPES = ["Nightclub", "Cocktail Bar", "Bar & Restaurant", "Rooftop Lounge"];
 const PRICE_TIERS = ["$", "$$", "$$$"];
 const DAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"] as const;
+const MUSIC_TYPES_OPTIONS = ["hip-hop", "house", "pop", "techno", "edm", "r&b", "live", "top-40", "latin", "k-pop", "country", "rock", "indie", "electronic"];
+const VIBE_TAGS_OPTIONS = ["luxury", "upscale", "high-energy", "bottle service", "multi-room", "intimate", "underground", "dance floor", "VIP", "rooftop", "date night", "craft cocktails", "live events", "casual", "queer-friendly", "after-hours", "art-driven", "cocktail-forward", "scenic", "dark", "moody", "polished", "inclusive"];
+const PRIMARY_CATEGORIES_OPTIONS = ["nightclub", "bar", "lounge", "live_music"];
 
 type Day = typeof DAYS[number];
 
@@ -32,10 +35,10 @@ interface FormState {
   neighbourhood: string;
   phone: string;
   establishment_type: string;
-  primary_categories: string;
-  music_types: string;
-  vibe_tags: string;
-  primary_nights: string;
+  primary_categories: string[];
+  music_types: string[];
+  vibe_tags: string[];
+  primary_nights: string[];
   hours: Record<Day, string>;
   special_nights: string;
   special_occasion: string;
@@ -66,9 +69,9 @@ const EMPTY_HOURS: Record<Day, string> = {
 
 const EMPTY_FORM: FormState = {
   name: "", description: "", address: "", neighbourhood: "", phone: "",
-  establishment_type: "", primary_categories: "",
-  music_types: "", vibe_tags: "",
-  primary_nights: "", hours: { ...EMPTY_HOURS },
+  establishment_type: "", primary_categories: [],
+  music_types: [], vibe_tags: [],
+  primary_nights: [], hours: { ...EMPTY_HOURS },
   special_nights: "", special_occasion: "",
   price_tier: "", cover_charge_info: "", bottle_minimum: "",
   dress_code: "", age_restriction: "", capacity: "", hospitality_company: "",
@@ -95,10 +98,10 @@ function buildPayload(form: FormState) {
     neighbourhood: form.neighbourhood || null,
     phone: form.phone || null,
     establishment_type: form.establishment_type || null,
-    primary_categories: splitCSV(form.primary_categories),
-    music_types: splitCSV(form.music_types),
-    vibe_tags: splitCSV(form.vibe_tags),
-    primary_nights: splitCSV(form.primary_nights),
+    primary_categories: form.primary_categories,
+    music_types: form.music_types,
+    vibe_tags: form.vibe_tags,
+    primary_nights: form.primary_nights,
     hours: Object.values(hours).some(v => v !== null) ? hours : null,
     special_nights: splitCSV(form.special_nights),
     special_occasion: form.special_occasion || null,
@@ -137,10 +140,10 @@ function venueToForm(v: any): FormState {
     neighbourhood: v.neighbourhood || "",
     phone: v.phone || "",
     establishment_type: v.establishment_type || "",
-    primary_categories: (v.primary_categories || []).join(", "),
-    music_types: (v.music_types || []).join(", "),
-    vibe_tags: (v.vibe_tags || []).join(", "),
-    primary_nights: (v.primary_nights || []).join(", "),
+    primary_categories: v.primary_categories || [],
+    music_types: v.music_types || [],
+    vibe_tags: v.vibe_tags || [],
+    primary_nights: v.primary_nights || [],
     hours,
     special_nights: (v.special_nights || []).join(", "),
     special_occasion: v.special_occasion || "",
@@ -204,6 +207,29 @@ function UploadButton({ onUrl, label }: { onUrl: (url: string) => void; label: s
       </button>
       <input ref={ref} type="file" accept="image/*" className="hidden" onChange={handleFile} />
     </>
+  );
+}
+
+function MultiCheckbox({ options, value, onChange }: { options: string[]; value: string[]; onChange: (v: string[]) => void }) {
+  function toggle(opt: string) {
+    onChange(value.includes(opt) ? value.filter(v => v !== opt) : [...value, opt]);
+  }
+  return (
+    <div className="flex flex-wrap gap-2 pt-1">
+      {options.map(opt => (
+        <label
+          key={opt}
+          className={`flex items-center gap-1 text-[11px] px-2.5 py-1 border cursor-pointer transition-colors select-none ${
+            value.includes(opt)
+              ? "border-gold bg-gold/10 text-gold"
+              : "border-white/10 text-text-muted hover:border-white/25"
+          }`}
+        >
+          <input type="checkbox" checked={value.includes(opt)} onChange={() => toggle(opt)} className="hidden" />
+          {opt}
+        </label>
+      ))}
+    </div>
   );
 }
 
@@ -272,8 +298,8 @@ function VenueForm({
             {ESTABLISHMENT_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
           </select>
         </Field>
-        <Field label="Primary Category">
-          <input value={form.primary_categories} onChange={e => set("primary_categories", e.target.value)} className={inputCls} placeholder="e.g. nightclub, bar (comma-separated)" />
+        <Field label="Primary Categories">
+          <MultiCheckbox options={PRIMARY_CATEGORIES_OPTIONS} value={form.primary_categories} onChange={v => set("primary_categories", v)} />
         </Field>
         <Field label="Address">
           <input value={form.address} onChange={e => set("address", e.target.value)} className={inputCls} />
@@ -295,12 +321,16 @@ function VenueForm({
       <div className={sectionCls}>
         <p className={sectionTitle}>Music & Vibe</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Field label="Music Types (comma-separated)">
-            <input value={form.music_types} onChange={e => set("music_types", e.target.value)} className={inputCls} placeholder="hip-hop, house, pop" />
-          </Field>
-          <Field label="Vibe Tags (comma-separated)">
-            <input value={form.vibe_tags} onChange={e => set("vibe_tags", e.target.value)} className={inputCls} placeholder="luxury, high-energy, bottle service" />
-          </Field>
+          <div className="md:col-span-2">
+            <Field label="Music Types">
+              <MultiCheckbox options={MUSIC_TYPES_OPTIONS} value={form.music_types} onChange={v => set("music_types", v)} />
+            </Field>
+          </div>
+          <div className="md:col-span-2">
+            <Field label="Vibe Tags">
+              <MultiCheckbox options={VIBE_TAGS_OPTIONS} value={form.vibe_tags} onChange={v => set("vibe_tags", v)} />
+            </Field>
+          </div>
         </div>
       </div>
 
@@ -308,8 +338,8 @@ function VenueForm({
       <div className={sectionCls}>
         <p className={sectionTitle}>Operations</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Field label="Primary Nights (comma-separated)">
-            <input value={form.primary_nights} onChange={e => set("primary_nights", e.target.value)} className={inputCls} placeholder="friday, saturday" />
+          <Field label="Primary Nights">
+            <MultiCheckbox options={[...DAYS]} value={form.primary_nights} onChange={v => set("primary_nights", v)} />
           </Field>
           <Field label="Special Nights (comma-separated)">
             <input value={form.special_nights} onChange={e => set("special_nights", e.target.value)} className={inputCls} placeholder="Mansion Fridays — Hip-Hop from $500" />
