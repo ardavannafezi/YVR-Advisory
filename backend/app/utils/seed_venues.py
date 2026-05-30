@@ -51,6 +51,7 @@ VENUES = [
         "hospitality_company": "Mansion Hospitality Group",
         "capacity": 1000,
         "image_url": "https://images.unsplash.com/photo-1566737236500-c8ac43014a67?w=1600&q=80",
+        "logo_url": None,
         "gallery_urls": [
             "https://images.unsplash.com/photo-1571266028243-e4733b0f0bb0?w=800&q=80",
             "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&q=80",
@@ -146,6 +147,7 @@ VENUES = [
         "hospitality_company": None,
         "capacity": 750,
         "image_url": "https://images.unsplash.com/photo-1493676304819-0d7a8d026dcf?w=1600&q=80",
+        "logo_url": None,
         "gallery_urls": [
             "https://images.unsplash.com/photo-1598387180429-c06a8b4a9e28?w=800&q=80",
             "https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?w=800&q=80",
@@ -218,6 +220,7 @@ VENUES = [
         "hospitality_company": None,
         "capacity": 350,
         "image_url": "https://images.unsplash.com/photo-1619983081563-430f63602796?w=1600&q=80",
+        "logo_url": None,
         "gallery_urls": [
             "https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?w=800&q=80",
             "https://images.unsplash.com/photo-1485872299829-c673f5194813?w=800&q=80",
@@ -290,6 +293,7 @@ VENUES = [
         "hospitality_company": None,
         "capacity": 300,
         "image_url": "https://images.unsplash.com/photo-1541532713592-79a0317b6b77?w=1600&q=80",
+        "logo_url": None,
         "gallery_urls": [
             "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80",
             "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&q=80",

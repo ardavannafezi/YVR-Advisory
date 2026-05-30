@@ -35,7 +35,18 @@ export function VenueCard({ venue, index = 0 }: VenueCardProps) {
             <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent" />
           )}
           <div className="absolute inset-0 bg-dark-gradient" />
-          <div className="absolute top-3 right-3 flex gap-1.5">
+          <div className="absolute top-3 right-3 flex items-center gap-2">
+            {venue.logo_url && (
+              <div className="relative w-8 h-8 bg-background/80 border border-white/10 overflow-hidden">
+                <Image
+                  src={venue.logo_url}
+                  alt={`${venue.name} logo`}
+                  fill
+                  className="object-contain p-0.5"
+                  sizes="32px"
+                />
+              </div>
+            )}
             {venue.price_tier && (
               <span className="text-[10px] uppercase tracking-widest text-gold bg-background/80 border border-gold/30 px-2 py-0.5">
                 {venue.price_tier}

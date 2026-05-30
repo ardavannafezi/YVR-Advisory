@@ -123,7 +123,20 @@ export default async function VenueDetailPage({ params }: { params: { slug: stri
             )}
           </div>
 
-          <h1 className="font-serif text-5xl md:text-6xl text-text-primary mb-1">{venue.name}</h1>
+          <div className="flex items-center gap-5 mb-1">
+            {venue.logo_url && (
+              <div className="relative w-16 h-16 shrink-0 bg-white/5 border border-white/10 overflow-hidden">
+                <Image
+                  src={venue.logo_url}
+                  alt={`${venue.name} logo`}
+                  fill
+                  className="object-contain p-1"
+                  sizes="64px"
+                />
+              </div>
+            )}
+            <h1 className="font-serif text-5xl md:text-6xl text-text-primary">{venue.name}</h1>
+          </div>
           {venue.hospitality_company && (
             <p className="text-xs uppercase tracking-widest text-text-dim mb-1">{venue.hospitality_company}</p>
           )}

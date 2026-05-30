@@ -35,6 +35,7 @@ class VenueBase(BaseModel):
     # Media
     capacity: int | None = None
     image_url: str | None = None
+    logo_url: str | None = None
     gallery_urls: list[str] = []
 
     # Maps

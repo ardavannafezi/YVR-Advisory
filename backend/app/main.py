@@ -10,6 +10,7 @@ from app.database import AsyncSessionLocal
 from app.models.admin_user import AdminUser
 from app.routers import admin, analytics, blog, events, guestlist, music, reservations, seo, tonight, venues, webhooks
 from app.utils.security import hash_password
+from app.utils.seed_venues import seed as seed_venues
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +42,7 @@ async def _seed_admin() -> None:
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await _seed_admin()
+    await seed_venues()
     yield
 
 

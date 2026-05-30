@@ -70,8 +70,9 @@ Full column reference for the `venues` PostgreSQL table. Managed via SQLAlchemy 
 
 | Column | Type | Notes |
 |--------|------|-------|
-| `image_url` | `varchar(1000)` | Hero image URL — displayed full-width at the top of the detail page |
-| `gallery_urls` | `text[]` | Additional photo URLs — rendered as a 2–3 column photo grid |
+| `image_url` | `varchar(1000)` | Hero image URL — displayed full-width at the top of the detail page and as the card thumbnail |
+| `logo_url` | `varchar(1000)` | Venue logo URL — shown as a small icon overlay on the card and beside the venue name on the detail page |
+| `gallery_urls` | `text[]` | Additional photo URLs — rendered as a 2–3 column photo grid on the detail page |
 
 ---
 

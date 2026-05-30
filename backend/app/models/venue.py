@@ -46,6 +46,7 @@ class Venue(Base):
     # Media
     capacity: Mapped[int | None] = mapped_column(Integer)
     image_url: Mapped[str | None] = mapped_column(String(1000))
+    logo_url: Mapped[str | None] = mapped_column(String(1000))
     gallery_urls: Mapped[list[str]] = mapped_column(ARRAY(String), default=list)
 
     # Maps

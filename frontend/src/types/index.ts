@@ -45,6 +45,7 @@ export interface Venue {
   // Media
   capacity?: number;
   image_url?: string;
+  logo_url?: string | null;
   gallery_urls: string[];
 
   // Maps
