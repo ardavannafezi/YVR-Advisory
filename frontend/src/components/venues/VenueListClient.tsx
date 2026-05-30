@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { VenueCard } from "@/components/venues/VenueCard";
+import { SkeletonCard } from "@/components/ui/SkeletonCard";
 import { GoldButton } from "@/components/ui/GoldButton";
 import type { Venue, PaginatedList } from "@/types";
 
@@ -55,12 +56,16 @@ export function VenueListClient({ initialItems, total, searchParams }: Props) {
         {items.map((v, i) => (
           <VenueCard key={v.id} venue={v} index={i} />
         ))}
+        {loading &&
+          Array.from({ length: 3 }).map((_, i) => (
+            <SkeletonCard key={`sk-${i}`} />
+          ))}
       </div>
 
-      {hasMore && (
+      {hasMore && !loading && (
         <div className="mt-12 flex flex-col items-center gap-3">
-          <GoldButton variant="outline" onClick={loadMore} disabled={loading}>
-            {loading ? "Loading…" : `Load More · ${total - items.length} remaining`}
+          <GoldButton variant="outline" onClick={loadMore}>
+            {`Load More · ${total - items.length} remaining`}
           </GoldButton>
           {error && (
             <p className="text-[10px] uppercase tracking-widest text-text-dim">

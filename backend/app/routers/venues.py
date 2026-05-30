@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import func, or_, select
+from sqlalchemy import func, select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -59,17 +59,6 @@ async def list_venues(
         filters.append(Venue.establishment_type.ilike(f"%{establishment_type}%"))
     if primary_category:
         filters.append(Venue.primary_categories.contains([primary_category]))
-    else:
-        # Exclude pure bars with no nightlife aspect (no music, no primary nights)
-        filters.append(
-            or_(
-                Venue.primary_categories.contains(["nightclub"]),
-                Venue.primary_categories.contains(["lounge"]),
-                Venue.primary_categories.contains(["live_music"]),
-                Venue.music_types != "{}",
-                Venue.primary_nights != "{}",
-            )
-        )
     if neighbourhood:
         filters.append(Venue.neighbourhood.ilike(f"%{neighbourhood}%"))
     if vibe:

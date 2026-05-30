@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
 
 const TABS = [
-  { label: "All Venues", value: "" },
+  { label: "All", value: "" },
   { label: "Nightclubs", value: "nightclub" },
   { label: "Lounges", value: "lounge" },
   { label: "Bars", value: "bar" },
@@ -30,15 +30,15 @@ export function VenueTabs() {
   );
 
   return (
-    <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+    <div className="flex gap-0 border-b border-white/10 overflow-x-auto scrollbar-hide">
       {TABS.map((tab) => (
         <button
           key={tab.value}
           onClick={() => setCategory(tab.value)}
-          className={`shrink-0 px-5 py-2.5 text-[11px] uppercase tracking-widest transition-colors duration-200 ${
+          className={`shrink-0 px-5 py-3 text-[11px] uppercase tracking-widest transition-colors duration-200 border-b-2 -mb-px ${
             active === tab.value
-              ? "border border-gold bg-gold/10 text-gold"
-              : "border border-white/10 text-text-muted hover:border-gold/40 hover:text-text-primary"
+              ? "border-gold text-gold"
+              : "border-transparent text-text-muted hover:text-text-primary"
           }`}
         >
           {tab.label}

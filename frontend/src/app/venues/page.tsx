@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 
 async function VenueSection({ searchParams }: { searchParams: Record<string, string> }) {
   try {
-    const qs = new URLSearchParams({ ...searchParams, limit: "12" }).toString();
+    const qs = new URLSearchParams({ ...searchParams, limit: "18" }).toString();
     const data = await api.get<PaginatedList<Venue>>(`/api/venues?${qs}`, { cache: "no-store" });
     const key = qs;
     return (
@@ -56,7 +56,7 @@ export default function VenuesPage({ searchParams }: { searchParams: Record<stri
         </div>
 
         <div className="mt-8">
-          <Suspense fallback={<SkeletonGrid />}>
+          <Suspense fallback={<SkeletonGrid count={18} />}>
             <VenueSection searchParams={searchParams} />
           </Suspense>
         </div>
