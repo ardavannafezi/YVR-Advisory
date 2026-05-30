@@ -88,6 +88,7 @@ class AdminVenueRow(BaseModel):
     is_active: bool
     is_featured: bool
     view_count: int | None = None
+    advisory_rating: float | None = None
     created_at: datetime
     updated_at: datetime
 

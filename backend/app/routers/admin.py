@@ -1,7 +1,11 @@
+import os
+import uuid
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
+from pydantic import BaseModel
 from sqlalchemy import func, select
+from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -12,6 +16,7 @@ from app.models.event import Event
 from app.models.guestlist import GuestlistEntry
 from app.models.reservation import TableReservation
 from app.models.venue import Venue
+from app.models.venue_advisory_rating import VenueAdvisoryRating
 from app.models.venue_view import VenueView
 from app.schemas.auth import LoginRequest, TokenResponse
 from app.schemas.blog import BlogPostCreate, BlogPostOut, BlogPostUpdate
@@ -22,6 +27,13 @@ from app.schemas.venue import AdminVenueRow, ViewCountUpdate, VenueCreate, Venue
 from app.services.analytics_service import get_summary
 from app.utils.security import create_access_token, hash_password, verify_password
 from app.utils.slugify import slugify
+
+UPLOAD_DIR = os.environ.get("UPLOAD_DIR", "uploads")
+ALLOWED_EXTS = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
+
+
+class RatingUpdate(BaseModel):
+    rating: float
 
 router = APIRouter(prefix="/api/admin", tags=["admin"])
 
@@ -45,8 +57,9 @@ async def admin_list_venues(
     db: AsyncSession = Depends(get_db),
 ):
     result = await db.execute(
-        select(Venue, VenueView.view_count)
+        select(Venue, VenueView.view_count, VenueAdvisoryRating.rating)
         .outerjoin(VenueView, Venue.id == VenueView.venue_id)
+        .outerjoin(VenueAdvisoryRating, Venue.id == VenueAdvisoryRating.venue_id)
         .order_by(Venue.created_at.desc())
         .offset((page - 1) * limit)
         .limit(limit)
@@ -61,11 +74,28 @@ async def admin_list_venues(
             is_active=v.is_active,
             is_featured=v.is_featured,
             view_count=vc,
+            advisory_rating=float(ar) if ar is not None else None,
             created_at=v.created_at,
             updated_at=v.updated_at,
         )
-        for v, vc in result
+        for v, vc, ar in result
     ]
+
+
+@router.get("/venues/{venue_id}", response_model=VenueOut, dependencies=[Depends(get_current_admin)])
+async def admin_get_venue(venue_id: int, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(
+        select(Venue, VenueAdvisoryRating.rating)
+        .outerjoin(VenueAdvisoryRating, Venue.id == VenueAdvisoryRating.venue_id)
+        .where(Venue.id == venue_id)
+    )
+    row = result.first()
+    if not row:
+        raise HTTPException(status_code=404, detail="Venue not found")
+    venue, rating = row
+    out = VenueOut.model_validate(venue)
+    out.advisory_rating = float(rating) if rating is not None else None
+    return out
 
 
 @router.post("/venues", response_model=VenueOut, status_code=status.HTTP_201_CREATED, dependencies=[Depends(get_current_admin)])
@@ -111,6 +141,34 @@ async def admin_update_venue_views(venue_id: int, data: ViewCountUpdate, db: Asy
         db.add(VenueView(venue_id=venue_id, view_count=data.view_count))
     await db.commit()
     return {"venue_id": venue_id, "view_count": data.view_count}
+
+
+@router.put("/venues/{venue_id}/rating", dependencies=[Depends(get_current_admin)])
+async def admin_update_venue_rating(venue_id: int, data: RatingUpdate, db: AsyncSession = Depends(get_db)):
+    venue = await db.get(Venue, venue_id)
+    if not venue:
+        raise HTTPException(status_code=404, detail="Venue not found")
+    stmt = pg_insert(VenueAdvisoryRating).values(venue_id=venue_id, rating=data.rating)
+    stmt = stmt.on_conflict_do_update(
+        index_elements=["venue_id"],
+        set_={"rating": data.rating, "updated_at": func.now()},
+    )
+    await db.execute(stmt)
+    await db.commit()
+    return {"venue_id": venue_id, "rating": data.rating}
+
+
+@router.post("/upload", dependencies=[Depends(get_current_admin)])
+async def admin_upload_file(file: UploadFile = File(...)):
+    ext = os.path.splitext(file.filename or "")[1].lower()
+    if ext not in ALLOWED_EXTS:
+        raise HTTPException(status_code=400, detail="Image files only (.jpg .jpeg .png .webp .gif)")
+    filename = f"{uuid.uuid4().hex}{ext}"
+    dest = os.path.join(UPLOAD_DIR, "venues", filename)
+    content = await file.read()
+    with open(dest, "wb") as f:
+        f.write(content)
+    return {"url": f"/uploads/venues/{filename}"}
 
 
 # ─── Events ──────────────────────────────────────────────────────────────────

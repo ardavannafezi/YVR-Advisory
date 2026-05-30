@@ -1,8 +1,10 @@
 import logging
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 
 from app.config import settings
@@ -39,8 +41,12 @@ async def _seed_admin() -> None:
         logger.exception("CRITICAL — failed to seed admin user")
 
 
+UPLOAD_DIR = os.environ.get("UPLOAD_DIR", "uploads")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    os.makedirs(f"{UPLOAD_DIR}/venues", exist_ok=True)
     await _seed_admin()
     await seed_venues()
     yield
@@ -81,6 +87,9 @@ app.include_router(analytics.router)
 app.include_router(admin.router)
 app.include_router(webhooks.router)
 app.include_router(seo.router)
+
+
+app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 
 @app.get("/health")

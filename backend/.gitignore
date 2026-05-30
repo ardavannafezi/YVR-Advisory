@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.env
+uploads/venues/*
+!uploads/venues/.gitkeep
+uploads/*
+!uploads/.gitkeep
+!uploads/venues/
