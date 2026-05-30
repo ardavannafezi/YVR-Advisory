@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/Badge";
 import { GoldButton } from "@/components/ui/GoldButton";
 import { VenueJsonLd } from "@/components/venues/VenueJsonLd";
 import { VenueFaqAccordion } from "@/components/venues/VenueFaqAccordion";
+import { VenueViewTracker } from "@/components/venues/VenueViewTracker";
 import type { Venue, VenueHours } from "@/types";
 
 export const revalidate = 600;
@@ -96,6 +97,7 @@ export default async function VenueDetailPage({ params }: { params: { slug: stri
   return (
     <>
       <VenueJsonLd venue={venue} />
+      <VenueViewTracker slug={venue.slug} />
       <div className="pt-20">
         {/* Hero image */}
         <div className="relative h-[55vh] overflow-hidden">

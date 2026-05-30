@@ -1,9 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import func, select
+from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dependencies import get_db
 from app.models.venue import Venue
+from app.models.venue_view import VenueView
 from app.schemas.venue import VenueList, VenueOut
 
 router = APIRouter(prefix="/api/venues", tags=["venues"])
@@ -30,7 +32,12 @@ async def list_venues(
     limit: int = Query(12, ge=1, le=50),
     db: AsyncSession = Depends(get_db),
 ):
-    q = select(Venue).where(Venue.is_active == True)
+    q = (
+        select(Venue)
+        .outerjoin(VenueView, Venue.id == VenueView.venue_id)
+        .where(Venue.is_active == True)
+        .order_by(func.coalesce(VenueView.view_count, 0).desc())
+    )
     if music_type:
         q = q.where(Venue.music_types.any(music_type))
     if establishment_type:
@@ -57,3 +64,18 @@ async def get_venue(slug: str, db: AsyncSession = Depends(get_db)):
     if not venue:
         raise HTTPException(status_code=404, detail="Venue not found")
     return venue
+
+
+@router.post("/{slug}/view", status_code=204)
+async def increment_view(slug: str, db: AsyncSession = Depends(get_db)):
+    venue = await db.scalar(select(Venue).where(Venue.slug == slug, Venue.is_active == True))
+    if not venue:
+        raise HTTPException(status_code=404, detail="Venue not found")
+
+    stmt = pg_insert(VenueView).values(venue_id=venue.id, view_count=1)
+    stmt = stmt.on_conflict_do_update(
+        index_elements=["venue_id"],
+        set_={"view_count": VenueView.view_count + 1, "updated_at": func.now()},
+    )
+    await db.execute(stmt)
+    await db.commit()
