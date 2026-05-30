@@ -7,6 +7,7 @@ import { isAuthenticated, clearToken } from "@/lib/auth";
 import clsx from "clsx";
 
 const adminLinks = [
+  { href: "/admin", label: "Dashboard" },
   { href: "/admin/analytics", label: "Analytics" },
   { href: "/admin/venues", label: "Venues" },
   { href: "/admin/events", label: "Events" },
@@ -41,7 +42,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               href={href}
               className={clsx(
                 "block px-3 py-2.5 text-sm rounded-sm mb-1 transition-colors",
-                pathname === href ? "bg-gold/10 text-gold" : "text-text-muted hover:text-text-primary hover:bg-white/5"
+                (href === "/admin" ? pathname === "/admin" : pathname === href)
+                  ? "bg-gold/10 text-gold"
+                  : "text-text-muted hover:text-text-primary hover:bg-white/5"
               )}
             >
               {label}
