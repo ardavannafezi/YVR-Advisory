@@ -16,7 +16,7 @@ const NEIGHBOURHOODS = [
   "False Creek",
 ];
 const PRIMARY_NIGHTS = ["Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-const PRICE_TIERS = ["$$", "$$$", "$$$$"];
+const PRICE_TIERS = ["$", "$$", "$$$"];
 
 export function VenueFilter() {
   const router = useRouter();
@@ -38,10 +38,23 @@ export function VenueFilter() {
   );
 
   const active = (key: string, value: string) => params.get(key) === value;
+  const hasFilters = params.toString().length > 0;
+
+  const clearAll = useCallback(() => {
+    router.push("/venues");
+  }, [router]);
 
   return (
     <aside className="w-full md:w-64 shrink-0">
       <div className="card-surface p-6 flex flex-col gap-6">
+        {hasFilters && (
+          <button
+            onClick={clearAll}
+            className="text-[10px] uppercase tracking-widest text-gold hover:text-gold-light transition-colors text-left"
+          >
+            ✕ Clear filters
+          </button>
+        )}
         <div>
           <p className="text-xs uppercase tracking-widest text-gold mb-3">Music</p>
           <div className="flex flex-wrap gap-2">

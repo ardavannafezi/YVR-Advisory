@@ -1,3 +1,4 @@
+import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -8,21 +9,33 @@ from app.config import settings
 from app.database import AsyncSessionLocal
 from app.models.admin_user import AdminUser
 from app.routers import admin, analytics, blog, events, guestlist, music, reservations, seo, tonight, venues, webhooks
-from app.utils.security import hash_password, verify_password
+from app.utils.security import hash_password
+
+logger = logging.getLogger(__name__)
 
 
 async def _seed_admin() -> None:
     if not settings.admin_password:
+        logger.warning("ADMIN_PASSWORD not set — skipping admin seed")
         return
     async with AsyncSessionLocal() as session:
-        existing = await session.scalar(select(AdminUser).where(AdminUser.email == settings.admin_email))
+        existing = await session.scalar(
+            select(AdminUser).where(AdminUser.email == settings.admin_email)
+        )
         if existing:
-            if not verify_password(settings.admin_password, existing.hashed_password):
-                existing.hashed_password = hash_password(settings.admin_password)
-                await session.commit()
-        else:
-            session.add(AdminUser(email=settings.admin_email, hashed_password=hash_password(settings.admin_password)))
+            existing.hashed_password = hash_password(settings.admin_password)
+            existing.is_active = True
             await session.commit()
+            logger.info("Admin user updated: %s", settings.admin_email)
+        else:
+            session.add(
+                AdminUser(
+                    email=settings.admin_email,
+                    hashed_password=hash_password(settings.admin_password),
+                )
+            )
+            await session.commit()
+            logger.info("Admin user created: %s", settings.admin_email)
 
 
 @asynccontextmanager
