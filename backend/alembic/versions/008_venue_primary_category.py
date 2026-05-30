@@ -8,6 +8,11 @@ Create Date: 2026-05-30
 import sqlalchemy as sa
 from alembic import op
 
+revision = "008"
+down_revision = "007"
+branch_labels = None
+depends_on = None
+
 
 def upgrade() -> None:
     op.add_column("venues", sa.Column("primary_category", sa.String(), nullable=True))
