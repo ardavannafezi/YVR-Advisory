@@ -25,7 +25,7 @@ async def get_featured(
 ):
     filters = [Venue.is_active == True, Venue.is_featured == True]
     if category:
-        filters.append(Venue.primary_categories.contains([category]))
+        filters.append(Venue.primary_categories.any(category))
 
     result = await db.execute(
         select(Venue, VenueAdvisoryRating.rating)
@@ -58,7 +58,7 @@ async def list_venues(
     if establishment_type:
         filters.append(Venue.establishment_type.ilike(f"%{establishment_type}%"))
     if primary_category:
-        filters.append(Venue.primary_categories.contains([primary_category]))
+        filters.append(Venue.primary_categories.any(primary_category))
     if neighbourhood:
         filters.append(Venue.neighbourhood.ilike(f"%{neighbourhood}%"))
     if vibe:
