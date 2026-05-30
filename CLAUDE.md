@@ -22,10 +22,9 @@ alembic upgrade head                          # Run migrations
 uvicorn app.main:app --reload                 # Dev server at localhost:8000
 uvicorn app.main:app --host 0.0.0.0 --port 8000  # Explicit port
 
-# Create an admin user (run from backend/ with DATABASE_URL set)
+# Admin seeded automatically on startup via ADMIN_EMAIL + ADMIN_PASSWORD env vars (atomic upsert)
+# Fallback: create admin manually (run from backend/ with DATABASE_URL set)
 python -m app.utils.create_admin email@example.com password
-# Or via Railway shell:
-# python -c "import asyncio; from app.utils.create_admin import create; asyncio.run(create('email@example.com', 'password'))"
 ```
 
 ### Frontend type-checking (`cd frontend`)
@@ -65,7 +64,7 @@ User Browser
 - **Entry point:** `app/main.py` — mounts all routers, configures CORS
 - **Settings:** `app/config.py` via Pydantic-Settings (reads env vars)
 - **DB session:** `app/database.py` — async engine; injected via `app/dependencies.py`
-- **Migrations:** Alembic, single migration `alembic/versions/001_initial_schema.py`
+- **Migrations:** Alembic; versions `001`–`007` in `alembic/versions/`; run `alembic upgrade head` before starting
 - **Auth:** JWT Bearer via python-jose; `get_current_admin` dependency gates all `/api/admin/*` routes
 
 ### Data Models
@@ -79,6 +78,8 @@ User Browser
 | `TableReservation` | `email`, `venue_id`, `date_requested`, `status` (pending/approved/rejected) |
 | `UserPreference` | `session_id` (unique), `quiz_answers` (JSON), arrays of viewed items |
 | `AdminUser` | `email` (unique), `hashed_password` |
+| `VenueView` | `venue_id` (unique FK), `view_count` — one row per venue, upserted on each page load |
+| `VenueAdvisoryRating` | `venue_id` (unique FK), `rating` (float) — editorial score shown on venue detail |
 
 ### Key API Flows
 
