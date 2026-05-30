@@ -32,7 +32,7 @@ interface FormState {
   neighbourhood: string;
   phone: string;
   establishment_type: string;
-  primary_category: string;
+  primary_categories: string;
   music_types: string;
   vibe_tags: string;
   primary_nights: string;
@@ -66,7 +66,7 @@ const EMPTY_HOURS: Record<Day, string> = {
 
 const EMPTY_FORM: FormState = {
   name: "", description: "", address: "", neighbourhood: "", phone: "",
-  establishment_type: "", primary_category: "",
+  establishment_type: "", primary_categories: "",
   music_types: "", vibe_tags: "",
   primary_nights: "", hours: { ...EMPTY_HOURS },
   special_nights: "", special_occasion: "",
@@ -95,7 +95,7 @@ function buildPayload(form: FormState) {
     neighbourhood: form.neighbourhood || null,
     phone: form.phone || null,
     establishment_type: form.establishment_type || null,
-    primary_category: form.primary_category || null,
+    primary_categories: splitCSV(form.primary_categories),
     music_types: splitCSV(form.music_types),
     vibe_tags: splitCSV(form.vibe_tags),
     primary_nights: splitCSV(form.primary_nights),
@@ -137,7 +137,7 @@ function venueToForm(v: any): FormState {
     neighbourhood: v.neighbourhood || "",
     phone: v.phone || "",
     establishment_type: v.establishment_type || "",
-    primary_category: v.primary_category || "",
+    primary_categories: (v.primary_categories || []).join(", "),
     music_types: (v.music_types || []).join(", "),
     vibe_tags: (v.vibe_tags || []).join(", "),
     primary_nights: (v.primary_nights || []).join(", "),
@@ -273,7 +273,7 @@ function VenueForm({
           </select>
         </Field>
         <Field label="Primary Category">
-          <input value={form.primary_category} onChange={e => set("primary_category", e.target.value)} className={inputCls} placeholder="e.g. Cocktail Bar" />
+          <input value={form.primary_categories} onChange={e => set("primary_categories", e.target.value)} className={inputCls} placeholder="e.g. nightclub, bar (comma-separated)" />
         </Field>
         <Field label="Address">
           <input value={form.address} onChange={e => set("address", e.target.value)} className={inputCls} />

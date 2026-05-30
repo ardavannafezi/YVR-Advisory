@@ -25,7 +25,7 @@ async def get_featured(
 ):
     filters = [Venue.is_active == True, Venue.is_featured == True]
     if category:
-        filters.append(Venue.primary_category == category)
+        filters.append(Venue.primary_categories.contains([category]))
 
     result = await db.execute(
         select(Venue, VenueAdvisoryRating.rating)
@@ -58,12 +58,14 @@ async def list_venues(
     if establishment_type:
         filters.append(Venue.establishment_type.ilike(f"%{establishment_type}%"))
     if primary_category:
-        filters.append(Venue.primary_category == primary_category)
+        filters.append(Venue.primary_categories.contains([primary_category]))
     else:
-        # Exclude bar venues with no nightlife aspect (pure restaurants)
+        # Exclude pure bars with no nightlife aspect (no music, no primary nights)
         filters.append(
             or_(
-                Venue.primary_category != "bar",
+                Venue.primary_categories.contains(["nightclub"]),
+                Venue.primary_categories.contains(["lounge"]),
+                Venue.primary_categories.contains(["live_music"]),
                 Venue.music_types != "{}",
                 Venue.primary_nights != "{}",
             )

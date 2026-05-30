@@ -15,7 +15,7 @@ VENUES = [
     {
         "name": "Mansion Nightclub",
         "establishment_type": "Nightclub",
-        "primary_category": "nightclub",
+        "primary_categories": ["nightclub"],
         "description": (
             "Mansion is Vancouver's premier multi-room nightclub, set inside a stunning heritage building "
             "on the Granville Strip. Known for its grand interior, world-class production, and curated nights "
@@ -112,7 +112,7 @@ VENUES = [
     {
         "name": "Celebrities Nightclub",
         "establishment_type": "Nightclub",
-        "primary_category": "nightclub",
+        "primary_categories": ["nightclub"],
         "description": (
             "One of Vancouver's most legendary nightclubs, Celebrities has been the heartbeat of the city's "
             "electronic music scene since 1984. Set in the heart of Davie Village, it hosts world-renowned DJs "
@@ -194,7 +194,7 @@ VENUES = [
     {
         "name": "The Red Room",
         "establishment_type": "Nightclub",
-        "primary_category": "nightclub",
+        "primary_categories": ["nightclub", "bar"],
         "description": (
             "Tucked beneath the streets of Downtown Vancouver, The Red Room is a subterranean nightclub "
             "with an intimate, underground feel. The space is defined by exposed brick, moody red lighting, "
@@ -268,7 +268,7 @@ VENUES = [
     {
         "name": "Eleven",
         "establishment_type": "Nightclub",
-        "primary_category": "nightclub",
+        "primary_categories": ["nightclub"],
         "description": (
             "Eleven is Yaletown's sleekest nightclub — a polished space favoured by the after-dinner crowd "
             "looking to extend the night with cocktails and dancing. The interior balances dark wood, leather "
@@ -335,7 +335,7 @@ VENUES = [
     {
         "name": "The Keefer Bar",
         "establishment_type": "Cocktail Bar",
-        "primary_category": "lounge",
+        "primary_categories": ["lounge", "bar"],
         "description": (
             "One of Vancouver's most celebrated cocktail bars, The Keefer Bar sits at the edge of Chinatown "
             "and draws a discerning crowd with its inventive, herb-forward cocktail menu and low-lit, intimate "
@@ -410,7 +410,7 @@ VENUES = [
     {
         "name": "Juniper Restaurant & Bar",
         "establishment_type": "Bar & Restaurant",
-        "primary_category": "bar",
+        "primary_categories": ["bar"],
         "description": (
             "Perched on the edge of Coal Harbour with sweeping views of the North Shore mountains and Burrard Inlet, "
             "Juniper is the city's most scenic dining and cocktail destination. The menu centres on Pacific Northwest "
@@ -485,7 +485,7 @@ VENUES = [
     {
         "name": "Twelve West",
         "establishment_type": "Nightclub",
-        "primary_category": "nightclub",
+        "primary_categories": ["nightclub"],
         "description": (
             "Twelve West is the flagship venue of the After Dark Hospitality Group — a 7,500-square-foot "
             "award-winning nightclub on the Granville Strip that has been recognized by the Top Bar Design Awards. "
@@ -578,7 +578,7 @@ VENUES = [
     {
         "name": "Aura Nightclub",
         "establishment_type": "Nightclub",
-        "primary_category": "nightclub",
+        "primary_categories": ["nightclub"],
         "description": (
             "Founded in July 2014 and located in the heart of the Granville Entertainment District, Aura Nightclub "
             "pairs classic decor with a postmodern, futuristic twist — high ceilings, state-of-the-art sound, and "
@@ -678,7 +678,7 @@ VENUES = [
     {
         "name": "The Roxy",
         "establishment_type": "Live Music Venue",
-        "primary_category": "live_music",
+        "primary_categories": ["live_music", "bar"],
         "description": (
             "With live music 365 days a year, The Roxy is Vancouver's premier live music institution — "
             "a Granville Strip staple where bands of every genre take the stage seven nights a week. "
@@ -782,7 +782,7 @@ VENUES = [
     {
         "name": "Cabana Lounge",
         "establishment_type": "Nightclub / Lounge",
-        "primary_category": "nightclub",
+        "primary_categories": ["nightclub", "lounge"],
         "description": (
             "Inspired by the vibrant style of South Beach, Cabana boasts rich colours, chic cabana-draped VIP booths, "
             "and stunning design elements including the venue's trademark — a gorgeous acacia tree growing throughout "
@@ -882,7 +882,7 @@ VENUES = [
     {
         "name": "Reflections: The Garden Terrace",
         "establishment_type": "Rooftop Lounge",
-        "primary_category": "lounge",
+        "primary_categories": ["lounge"],
         "description": (
             "Perched atop the historic Hotel Georgia in the heart of downtown Vancouver, Reflections is the city's "
             "premier rooftop lounge — an open-air terrace wrapped in lush greenery, warm lighting, and unobstructed "
@@ -966,7 +966,7 @@ VENUES = [
     {
         "name": "Bimini's Since 1975",
         "establishment_type": "Pub / Bar / Dance Venue",
-        "primary_category": "bar",
+        "primary_categories": ["bar"],
         "description": (
             "Renamed Bimini's Since 1975 to honour its legacy, this longtime Kitsilano bar reopened in December 2024 "
             "under new owner Harsh Sharma. The renovation kept the lofty ceilings and mezzanines and added a games room, "
@@ -1031,7 +1031,7 @@ VENUES = [
     {
         "name": "Heist Nightclub",
         "establishment_type": "Nightclub",
-        "primary_category": "nightclub",
+        "primary_categories": ["nightclub"],
         "description": (
             "Opened February 2026 in the former Bar None space in Yaletown, Heist draws inspiration from a baroque "
             "art museum crossed with an art thieves' hideout — layered textures, dramatic lighting, unique chandeliers "
@@ -1089,7 +1089,7 @@ VENUES = [
     {
         "name": "Gorg-o-Mish",
         "establishment_type": "After-Hours Club",
-        "primary_category": "nightclub",
+        "primary_categories": ["nightclub"],
         "description": (
             "Vancouver's longest-running legal after-hours club with over 20 years of operation. Gorg-o-Mish opens "
             "at 2 AM when all other clubs are closing, running until 8 AM. No alcohol is sold — this is a sober "
@@ -1152,7 +1152,7 @@ VENUES = [
     {
         "name": "The Fox Cabaret",
         "establishment_type": "Live Music Venue / Cabaret",
-        "primary_category": "live_music",
+        "primary_categories": ["live_music", "bar"],
         "description": (
             "A converted old movie theatre in Mount Pleasant, The Fox Cabaret has become one of Vancouver's most "
             "beloved independent venues. The projection room houses the main dance floor in a long, narrow two-level "
@@ -1206,7 +1206,7 @@ VENUES = [
     {
         "name": "Guilt & Company",
         "establishment_type": "Live Music Bar / Restaurant",
-        "primary_category": "live_music",
+        "primary_categories": ["live_music", "bar"],
         "description": (
             "Gastown's premier underground live music venue since 2010, located in a subterranean space beneath "
             "Chill Winston, accessible via stairs from Alexander Street. Stone floors, exposed brick, and candlelit "
@@ -1271,7 +1271,7 @@ VENUES = [
     {
         "name": "The Biltmore Cabaret",
         "establishment_type": "Live Music Venue / Cabaret",
-        "primary_category": "live_music",
+        "primary_categories": ["live_music", "bar"],
         "description": (
             "A community fixture for over 50 years, The Biltmore Cabaret is one of Vancouver's most beloved indie "
             "live music venues. Known for eclectic programming across indie rock, alternative, pop, hip-hop, "
@@ -1329,7 +1329,7 @@ VENUES = [
     {
         "name": "The Portside Pub",
         "establishment_type": "Pub / Bar / Live Music Venue",
-        "primary_category": "bar",
+        "primary_categories": ["bar"],
         "description": (
             "A historic three-level Gastown pub built with East Coast pub culture as its inspiration. Exposed brick, "
             "sandblasted walls, and heritage wood beams set the backdrop for 48 craft beer taps across three floors. "
@@ -1388,7 +1388,7 @@ VENUES = [
     {
         "name": "The Pearl",
         "establishment_type": "Live Music Venue / Nightclub",
-        "primary_category": "live_music",
+        "primary_categories": ["live_music", "nightclub"],
         "description": (
             "Independently owned and operated by MODO-LIVE, The Pearl reopened in 2023 in the historic Maple Leaf "
             "Theatre building (built 1908) on Granville Street. Over 10,000 sq ft across two levels with wrap-around "
@@ -1447,7 +1447,7 @@ VENUES = [
     {
         "name": "Playhaus Nightclub",
         "establishment_type": "Nightclub / Show Lounge",
-        "primary_category": "nightclub",
+        "primary_categories": ["nightclub"],
         "description": (
             "Vancouver's Luxury Show Lounge in Gastown, Playhaus Nightclub features an outdoor patio and themed nights "
             "blending hip-hop, urban Punjabi, and Latin beats. One of the few Vancouver venues licensed until 4 AM "
@@ -1499,7 +1499,7 @@ VENUES = [
     {
         "name": "The Blarney Stone",
         "establishment_type": "Irish Pub / Bar / Live Music Venue",
-        "primary_category": "bar",
+        "primary_categories": ["bar"],
         "description": (
             "Established in 1972, The Blarney Stone is Vancouver's oldest Irish pub and the city's institution for "
             "Irish-inspired food, entertainment, and atmosphere. Live music plays every night, from rock and pop "
@@ -1558,7 +1558,7 @@ VENUES = [
     {
         "name": "The Cambie Bar & Grill",
         "establishment_type": "Pub / Bar / Live Music Venue",
-        "primary_category": "bar",
+        "primary_categories": ["bar"],
         "description": (
             "Established in 1897 after the Great Vancouver Fire, The Cambie is Vancouver's oldest bar. Known for cheap "
             "drinks, a lively atmosphere, and a diverse mix of locals and travellers — the building houses a hostel "
@@ -1617,7 +1617,7 @@ VENUES = [
     {
         "name": "The Yale Saloon",
         "establishment_type": "Country Bar / Saloon",
-        "primary_category": "bar",
+        "primary_categories": ["bar", "live_music"],
         "description": (
             "Vancouver's only country bar in the Lower Mainland, The Yale Saloon brings the full Western experience "
             "to the Granville Entertainment District — complimentary line dancing lessons, mechanical bull riding "
@@ -1684,7 +1684,7 @@ VENUES = [
     {
         "name": "Pierre's Champagne Lounge",
         "establishment_type": "Champagne Lounge / Nightclub",
-        "primary_category": "lounge",
+        "primary_categories": ["lounge"],
         "description": (
             "Located in historic Yaletown behind a hidden door and exposed brick walls, Pierre's is Vancouver's "
             "most exclusive champagne lounge. A marble bar, classic craftsmanship, and a sophisticated atmosphere "
@@ -1738,7 +1738,7 @@ VENUES = [
     {
         "name": "Hello Goodbye Bar",
         "establishment_type": "Speakeasy Lounge / Nightclub",
-        "primary_category": "nightclub",
+        "primary_categories": ["nightclub", "bar"],
         "description": (
             "Accessible through an unmarked red door and down a hidden staircase in Yaletown, Hello Goodbye Bar "
             "is a subterranean boutique nightlife experience. Artfully designed interiors, a seasonal cocktail menu, "
@@ -1803,7 +1803,7 @@ VENUES = [
     {
         "name": "Parker Rooftop",
         "establishment_type": "Rooftop Bar / Restaurant / Event Space",
-        "primary_category": "lounge",
+        "primary_categories": ["lounge", "bar"],
         "description": (
             "Located 120 feet above Downtown Vancouver's Beach District on the 9th floor of The Parker Hotel, "
             "Parker Rooftop features three breathtaking patios, 20-foot ceilings, floor-to-ceiling windows, "
@@ -1877,7 +1877,7 @@ VENUES = [
     {
         "name": "D6 Bar & Lounge",
         "establishment_type": "Rooftop Lounge / Bar / Restaurant",
-        "primary_category": "lounge",
+        "primary_categories": ["lounge", "bar"],
         "description": (
             "A vibrant indoor/outdoor experience on the 6th floor of Parq Vancouver, adjacent to BC Place stadium. "
             "The space features a 30,000 sq ft green space called The Park, a steam fireplace, curated bookshelves, "
@@ -1948,9 +1948,10 @@ async def seed():
             slug = slugify(data["name"])
             existing = await db.scalar(select(Venue).where(Venue.slug == slug))
             if existing:
-                if existing.primary_category != data.get("primary_category"):
-                    existing.primary_category = data.get("primary_category")
-                    print(f"[update] {data['name']} primary_category={data.get('primary_category')}")
+                new_cats = data.get("primary_categories") or []
+                if existing.primary_categories != new_cats:
+                    existing.primary_categories = new_cats
+                    print(f"[update] {data['name']} primary_categories={new_cats}")
                 else:
                     print(f"[skip] {data['name']} already exists")
                 continue

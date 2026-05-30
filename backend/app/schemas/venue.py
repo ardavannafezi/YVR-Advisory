@@ -32,7 +32,7 @@ class VenueBase(BaseModel):
     hospitality_company: str | None = None
 
     establishment_type: str | None = None
-    primary_category: str | None = None
+    primary_categories: list[str] = []
 
     # Media
     capacity: int | None = None
