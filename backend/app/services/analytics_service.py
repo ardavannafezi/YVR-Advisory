@@ -6,6 +6,7 @@ from app.models.reservation import TableReservation
 from app.models.user_preference import UserPreference
 from app.models.venue import Venue
 from app.models.event import Event
+from app.models.venue_view import VenueView
 
 
 async def upsert_preference(session_id: str, email: str | None, event_type: str, payload: dict, db: AsyncSession) -> None:
@@ -50,8 +51,17 @@ async def get_summary(db: AsyncSession) -> dict:
         select(func.count(TableReservation.id)).where(TableReservation.status == "pending")
     ) or 0
 
+    top_views_raw = await db.execute(
+        select(Venue.name, VenueView.view_count)
+        .join(VenueView, Venue.id == VenueView.venue_id)
+        .order_by(VenueView.view_count.desc())
+        .limit(10)
+    )
+    top_venue_views = [{"name": r.name, "views": r.view_count} for r in top_views_raw]
+
     return {
         "top_venues": top_venues,
+        "top_venue_views": top_venue_views,
         "music_type_distribution": [],
         "top_events": [],
         "total_guestlist": total_guestlist,

@@ -61,6 +61,7 @@ export interface Venue {
   reservation_link?: string | null;
   is_featured: boolean;
   is_active: boolean;
+  advisory_rating?: number | null;
   created_at: string;
   updated_at: string;
 }
@@ -143,6 +144,7 @@ export interface Recommendation {
 
 export interface AnalyticsSummary {
   top_venues: { name: string; count: number }[];
+  top_venue_views: { name: string; views: number }[];
   music_type_distribution: { genre: string; count: number }[];
   total_guestlist: number;
   total_reservations: number;

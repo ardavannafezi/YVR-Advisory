@@ -32,10 +32,23 @@ export default function AdminAnalyticsPage() {
         <StatCard label="Total Guestlist" value={data.total_guestlist} />
         <StatCard label="Total Reservations" value={data.total_reservations} />
         <StatCard label="Pending Reservations" value={data.pending_reservations} />
-        <StatCard label="Venues Tracked" value={data.top_venues.length} />
+        <StatCard
+          label="Total Venue Views"
+          value={data.top_venue_views?.reduce((s, v) => s + v.views, 0) ?? 0}
+        />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="card-surface p-6">
+          <p className="text-xs uppercase tracking-widest text-gold mb-4">Top Venues by Views</p>
+          {data.top_venue_views?.length ? data.top_venue_views.map((v) => (
+            <div key={v.name} className="flex justify-between py-2 border-b border-white/5 text-sm">
+              <span className="text-text-muted">{v.name}</span>
+              <span className="text-text-primary">{v.views.toLocaleString()}</span>
+            </div>
+          )) : <p className="text-text-dim">No views tracked yet</p>}
+        </div>
+
         <div className="card-surface p-6">
           <p className="text-xs uppercase tracking-widest text-gold mb-4">Top Venues by Guestlist</p>
           {data.top_venues.map((v) => (

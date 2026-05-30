@@ -64,6 +64,7 @@ class VenueUpdate(VenueBase):
 class VenueOut(VenueBase):
     id: int
     slug: str
+    advisory_rating: float | None = None
     created_at: datetime
     updated_at: datetime
 

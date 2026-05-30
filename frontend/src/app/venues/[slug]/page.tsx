@@ -153,6 +153,37 @@ export default async function VenueDetailPage({ params }: { params: { slug: stri
                 <p className="text-text-muted leading-relaxed">{venue.description}</p>
               )}
 
+              {/* Advisory rating */}
+              {venue.advisory_rating != null && (
+                <div className="flex items-center gap-4 border border-gold/30 px-5 py-4 bg-gold/5">
+                  <div>
+                    <p className="text-[10px] uppercase tracking-widest text-gold mb-0.5">YVR Advisory Rating</p>
+                    <p className="font-serif text-4xl text-text-primary leading-none">
+                      {venue.advisory_rating.toFixed(1)}
+                      <span className="text-text-dim text-lg font-sans font-normal"> / 10</span>
+                    </p>
+                  </div>
+                  {/* pip bar */}
+                  <div className="flex gap-1 items-end ml-2">
+                    {Array.from({ length: 10 }).map((_, i) => (
+                      <div
+                        key={i}
+                        className="w-1.5 rounded-sm transition-all"
+                        style={{
+                          height: `${8 + i * 3}px`,
+                          backgroundColor:
+                            i < Math.floor(venue.advisory_rating!)
+                              ? "#c9a84c"
+                              : i < venue.advisory_rating!
+                              ? "rgba(201,168,76,0.45)"
+                              : "rgba(255,255,255,0.08)",
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Quick stats */}
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 {venue.primary_nights.length > 0 && (
@@ -284,6 +315,15 @@ export default async function VenueDetailPage({ params }: { params: { slug: stri
             {/* ── Right column: CTA panel ── */}
             <div className="flex flex-col gap-4">
               <div className="card-surface p-6 flex flex-col gap-4 sticky top-24">
+                {venue.advisory_rating != null && (
+                  <div className="text-center border-b border-white/5 pb-4">
+                    <p className="text-[10px] uppercase tracking-widest text-gold mb-1">YVR Rating</p>
+                    <p className="font-serif text-3xl text-text-primary">
+                      {venue.advisory_rating.toFixed(1)}
+                      <span className="text-text-dim text-sm font-sans font-normal"> / 10</span>
+                    </p>
+                  </div>
+                )}
                 <p className="text-xs uppercase tracking-widest text-gold">Reserve or Join</p>
                 <Link href={`/reserve?venue_id=${venue.id}`}>
                   <GoldButton className="w-full">Reserve a Table</GoldButton>

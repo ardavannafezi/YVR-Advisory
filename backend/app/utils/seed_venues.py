@@ -469,6 +469,399 @@ VENUES = [
         ],
     },
     {
+        "name": "Twelve West",
+        "establishment_type": "Nightclub",
+        "description": (
+            "Twelve West is the flagship venue of the After Dark Hospitality Group — a 7,500-square-foot "
+            "award-winning nightclub on the Granville Strip that has been recognized by the Top Bar Design Awards. "
+            "The space is built for impact: three distinct VIP sections, a commanding dance floor, and production "
+            "that rivals any major-market club. The music leans into hip-hop and R&B, with a rotation of "
+            "Vancouver's best resident DJs and high-profile guest bookings. It draws a well-dressed, "
+            "high-energy crowd looking for an elevated night out without leaving the city."
+        ),
+        "address": "1219 Granville St, Vancouver, BC V6Z 1M6",
+        "neighbourhood": "Granville Strip",
+        "phone": "(604) 653-6335",
+        "latitude": 49.2752,
+        "longitude": -123.1337,
+        "music_types": ["hip-hop", "r&b"],
+        "vibe_tags": ["upscale", "high-energy", "bottle service", "VIP", "award-winning design", "dance floor"],
+        "primary_nights": ["friday", "saturday"],
+        "hours": {
+            "monday": None,
+            "tuesday": None,
+            "wednesday": None,
+            "thursday": None,
+            "friday": "9:30 PM – 3:00 AM",
+            "saturday": "9:30 PM – 3:00 AM",
+            "sunday": None,
+        },
+        "special_nights": [
+            "Fridays — Hip-Hop & R&B with resident DJs and VIP bottle service",
+            "Saturdays — High-energy club anthems and throwbacks with guest DJ bookings",
+        ],
+        "price_tier": "$$$",
+        "cover_charge_info": "~$20 at the door; varies by event and DJ lineup. Guestlist available online.",
+        "bottle_minimum": 500,
+        "dress_code": "Upscale — collared shirts, jeans, and dress shoes for men. No jerseys, track jackets, hats, or sneakers.",
+        "age_restriction": 19,
+        "hospitality_company": "After Dark Hospitality Group",
+        "capacity": 450,
+        "image_url": "https://images.unsplash.com/photo-1571266028243-e4733b0f0bb0?w=1600&q=80",
+        "logo_url": None,
+        "gallery_urls": [
+            "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800&q=80",
+            "https://images.unsplash.com/photo-1504196606672-aef5c9cefc92?w=800&q=80",
+        ],
+        "website_url": "https://twelvewest.ca",
+        "instagram_url": "https://www.instagram.com/twelve_west",
+        "reservation_link": "https://twelvewest.ca/pages/table-reservation",
+        "is_featured": True,
+        "is_active": True,
+        "faqs": [
+            {
+                "question": "What is the dress code at Twelve West?",
+                "answer": (
+                    "Upscale dress code is strictly enforced. Men must wear collared shirts, dress jeans or "
+                    "trousers, and dress shoes. Jerseys, track jackets, baseball caps, hoodies, and sneakers "
+                    "are not permitted. Management reserves the right to refuse entry."
+                ),
+            },
+            {
+                "question": "How do I get on the guestlist?",
+                "answer": (
+                    "Submit your name and party size via our guestlist form above. Guestlist entry is "
+                    "complimentary before a set time, subject to capacity and dress code. "
+                    "Door charge applies after guestlist cutoff."
+                ),
+            },
+            {
+                "question": "How do I book a VIP table?",
+                "answer": (
+                    "Use the Reserve a Table link above or visit twelvewest.ca/pages/table-reservation. "
+                    "Twelve West has three VIP sections with bottle minimums starting at $500 CAD. "
+                    "Reservations are recommended at least 48 hours in advance."
+                ),
+            },
+            {
+                "question": "What music plays at Twelve West?",
+                "answer": (
+                    "Twelve West focuses on hip-hop and R&B — a blend of current club anthems, throwbacks, "
+                    "and high-energy sets curated by resident and guest DJs. Fridays and Saturdays both "
+                    "feature full DJ production from open to close."
+                ),
+            },
+            {
+                "question": "What is the minimum age to enter?",
+                "answer": (
+                    "19+ with valid government-issued photo ID. BC driver's licence, passport, or NEXUS "
+                    "card accepted. IDs are verified at the door."
+                ),
+            },
+        ],
+    },
+    {
+        "name": "Aura Nightclub",
+        "establishment_type": "Nightclub",
+        "description": (
+            "Founded in July 2014 and located in the heart of the Granville Entertainment District, Aura Nightclub "
+            "pairs classic decor with a postmodern, futuristic twist — high ceilings, state-of-the-art sound, and "
+            "sophisticated lighting design across multiple environments ranging from high-energy dance floors to "
+            "intimate lounge areas. The weekly programming is split between Global Fridays — an international party "
+            "blending Top 40, Latin hits, and mainstream EDM — and Latin Saturdays, billed as Vancouver's busiest "
+            "Saturday clubbing event. K-pop nights and themed parties round out a calendar that draws a diverse, "
+            "international crowd to one of the Strip's most visually distinctive spaces."
+        ),
+        "address": "1180 Granville St, Vancouver, BC V6Z 1L8",
+        "neighbourhood": "Granville Strip",
+        "phone": "(604) 688-8889",
+        "latitude": 49.2791,
+        "longitude": -123.1243,
+        "music_types": ["top-40", "latin", "edm", "k-pop"],
+        "vibe_tags": ["upscale", "futuristic decor", "international crowd", "Latin", "EDM", "VIP tables", "high-energy"],
+        "primary_nights": ["friday", "saturday"],
+        "hours": {
+            "monday": None,
+            "tuesday": None,
+            "wednesday": None,
+            "thursday": None,
+            "friday": "10:00 PM – 3:00 AM",
+            "saturday": "10:00 PM – 3:00 AM",
+            "sunday": None,
+        },
+        "special_nights": [
+            "Global Fridays — Weekly international party blending Top 40, Latin hits, and mainstream EDM",
+            "Latin Saturdays — Weekly reggaeton and Latin night, billed as Vancouver's busiest Saturday clubbing event. Two pieces of valid ID required for entry.",
+            "K-pop nights and themed parties run periodically throughout the year",
+        ],
+        "special_occasion": (
+            "Birthday and stagette packages bookable at auravancouver.ca/packages. "
+            "Corporate event bookings also available directly through the venue."
+        ),
+        "price_tier": "$$$",
+        "cover_charge_info": "Typically ~$20 at the door. Varies by event and advance vs. door purchase.",
+        "bottle_minimum": None,
+        "dress_code": "Smart and elegant — dress shirts, blazers, stylish tops, smart trousers, or elegant dresses. No sportswear, shorts, or flip-flops.",
+        "age_restriction": 19,
+        "hospitality_company": None,
+        "capacity": None,
+        "image_url": "https://images.unsplash.com/photo-1579548122080-c35fd6820ecb?w=1600&q=80",
+        "logo_url": None,
+        "gallery_urls": [
+            "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800&q=80",
+            "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&q=80",
+        ],
+        "website_url": "https://auravancouver.ca",
+        "instagram_url": "https://www.instagram.com/auravancouver",
+        "reservation_link": "https://auravancouver.ca/vip-tables",
+        "is_featured": True,
+        "is_active": True,
+        "faqs": [
+            {
+                "question": "What are the weekly nights at Aura?",
+                "answer": (
+                    "Aura runs two flagship weekly nights: Global Fridays — a high-energy international party "
+                    "blending Top 40, Latin hits, and EDM — and Latin Saturdays, featuring reggaeton and Latin "
+                    "music and billed as Vancouver's busiest Saturday night. K-pop and themed nights are "
+                    "scheduled periodically throughout the year."
+                ),
+            },
+            {
+                "question": "What is the dress code?",
+                "answer": (
+                    "Smart and elegant. Dress shirts, blazers, stylish tops, and smart trousers or elegant "
+                    "dresses are expected. No sportswear, shorts, or flip-flops. Management reserves the "
+                    "right to refuse entry."
+                ),
+            },
+            {
+                "question": "Does Latin Saturdays have different entry rules?",
+                "answer": (
+                    "Yes — Latin Saturdays requires two pieces of valid government-issued identification "
+                    "for entry, in addition to the standard 19+ age requirement."
+                ),
+            },
+            {
+                "question": "Can I book a VIP table or birthday package?",
+                "answer": (
+                    "Yes — VIP table reservations are available at auravancouver.ca/vip-tables. Birthday "
+                    "and stagette packages with dedicated perks are bookable at auravancouver.ca/packages. "
+                    "Corporate bookings can be arranged directly through the venue."
+                ),
+            },
+            {
+                "question": "How much is cover at Aura?",
+                "answer": (
+                    "Cover is typically around $20 at the door. Pricing varies by event and DJ lineup, "
+                    "and advance tickets are often available at a lower rate. Check auravancouver.ca "
+                    "or their Instagram for event-specific details."
+                ),
+            },
+        ],
+    },
+    {
+        "name": "The Roxy",
+        "establishment_type": "Live Music Venue",
+        "description": (
+            "With live music 365 days a year, The Roxy is Vancouver's premier live music institution — "
+            "a Granville Strip staple where bands of every genre take the stage seven nights a week. "
+            "Four bars and thirteen high-energy staff keep the drinks moving, with a different special every "
+            "night and the venue's famous double Long Island Iced Tea always on call. Between sets, some of "
+            "the city's top DJs hold the floor. From Millennial Monday throwbacks to Girls Gone Roxy on "
+            "Thursdays and ticketed live shows on weekends, The Roxy runs one of the most consistent "
+            "weekly programmes on the strip — and has for decades."
+        ),
+        "address": "932 Granville St, Vancouver, BC V6Z 1L2",
+        "neighbourhood": "Granville Strip",
+        "phone": "(604) 331-7999",
+        "latitude": 49.2800,
+        "longitude": -123.1238,
+        "music_types": ["live", "hip-hop", "r&b", "country", "rock"],
+        "vibe_tags": ["live music institution", "Vancouver legend", "high-energy", "casual", "cover bands", "drink specials", "dance floor"],
+        "primary_nights": ["friday", "saturday"],
+        "hours": {
+            "monday": "8:00 PM – 3:00 AM",
+            "tuesday": "8:00 PM – 3:00 AM",
+            "wednesday": "8:00 PM – 3:00 AM",
+            "thursday": "8:00 PM – 3:00 AM",
+            "friday": "8:00 PM – 3:00 AM",
+            "saturday": "8:00 PM – 3:00 AM",
+            "sunday": "8:00 PM – 3:00 AM",
+        },
+        "special_nights": [
+            "Millennial Mondays — House band performs greatest hits from 1995–2008: hip-hop, dancehall, Afrobeat, and pop classics",
+            "Girls Gone Roxy (Thursdays) — Female-focused weekly night with live performances, pop tributes, and throwback hits",
+            "Weekend Live Shows — Ticketed performances presented with Live Acts Canada and We Outside promotions",
+        ],
+        "special_occasion": (
+            "Birthday packages: free entry for up to 5 guests, VIP line, and table reservation. "
+            "Bachelorette packages: complimentary cover for bride-to-be and maid of honour, VIP line, table, and goodie bag. "
+            "High school reunions also catered for. Book via info@roxyvan.com."
+        ),
+        "price_tier": "$",
+        "cover_charge_info": (
+            "Cover every night, $5–$13 depending on the night. Saturday is the most expensive. "
+            "Ticketed live events: advance $6–$15; door price typically $2–$10 higher."
+        ),
+        "bottle_minimum": None,
+        "dress_code": "No bags, backpacks, tracksuits, or ripped jeans. One of the most relaxed dress codes on the strip.",
+        "age_restriction": 19,
+        "hospitality_company": None,
+        "capacity": 275,
+        "image_url": "https://images.unsplash.com/photo-1493676304819-0d7a8d026dcf?w=1600&q=80",
+        "logo_url": None,
+        "gallery_urls": [
+            "https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?w=800&q=80",
+            "https://images.unsplash.com/photo-1598387180429-c06a8b4a9e28?w=800&q=80",
+        ],
+        "website_url": "http://www.roxyvan.com",
+        "instagram_url": "https://www.instagram.com/roxyvanlive",
+        "reservation_link": "http://www.roxyvan.com/guestlist",
+        "is_featured": True,
+        "is_active": True,
+        "faqs": [
+            {
+                "question": "Does The Roxy have live music every night?",
+                "answer": (
+                    "Yes — live bands perform 365 days a year, seven nights a week. Between sets, "
+                    "resident DJs keep the dance floor moving. Programming ranges from cover bands "
+                    "and tribute acts to ticketed original artists on weekends."
+                ),
+            },
+            {
+                "question": "What is Millennial Monday?",
+                "answer": (
+                    "Millennial Mondays is The Roxy's weekly Monday night hosted by the house band, "
+                    "performing greatest hits from 1995 to 2008 — spanning hip-hop, dancehall, "
+                    "Afrobeat, Brit pop, and R&B classics."
+                ),
+            },
+            {
+                "question": "How much is cover at The Roxy?",
+                "answer": (
+                    "Cover ranges from $5 to $13 depending on the night — Saturday is the highest. "
+                    "For ticketed live events, advance tickets are $6–$15 with door prices typically "
+                    "$2–$10 higher. Check roxyvan.com/events for event-specific pricing."
+                ),
+            },
+            {
+                "question": "Is there a dress code?",
+                "answer": (
+                    "One of the most relaxed dress codes on the Granville Strip. No bags, backpacks, "
+                    "tracksuits, or ripped jeans. Most other attire is welcome."
+                ),
+            },
+            {
+                "question": "Can I book a birthday or bachelorette package?",
+                "answer": (
+                    "Yes — birthday packages include free entry for up to 5 guests, VIP line access, and "
+                    "a table reservation. Bachelorette packages include complimentary cover for the bride "
+                    "and maid of honour, VIP entry, a reserved table, and a goodie bag. "
+                    "Book in advance at info@roxyvan.com."
+                ),
+            },
+        ],
+    },
+    {
+        "name": "Cabana Lounge",
+        "establishment_type": "Nightclub / Lounge",
+        "description": (
+            "Inspired by the vibrant style of South Beach, Cabana boasts rich colours, chic cabana-draped VIP booths, "
+            "and stunning design elements including the venue's trademark — a gorgeous acacia tree growing throughout "
+            "the intimate space. Longtime Vancouver nightlife figure Dave Kershaw oversees a venue that blends VIP "
+            "table culture with high-energy dance programming across multiple rooms, drawing crowds for Top 40, "
+            "hip-hop, Latin, and special themed nights. Wednesday's Festa Cabana splits the floor between "
+            "reggaeton in the main room and Brazilian hits in the back Eden Lounge."
+        ),
+        "address": "1159 Granville St, Vancouver, BC V6Z 1L8",
+        "neighbourhood": "Granville Strip",
+        "phone": "(778) 251-3335",
+        "latitude": 49.2784,
+        "longitude": -123.1244,
+        "music_types": ["top-40", "hip-hop", "r&b", "latin"],
+        "vibe_tags": ["South Beach-inspired", "VIP booths", "high-energy", "tropical decor", "bottle service", "multi-room"],
+        "primary_nights": ["wednesday", "friday", "saturday"],
+        "hours": {
+            "monday": None,
+            "tuesday": None,
+            "wednesday": "10:00 PM – 2:00 AM",
+            "thursday": "10:00 PM – 2:00 AM",
+            "friday": "10:00 PM – 3:00 AM",
+            "saturday": "10:00 PM – 3:00 AM",
+            "sunday": None,
+        },
+        "special_nights": [
+            "Festa Cabana Wednesdays — Reggaeton and Latin hits in the main room; Brazilian hits in Eden Lounge (back room). Occasional 10–11 PM dance classes.",
+            "Cabana Saturdays — Hip-hop, R&B, and dance hits with resident DJs",
+            "Themed one-offs — Pop culture tributes and holiday parties throughout the year",
+        ],
+        "special_occasion": (
+            "Birthday parties, bachelorette parties, and corporate events — private event bookings available. "
+            "Contact the venue directly via cabanavancouver.com for group packages."
+        ),
+        "price_tier": "$$",
+        "cover_charge_info": (
+            "Regular cover $12. Party Pass $10 (cover + priority entry + 2 drinks). "
+            "VIP Pass $20 (instant access, cover, 3 premium drinks including Grey Goose, Cîroc, Patrón, Hennessy, Corona)."
+        ),
+        "bottle_minimum": 315,
+        "dress_code": "Smart, upscale attire required. No casualwear, athletic wear, or sneakers.",
+        "age_restriction": 19,
+        "hospitality_company": None,
+        "capacity": 250,
+        "image_url": "https://images.unsplash.com/photo-1566737236500-c8ac43014a67?w=1600&q=80",
+        "logo_url": None,
+        "gallery_urls": [
+            "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800&q=80",
+            "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&q=80",
+        ],
+        "website_url": "https://cabanavancouver.com",
+        "instagram_url": "https://www.instagram.com/cabanavancouver",
+        "reservation_link": "https://cabanavancouver.com",
+        "is_featured": True,
+        "is_active": True,
+        "faqs": [
+            {
+                "question": "What is the dress code at Cabana?",
+                "answer": (
+                    "Smart, upscale attire is required. No casualwear, athletic wear, or sneakers. "
+                    "Management reserves the right to refuse entry at their discretion."
+                ),
+            },
+            {
+                "question": "What are the best nights to visit?",
+                "answer": (
+                    "Fridays and Saturdays are the most popular nights for Top 40, hip-hop, and R&B. "
+                    "Wednesdays run Festa Cabana — a Latin night split between reggaeton in the main room "
+                    "and Brazilian hits in the back Eden Lounge, with occasional dance classes at 10 PM."
+                ),
+            },
+            {
+                "question": "How much is cover charge?",
+                "answer": (
+                    "Regular cover is $12. The Party Pass ($10) includes cover, priority entry, and 2 drinks. "
+                    "The VIP Pass ($20) includes instant access, cover, and 3 premium drinks (Grey Goose, "
+                    "Cîroc, Patrón, Hennessy, or Corona)."
+                ),
+            },
+            {
+                "question": "Can I book a VIP table?",
+                "answer": (
+                    "Yes — Cabana has chic cabana-style VIP booths with full bottle service. "
+                    "Pricing varies by spirit and party size. Contact the venue through cabanavancouver.com "
+                    "to confirm minimums and availability for your date."
+                ),
+            },
+            {
+                "question": "Does Cabana host private events?",
+                "answer": (
+                    "Yes — birthday parties, bachelorette events, and corporate bookings are available. "
+                    "Reach out through the website to discuss packages and venue availability."
+                ),
+            },
+        ],
+    },
+    {
         "name": "Reflections: The Garden Terrace",
         "establishment_type": "Rooftop Lounge",
         "description": (
