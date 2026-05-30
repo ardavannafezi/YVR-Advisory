@@ -4,7 +4,12 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
 import { usePreferenceTracker } from "@/hooks/usePreferenceTracker";
 
-const ESTABLISHMENT_TYPES = ["Nightclub", "Cocktail Bar", "Bar & Restaurant", "Rooftop Lounge"];
+const CATEGORIES = [
+  { value: "nightclub", label: "Nightclubs" },
+  { value: "lounge", label: "Lounges" },
+  { value: "bar", label: "Bars" },
+  { value: "live_music", label: "Live Music" },
+];
 const MUSIC_TYPES = ["techno", "house", "hip-hop", "latin", "r&b", "pop", "edm", "live"];
 const NEIGHBOURHOODS = [
   "Granville Strip",
@@ -40,10 +45,13 @@ export function VenueFilter() {
 
   const active = (key: string, value: string) => params.get(key) === value;
   const hasFilters = params.toString().length > 0;
+  const activeCategory = params.get("primary_category");
 
   const clearAll = useCallback(() => {
     router.push("/venues");
   }, [router]);
+
+  const showBottleMin = activeCategory === "nightclub";
 
   return (
     <aside className="w-full md:w-64 shrink-0">
@@ -56,18 +64,19 @@ export function VenueFilter() {
             ✕ Clear filters
           </button>
         )}
+
         <div>
           <p className="text-xs uppercase tracking-widest text-gold mb-3">Venue Type</p>
           <div className="flex flex-col gap-2">
-            {ESTABLISHMENT_TYPES.map((t) => (
+            {CATEGORIES.map((c) => (
               <button
-                key={t}
-                onClick={() => setFilter("establishment_type", t)}
+                key={c.value}
+                onClick={() => setFilter("primary_category", c.value)}
                 className={`text-left text-sm transition-colors ${
-                  active("establishment_type", t) ? "text-gold" : "text-text-muted hover:text-text-primary"
+                  active("primary_category", c.value) ? "text-gold" : "text-text-muted hover:text-text-primary"
                 }`}
               >
-                {t}
+                {c.label}
               </button>
             ))}
           </div>
@@ -146,6 +155,22 @@ export function VenueFilter() {
             ))}
           </div>
         </div>
+
+        {showBottleMin && (
+          <div>
+            <p className="text-xs uppercase tracking-widest text-gold mb-3">Table Service</p>
+            <div className="flex flex-col gap-2">
+              <button
+                onClick={() => setFilter("dress_code", "upscale")}
+                className={`text-left text-sm transition-colors ${
+                  active("dress_code", "upscale") ? "text-gold" : "text-text-muted hover:text-text-primary"
+                }`}
+              >
+                Strict Dress Code
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </aside>
   );

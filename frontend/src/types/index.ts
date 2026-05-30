@@ -61,6 +61,7 @@ export interface Venue {
   reservation_link?: string | null;
   is_featured: boolean;
   is_active: boolean;
+  primary_category?: string | null;
   advisory_rating?: number | null;
   created_at: string;
   updated_at: string;

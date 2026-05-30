@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -19,11 +19,18 @@ def _attach_rating(venue: Venue, rating_val: float | None) -> VenueOut:
 
 
 @router.get("/featured", response_model=list[VenueOut])
-async def get_featured(db: AsyncSession = Depends(get_db)):
+async def get_featured(
+    category: str | None = Query(None),
+    db: AsyncSession = Depends(get_db),
+):
+    filters = [Venue.is_active == True, Venue.is_featured == True]
+    if category:
+        filters.append(Venue.primary_category == category)
+
     result = await db.execute(
         select(Venue, VenueAdvisoryRating.rating)
         .outerjoin(VenueAdvisoryRating, Venue.id == VenueAdvisoryRating.venue_id)
-        .where(Venue.is_active == True, Venue.is_featured == True)
+        .where(*filters)
         .limit(4)
     )
     rows = result.all()
@@ -35,6 +42,7 @@ async def list_venues(
     music_type: str | None = Query(None),
     neighbourhood: str | None = Query(None),
     establishment_type: str | None = Query(None),
+    primary_category: str | None = Query(None),
     vibe: str | None = Query(None),
     price_tier: str | None = Query(None),
     primary_night: str | None = Query(None),
@@ -43,35 +51,46 @@ async def list_venues(
     limit: int = Query(12, ge=1, le=50),
     db: AsyncSession = Depends(get_db),
 ):
+    filters = [Venue.is_active == True]
+
+    if music_type:
+        filters.append(Venue.music_types.any(music_type))
+    if establishment_type:
+        filters.append(Venue.establishment_type.ilike(f"%{establishment_type}%"))
+    if primary_category:
+        filters.append(Venue.primary_category == primary_category)
+    else:
+        # Exclude bar venues with no nightlife aspect (pure restaurants)
+        filters.append(
+            or_(
+                Venue.primary_category != "bar",
+                Venue.music_types != "{}",
+                Venue.primary_nights != "{}",
+            )
+        )
+    if neighbourhood:
+        filters.append(Venue.neighbourhood.ilike(f"%{neighbourhood}%"))
+    if vibe:
+        filters.append(Venue.vibe_tags.any(vibe))
+    if price_tier:
+        filters.append(Venue.price_tier == price_tier)
+    if primary_night:
+        filters.append(Venue.primary_nights.any(primary_night))
+    if dress_code:
+        filters.append(Venue.dress_code.ilike(f"%{dress_code}%"))
+
     q = (
         select(Venue, VenueAdvisoryRating.rating)
         .outerjoin(VenueView, Venue.id == VenueView.venue_id)
         .outerjoin(VenueAdvisoryRating, Venue.id == VenueAdvisoryRating.venue_id)
-        .where(Venue.is_active == True)
+        .where(*filters)
         .order_by(func.coalesce(VenueView.view_count, 0).desc())
     )
-    if music_type:
-        q = q.where(Venue.music_types.any(music_type))
-    if establishment_type:
-        q = q.where(Venue.establishment_type.ilike(f"%{establishment_type}%"))
-    if neighbourhood:
-        q = q.where(Venue.neighbourhood.ilike(f"%{neighbourhood}%"))
-    if vibe:
-        q = q.where(Venue.vibe_tags.any(vibe))
-    if price_tier:
-        q = q.where(Venue.price_tier == price_tier)
-    if primary_night:
-        q = q.where(Venue.primary_nights.any(primary_night))
-    if dress_code:
-        q = q.where(Venue.dress_code.ilike(f"%{dress_code}%"))
 
     count_q = select(func.count()).select_from(
-        select(Venue)
-        .outerjoin(VenueView, Venue.id == VenueView.venue_id)
-        .outerjoin(VenueAdvisoryRating, Venue.id == VenueAdvisoryRating.venue_id)
-        .where(Venue.is_active == True)
-        .subquery()
+        select(Venue).where(*filters).subquery()
     )
+
     total = await db.scalar(count_q)
     result = await db.execute(q.offset((page - 1) * limit).limit(limit))
     rows = result.all()

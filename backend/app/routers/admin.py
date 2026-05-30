@@ -12,12 +12,13 @@ from app.models.event import Event
 from app.models.guestlist import GuestlistEntry
 from app.models.reservation import TableReservation
 from app.models.venue import Venue
+from app.models.venue_view import VenueView
 from app.schemas.auth import LoginRequest, TokenResponse
 from app.schemas.blog import BlogPostCreate, BlogPostOut, BlogPostUpdate
 from app.schemas.event import EventCreate, EventOut, EventUpdate
 from app.schemas.guestlist import GuestlistOut
 from app.schemas.reservation import ReservationOut, ReservationUpdate
-from app.schemas.venue import VenueCreate, VenueOut, VenueUpdate
+from app.schemas.venue import AdminVenueRow, ViewCountUpdate, VenueCreate, VenueOut, VenueUpdate
 from app.services.analytics_service import get_summary
 from app.utils.security import create_access_token, hash_password, verify_password
 from app.utils.slugify import slugify
@@ -37,14 +38,34 @@ async def login(req: LoginRequest, db: AsyncSession = Depends(get_db)):
 
 # ─── Venues ──────────────────────────────────────────────────────────────────
 
-@router.get("/venues", response_model=list[VenueOut], dependencies=[Depends(get_current_admin)])
+@router.get("/venues", response_model=list[AdminVenueRow], dependencies=[Depends(get_current_admin)])
 async def admin_list_venues(
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=100),
     db: AsyncSession = Depends(get_db),
 ):
-    result = await db.execute(select(Venue).order_by(Venue.created_at.desc()).offset((page - 1) * limit).limit(limit))
-    return result.scalars().all()
+    result = await db.execute(
+        select(Venue, VenueView.view_count)
+        .outerjoin(VenueView, Venue.id == VenueView.venue_id)
+        .order_by(Venue.created_at.desc())
+        .offset((page - 1) * limit)
+        .limit(limit)
+    )
+    return [
+        AdminVenueRow(
+            id=v.id,
+            slug=v.slug,
+            name=v.name,
+            neighbourhood=v.neighbourhood,
+            music_types=v.music_types or [],
+            is_active=v.is_active,
+            is_featured=v.is_featured,
+            view_count=vc,
+            created_at=v.created_at,
+            updated_at=v.updated_at,
+        )
+        for v, vc in result
+    ]
 
 
 @router.post("/venues", response_model=VenueOut, status_code=status.HTTP_201_CREATED, dependencies=[Depends(get_current_admin)])
@@ -76,6 +97,20 @@ async def admin_delete_venue(venue_id: int, db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Venue not found")
     await db.delete(venue)
     await db.commit()
+
+
+@router.put("/venues/{venue_id}/views", dependencies=[Depends(get_current_admin)])
+async def admin_update_venue_views(venue_id: int, data: ViewCountUpdate, db: AsyncSession = Depends(get_db)):
+    venue = await db.get(Venue, venue_id)
+    if not venue:
+        raise HTTPException(status_code=404, detail="Venue not found")
+    existing = await db.scalar(select(VenueView).where(VenueView.venue_id == venue_id))
+    if existing:
+        existing.view_count = data.view_count
+    else:
+        db.add(VenueView(venue_id=venue_id, view_count=data.view_count))
+    await db.commit()
+    return {"venue_id": venue_id, "view_count": data.view_count}
 
 
 # ─── Events ──────────────────────────────────────────────────────────────────

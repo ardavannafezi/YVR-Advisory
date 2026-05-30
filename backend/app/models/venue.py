@@ -43,6 +43,7 @@ class Venue(Base):
     hospitality_company: Mapped[str | None] = mapped_column(String(200))
 
     establishment_type: Mapped[str | None] = mapped_column(String(100))
+    primary_category: Mapped[str | None] = mapped_column(String(50), nullable=True, index=True)
 
     # Media
     capacity: Mapped[int | None] = mapped_column(Integer)

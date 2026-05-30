@@ -32,6 +32,7 @@ class VenueBase(BaseModel):
     hospitality_company: str | None = None
 
     establishment_type: str | None = None
+    primary_category: str | None = None
 
     # Media
     capacity: int | None = None
@@ -76,3 +77,22 @@ class VenueList(BaseModel):
     total: int
     page: int
     limit: int
+
+
+class AdminVenueRow(BaseModel):
+    id: int
+    slug: str
+    name: str
+    neighbourhood: str | None = None
+    music_types: list[str] = []
+    is_active: bool
+    is_featured: bool
+    view_count: int | None = None
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+class ViewCountUpdate(BaseModel):
+    view_count: int
