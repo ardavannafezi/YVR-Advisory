@@ -54,7 +54,7 @@ export function VenueCard({ venue, index = 0 }: VenueCardProps) {
             )}
           </div>
           <div className="absolute bottom-3 left-3 flex gap-1.5 flex-wrap">
-            {venue.music_types.slice(0, 2).map((type) => (
+            {(venue.music_types ?? []).slice(0, 2).map((type) => (
               <Badge key={type} label={type} variant="gold" />
             ))}
           </div>
@@ -62,10 +62,10 @@ export function VenueCard({ venue, index = 0 }: VenueCardProps) {
 
         <div className="p-5">
           <div className="flex items-center justify-between mb-1">
-            <p className="text-text-dim text-[10px] uppercase tracking-widest">{venue.neighbourhood}</p>
-            {venue.primary_nights.length > 0 && (
+            <p className="text-text-dim text-[10px] uppercase tracking-widest">{venue.neighbourhood ?? "—"}</p>
+            {(venue.primary_nights ?? []).length > 0 && (
               <p className="text-[10px] uppercase tracking-widest text-text-muted">
-                {venue.primary_nights.slice(0, 2).join(" · ")}
+                {(venue.primary_nights ?? []).slice(0, 2).join(" · ")}
               </p>
             )}
           </div>
@@ -79,7 +79,7 @@ export function VenueCard({ venue, index = 0 }: VenueCardProps) {
             <p className="mt-2 text-text-muted text-sm line-clamp-2 leading-relaxed">{venue.description}</p>
           )}
           <div className="mt-4 flex flex-wrap gap-1.5">
-            {venue.vibe_tags.slice(0, 3).map((tag) => (
+            {(venue.vibe_tags ?? []).slice(0, 3).map((tag) => (
               <Badge key={tag} label={tag} variant="dim" />
             ))}
           </div>

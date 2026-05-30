@@ -117,7 +117,7 @@ export default async function VenueDetailPage({ params }: { params: { slug: stri
                 {venue.establishment_type}
               </span>
             )}
-            {venue.music_types.map((t) => <Badge key={t} label={t} variant="gold" />)}
+            {(venue.music_types ?? []).map((t) => <Badge key={t} label={t} variant="gold" />)}
             {venue.price_tier && (
               <span className="text-[10px] uppercase tracking-widest text-gold border border-gold/40 px-2.5 py-1">
                 {venue.price_tier}
@@ -186,10 +186,10 @@ export default async function VenueDetailPage({ params }: { params: { slug: stri
 
               {/* Quick stats */}
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                {venue.primary_nights.length > 0 && (
+                {(venue.primary_nights ?? []).length > 0 && (
                   <div className="card-surface p-4">
                     <p className="text-[10px] uppercase tracking-widest text-gold mb-1">Best Nights</p>
-                    <p className="text-text-primary text-sm capitalize">{venue.primary_nights.join(", ")}</p>
+                    <p className="text-text-primary text-sm capitalize">{(venue.primary_nights ?? []).join(", ")}</p>
                   </div>
                 )}
                 {venue.dress_code && (
@@ -213,11 +213,11 @@ export default async function VenueDetailPage({ params }: { params: { slug: stri
               </div>
 
               {/* Gallery */}
-              {venue.gallery_urls.length > 0 && (
+              {(venue.gallery_urls ?? []).length > 0 && (
                 <div>
                   <p className="text-xs uppercase tracking-widest text-gold mb-3">Photos</p>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                    {venue.gallery_urls.map((url, i) => (
+                    {(venue.gallery_urls ?? []).map((url, i) => (
                       <div key={i} className="relative aspect-[4/3] overflow-hidden">
                         <Image
                           src={url}
@@ -247,11 +247,11 @@ export default async function VenueDetailPage({ params }: { params: { slug: stri
               )}
 
               {/* Special nights */}
-              {venue.special_nights.length > 0 && (
+              {(venue.special_nights ?? []).length > 0 && (
                 <div>
                   <p className="text-xs uppercase tracking-widest text-gold mb-3">Special Nights</p>
                   <ul className="card-surface p-5 flex flex-col gap-2">
-                    {venue.special_nights.map((night) => (
+                    {(venue.special_nights ?? []).map((night) => (
                       <li key={night} className="text-text-muted text-sm flex items-start gap-2">
                         <span className="text-gold mt-0.5 shrink-0">›</span>
                         {night}
@@ -295,9 +295,9 @@ export default async function VenueDetailPage({ params }: { params: { slug: stri
               )}
 
               {/* Vibe tags */}
-              {venue.vibe_tags.length > 0 && (
+              {(venue.vibe_tags ?? []).length > 0 && (
                 <div className="flex flex-wrap gap-2">
-                  {venue.vibe_tags.map((tag) => <Badge key={tag} label={tag} />)}
+                  {(venue.vibe_tags ?? []).map((tag) => <Badge key={tag} label={tag} />)}
                 </div>
               )}
 
