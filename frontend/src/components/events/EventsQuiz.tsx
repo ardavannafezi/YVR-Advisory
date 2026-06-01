@@ -199,7 +199,7 @@ export function EventsQuiz({ onResults, onSkip, listRef }: Props) {
                 Reset preferences
               </button>
             </div>
-            <button onClick={onSkip} className="text-[11px] uppercase tracking-widest text-text-dim hover:text-text-muted transition-colors">
+            <button onClick={onSkip} className="text-xs uppercase tracking-widest text-text-muted border border-white/20 px-5 py-2 hover:border-white/40 hover:text-text-primary transition-colors">
               Skip — show all events
             </button>
           </motion.div>
@@ -298,7 +298,7 @@ export function EventsQuiz({ onResults, onSkip, listRef }: Props) {
                   <button
                     onClick={advance}
                     disabled={loading}
-                    className="text-[11px] uppercase tracking-widest text-text-dim hover:text-text-muted transition-colors"
+                    className="text-xs uppercase tracking-widest text-text-muted border border-white/20 px-5 py-2 hover:border-white/40 hover:text-text-primary transition-colors"
                   >
                     Skip this step →
                   </button>
@@ -310,7 +310,7 @@ export function EventsQuiz({ onResults, onSkip, listRef }: Props) {
             <div className="text-center mt-8">
               <button
                 onClick={onSkip}
-                className="text-[11px] uppercase tracking-widest text-text-dim hover:text-text-muted transition-colors"
+                className="text-xs uppercase tracking-widest text-text-muted border border-white/20 px-5 py-2 hover:border-white/40 hover:text-text-primary transition-colors"
               >
                 Skip — show all events
               </button>
