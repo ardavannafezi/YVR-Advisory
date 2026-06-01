@@ -1,7 +1,9 @@
+import os
 import random
+import uuid
 from datetime import date
 
-from fastapi import APIRouter, Depends, Header, HTTPException, status
+from fastapi import APIRouter, Depends, File, Header, HTTPException, UploadFile, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -11,6 +13,9 @@ from app.models.event import Event
 from app.models.venue import Venue
 from app.schemas.webhook import N8nEventPayload, WebhookResponse
 from app.utils.slugify import slugify
+
+UPLOAD_DIR = os.environ.get("UPLOAD_DIR", "uploads")
+ALLOWED_EXTS = {".jpg", ".jpeg", ".png", ".webp", ".gif"}
 
 router = APIRouter(prefix="/api/webhooks", tags=["webhooks"])
 
@@ -39,6 +44,20 @@ def _apply_payload(event: Event, payload: N8nEventPayload, venue_id: int) -> Non
     event.entry_closes_at = payload.entry_closes_at
     if payload.external_id:
         event.external_id = payload.external_id
+
+
+@router.post("/upload", dependencies=[Depends(_verify_api_key)])
+async def webhook_upload(file: UploadFile = File(...)):
+    ext = os.path.splitext(file.filename or "")[1].lower()
+    if ext not in ALLOWED_EXTS:
+        raise HTTPException(status_code=400, detail="Image files only (.jpg .jpeg .png .webp .gif)")
+    dest_dir = os.path.join(UPLOAD_DIR, "events")
+    os.makedirs(dest_dir, exist_ok=True)
+    filename = f"{uuid.uuid4().hex}{ext}"
+    content = await file.read()
+    with open(os.path.join(dest_dir, filename), "wb") as f:
+        f.write(content)
+    return {"url": f"/uploads/events/{filename}"}
 
 
 @router.post("/n8n", response_model=WebhookResponse, dependencies=[Depends(_verify_api_key)])
