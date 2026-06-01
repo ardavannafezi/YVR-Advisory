@@ -16,7 +16,7 @@ interface EventCardProps {
 const ENTRY_LABELS: Record<string, string> = {
   guestlist: "Guestlist",
   tickets: "Tickets",
-  reservation: "Reservation",
+  reservation: "Bottle Service / Reservation",
 };
 
 export function EventCard({ event, index = 0 }: EventCardProps) {

@@ -10,7 +10,7 @@ const MUSIC_OPTIONS = ["hip-hop", "house", "techno", "latin", "r&b", "edm", "pop
 const ENTRY_OPTIONS = [
   { value: "guestlist", label: "Guestlist" },
   { value: "tickets", label: "Tickets" },
-  { value: "reservation", label: "Reservation" },
+  { value: "reservation", label: "Bottle Service / Reservation" },
 ];
 const DATE_OPTIONS = [
   { label: "Tonight", value: "tonight" },

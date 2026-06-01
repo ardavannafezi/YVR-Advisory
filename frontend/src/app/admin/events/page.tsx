@@ -9,7 +9,11 @@ import { ErrorState } from "@/components/ui/ErrorState";
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://back.yvradvisory.ca";
 
 const MUSIC_OPTIONS = ["hip-hop", "house", "techno", "latin", "r&b", "edm", "pop", "live", "top-40", "k-pop", "country", "rock"];
-const ENTRY_TYPE_OPTIONS = ["guestlist", "tickets", "reservation"];
+const ENTRY_TYPE_OPTIONS = [
+  { value: "guestlist", label: "Guestlist" },
+  { value: "tickets", label: "Tickets" },
+  { value: "reservation", label: "Bottle Service / Reservation" },
+];
 
 interface LineupArtist {
   name: string;
@@ -114,14 +118,14 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
-function MultiCheckbox({ options, value, onChange }: { options: string[]; value: string[]; onChange: (v: string[]) => void }) {
+function MultiCheckbox({ options, value, onChange }: { options: { value: string; label: string }[]; value: string[]; onChange: (v: string[]) => void }) {
   function toggle(opt: string) { onChange(value.includes(opt) ? value.filter(v => v !== opt) : [...value, opt]); }
   return (
     <div className="flex flex-wrap gap-2 pt-1">
       {options.map(opt => (
-        <label key={opt} className={`flex items-center gap-1 text-[11px] px-2.5 py-1 border cursor-pointer transition-colors select-none ${value.includes(opt) ? "border-gold bg-gold/10 text-gold" : "border-white/10 text-text-muted hover:border-white/25"}`}>
-          <input type="checkbox" checked={value.includes(opt)} onChange={() => toggle(opt)} className="hidden" />
-          {opt}
+        <label key={opt.value} className={`flex items-center gap-1 text-[11px] px-2.5 py-1 border cursor-pointer transition-colors select-none ${value.includes(opt.value) ? "border-gold bg-gold/10 text-gold" : "border-white/10 text-text-muted hover:border-white/25"}`}>
+          <input type="checkbox" checked={value.includes(opt.value)} onChange={() => toggle(opt.value)} className="hidden" />
+          {opt.label}
         </label>
       ))}
     </div>
