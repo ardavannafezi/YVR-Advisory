@@ -1,4 +1,5 @@
 import os
+import random
 import uuid
 from datetime import datetime, timezone
 
@@ -20,7 +21,7 @@ from app.models.venue_advisory_rating import VenueAdvisoryRating
 from app.models.venue_view import VenueView
 from app.schemas.auth import LoginRequest, TokenResponse
 from app.schemas.blog import BlogPostCreate, BlogPostOut, BlogPostUpdate
-from app.schemas.event import EventCreate, EventOut, EventUpdate
+from app.schemas.event import EventCreate, EventOut, EventUpdate, SocialProofUpdate
 from app.schemas.guestlist import GuestlistOut
 from app.schemas.reservation import ReservationOut, ReservationUpdate
 from app.schemas.venue import AdminVenueRow, ViewCountUpdate, VenueCreate, VenueOut, VenueUpdate
@@ -173,6 +174,14 @@ async def admin_upload_file(file: UploadFile = File(...)):
 
 # ─── Events ──────────────────────────────────────────────────────────────────
 
+@router.get("/events/{event_id}", response_model=EventOut, dependencies=[Depends(get_current_admin)])
+async def admin_get_event(event_id: int, db: AsyncSession = Depends(get_db)):
+    event = await db.scalar(select(Event).options(selectinload(Event.venue)).where(Event.id == event_id))
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+    return event
+
+
 @router.get("/events", response_model=list[EventOut], dependencies=[Depends(get_current_admin)])
 async def admin_list_events(
     page: int = Query(1, ge=1),
@@ -188,11 +197,21 @@ async def admin_list_events(
 @router.post("/events", response_model=EventOut, status_code=status.HTTP_201_CREATED, dependencies=[Depends(get_current_admin)])
 async def admin_create_event(data: EventCreate, db: AsyncSession = Depends(get_db)):
     slug = slugify(f"{data.name} {data.date.strftime('%Y-%m-%d')}")
-    event = Event(**data.model_dump(), slug=slug, source="manual")
+    event = Event(**data.model_dump(), slug=slug, source="manual", social_proof_count=random.randint(4, 12))
     db.add(event)
     await db.commit()
     await db.refresh(event)
     return event
+
+
+@router.put("/events/{event_id}/social-proof", dependencies=[Depends(get_current_admin)])
+async def admin_set_social_proof(event_id: int, data: SocialProofUpdate, db: AsyncSession = Depends(get_db)):
+    event = await db.get(Event, event_id)
+    if not event:
+        raise HTTPException(status_code=404, detail="Event not found")
+    event.social_proof_count = data.count
+    await db.commit()
+    return {"event_id": event_id, "social_proof_count": event.social_proof_count}
 
 
 @router.put("/events/{event_id}", response_model=EventOut, dependencies=[Depends(get_current_admin)])

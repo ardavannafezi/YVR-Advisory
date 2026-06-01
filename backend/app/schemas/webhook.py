@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Any
 
 from pydantic import BaseModel
 
@@ -13,6 +14,15 @@ class N8nEventPayload(BaseModel):
     image_url: str | None = None
     ticket_url: str | None = None
     external_id: str | None = None
+
+    lineup: list[dict[str, Any]] | None = None
+    gallery: list[str] | None = None
+    video_url: str | None = None
+    entry_types: list[str] | None = None
+    our_guestlist: bool = False
+    our_reservation: bool = False
+    guestlist_closes_at: datetime | None = None
+    entry_closes_at: datetime | None = None
 
 
 class WebhookResponse(BaseModel):

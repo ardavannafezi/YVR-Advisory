@@ -67,6 +67,13 @@ export interface Venue {
   updated_at: string;
 }
 
+export interface LineupArtist {
+  name: string;
+  instagram?: string;
+  tiktok?: string;
+  youtube?: string;
+}
+
 export interface Event {
   id: number;
   name: string;
@@ -82,6 +89,17 @@ export interface Event {
   is_published: boolean;
   source: string;
   external_id?: string;
+
+  lineup?: LineupArtist[];
+  gallery?: string[];
+  video_url?: string;
+  entry_types?: string[];
+  our_guestlist: boolean;
+  our_reservation: boolean;
+  guestlist_closes_at?: string;
+  entry_closes_at?: string;
+  social_proof_count?: number;
+
   created_at: string;
   updated_at: string;
 }

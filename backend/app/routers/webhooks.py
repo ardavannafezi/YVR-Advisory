@@ -1,3 +1,4 @@
+import random
 from datetime import date
 
 from fastapi import APIRouter, Depends, Header, HTTPException, status
@@ -17,6 +18,27 @@ router = APIRouter(prefix="/api/webhooks", tags=["webhooks"])
 def _verify_api_key(x_api_key: str = Header(...)):
     if x_api_key != settings.n8n_webhook_api_key:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid API key")
+
+
+def _apply_payload(event: Event, payload: N8nEventPayload, venue_id: int) -> None:
+    event.name = payload.event_name
+    event.venue_id = venue_id
+    event.date = payload.date
+    event.category = payload.category
+    event.music_type = payload.music_type
+    event.description = payload.description
+    event.image_url = payload.image_url
+    event.ticket_url = payload.ticket_url
+    event.lineup = payload.lineup
+    event.gallery = payload.gallery
+    event.video_url = payload.video_url
+    event.entry_types = payload.entry_types
+    event.our_guestlist = payload.our_guestlist
+    event.our_reservation = payload.our_reservation
+    event.guestlist_closes_at = payload.guestlist_closes_at
+    event.entry_closes_at = payload.entry_closes_at
+    if payload.external_id:
+        event.external_id = payload.external_id
 
 
 @router.post("/n8n", response_model=WebhookResponse, dependencies=[Depends(_verify_api_key)])
@@ -42,17 +64,8 @@ async def n8n_webhook(payload: N8nEventPayload, db: AsyncSession = Depends(get_d
         await db.flush()
 
     if existing_event:
-        existing_event.name = payload.event_name
-        existing_event.venue_id = venue.id
-        existing_event.date = payload.date
-        existing_event.category = payload.category
-        existing_event.music_type = payload.music_type
-        existing_event.description = payload.description
-        existing_event.image_url = payload.image_url
-        existing_event.ticket_url = payload.ticket_url
         existing_event.source = "n8n"
-        if payload.external_id:
-            existing_event.external_id = payload.external_id
+        _apply_payload(existing_event, payload, venue.id)
         await db.commit()
         return WebhookResponse(status="ok", action="updated", event_id=existing_event.id)
 
@@ -60,17 +73,11 @@ async def n8n_webhook(payload: N8nEventPayload, db: AsyncSession = Depends(get_d
     new_event = Event(
         name=payload.event_name,
         slug=slug_base,
-        venue_id=venue.id,
-        date=payload.date,
-        category=payload.category,
-        music_type=payload.music_type,
-        description=payload.description,
-        image_url=payload.image_url,
-        ticket_url=payload.ticket_url,
         source="n8n",
-        external_id=payload.external_id,
         is_published=True,
+        social_proof_count=random.randint(4, 12),
     )
+    _apply_payload(new_event, payload, venue.id)
     db.add(new_event)
     await db.commit()
     await db.refresh(new_event)
