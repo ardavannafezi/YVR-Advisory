@@ -1,10 +1,8 @@
 import os
 import random
 import uuid
-from datetime import date
-
 from fastapi import APIRouter, Depends, File, Header, HTTPException, UploadFile, status
-from sqlalchemy import select
+from sqlalchemy import Date, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
@@ -60,48 +58,44 @@ async def webhook_upload(file: UploadFile = File(...)):
     return {"url": f"/uploads/events/{filename}"}
 
 
-@router.post("/n8n", dependencies=[Depends(_verify_api_key)])
+@router.post("/n8n", response_model=WebhookResponse, dependencies=[Depends(_verify_api_key)])
 async def n8n_webhook(payload: N8nEventPayload, db: AsyncSession = Depends(get_db)):
-    import traceback
-    try:
-        existing_event: Event | None = None
+    existing_event: Event | None = None
 
-        if payload.external_id:
-            existing_event = await db.scalar(select(Event).where(Event.external_id == payload.external_id))
+    if payload.external_id:
+        existing_event = await db.scalar(select(Event).where(Event.external_id == payload.external_id))
 
-        if not existing_event:
-            existing_event = await db.scalar(
-                select(Event).where(
-                    Event.name == payload.event_name,
-                    Event.date.cast(date) == payload.date.date(),
-                )
+    if not existing_event:
+        existing_event = await db.scalar(
+            select(Event).where(
+                Event.name == payload.event_name,
+                Event.date.cast(Date) == payload.date.date(),
             )
-
-        venue = await db.scalar(select(Venue).where(Venue.name == payload.venue_name))
-        if not venue:
-            slug_base = slugify(payload.venue_name)
-            venue = Venue(name=payload.venue_name, slug=slug_base)
-            db.add(venue)
-            await db.flush()
-
-        if existing_event:
-            existing_event.source = "n8n"
-            _apply_payload(existing_event, payload, venue.id)
-            await db.commit()
-            return {"status": "ok", "action": "updated", "event_id": existing_event.id}
-
-        slug_base = slugify(f"{payload.event_name} {payload.date.strftime('%Y-%m-%d')}")
-        new_event = Event(
-            name=payload.event_name,
-            slug=slug_base,
-            source="n8n",
-            is_published=True,
-            social_proof_count=random.randint(4, 12),
         )
-        _apply_payload(new_event, payload, venue.id)
-        db.add(new_event)
+
+    venue = await db.scalar(select(Venue).where(Venue.name == payload.venue_name))
+    if not venue:
+        slug_base = slugify(payload.venue_name)
+        venue = Venue(name=payload.venue_name, slug=slug_base)
+        db.add(venue)
+        await db.flush()
+
+    if existing_event:
+        existing_event.source = "n8n"
+        _apply_payload(existing_event, payload, venue.id)
         await db.commit()
-        await db.refresh(new_event)
-        return {"status": "ok", "action": "created", "event_id": new_event.id}
-    except Exception as e:
-        return {"status": "error", "detail": str(e), "trace": traceback.format_exc()}
+        return WebhookResponse(status="ok", action="updated", event_id=existing_event.id)
+
+    slug_base = slugify(f"{payload.event_name} {payload.date.strftime('%Y-%m-%d')}")
+    new_event = Event(
+        name=payload.event_name,
+        slug=slug_base,
+        source="n8n",
+        is_published=True,
+        social_proof_count=random.randint(4, 12),
+    )
+    _apply_payload(new_event, payload, venue.id)
+    db.add(new_event)
+    await db.commit()
+    await db.refresh(new_event)
+    return WebhookResponse(status="ok", action="created", event_id=new_event.id)
