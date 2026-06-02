@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { WebsiteJsonLd } from "@/components/layout/WebsiteJsonLd";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -50,6 +52,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
       <body className="bg-background text-text-primary font-sans antialiased">
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-8V3HYJTMRZ"
+          strategy="afterInteractive"
+        />
+        <Script id="gtag-init" strategy="afterInteractive">
+          {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-8V3HYJTMRZ');`}
+        </Script>
+        <WebsiteJsonLd />
         <Navbar />
         <main>{children}</main>
         <Footer />
