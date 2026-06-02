@@ -14,6 +14,15 @@ class Settings(BaseSettings):
     admin_email: str = "admin@yvradvisory.ca"
     admin_password: str = ""
 
+    telegram_bot_token: str = ""
+    telegram_chat_id: str = ""
+
+    smtp_host: str = ""
+    smtp_port: int = 587
+    smtp_user: str = ""
+    smtp_password: str = ""
+    email_from: str = "YVR Advisory <noreply@yvradvisory.ca>"
+
     @property
     def async_database_url(self) -> str:
         url = self.database_url

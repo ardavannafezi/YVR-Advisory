@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { api } from "@/lib/api";
 import { Badge } from "@/components/ui/Badge";
-import { GoldButton } from "@/components/ui/GoldButton";
 import { VenueJsonLd } from "@/components/venues/VenueJsonLd";
 import { VenueFaqAccordion } from "@/components/venues/VenueFaqAccordion";
 import { VenueViewTracker } from "@/components/venues/VenueViewTracker";
+import { VenueEventsSlider } from "@/components/venues/VenueEventsSlider";
+import { VenueCTAPanel } from "@/components/venues/VenueCTAPanel";
 import type { Venue, VenueHours } from "@/types";
 
 export const revalidate = 600;
@@ -310,55 +310,24 @@ export default async function VenueDetailPage({ params }: { params: { slug: stri
                   </div>
                 </div>
               )}
+
+              {/* Upcoming events */}
+              <VenueEventsSlider venueId={venue.id} venueName={venue.name} />
             </div>
 
             {/* ── Right column: CTA panel ── */}
             <div className="flex flex-col gap-4">
-              <div className="card-surface p-6 flex flex-col gap-4 sticky top-24">
-                {venue.advisory_rating != null && (
-                  <div className="text-center border-b border-white/5 pb-4">
-                    <p className="text-[10px] uppercase tracking-widest text-gold mb-1">YVR Rating</p>
-                    <p className="font-serif text-3xl text-text-primary">
-                      {venue.advisory_rating.toFixed(1)}
-                      <span className="text-text-dim text-sm font-sans font-normal"> / 10</span>
-                    </p>
-                  </div>
-                )}
-                <p className="text-xs uppercase tracking-widest text-gold">Reserve or Join</p>
-                <Link href={`/reserve?venue_id=${venue.id}`}>
-                  <GoldButton className="w-full">Reserve a Table</GoldButton>
-                </Link>
-                <Link href={`/guestlist?venue_id=${venue.id}`}>
-                  <GoldButton variant="outline" className="w-full">Join Guestlist</GoldButton>
-                </Link>
-                {venue.reservation_link && (
-                  <a href={venue.reservation_link} target="_blank" rel="noopener noreferrer" className="text-center text-xs uppercase tracking-widest text-text-muted hover:text-gold transition-colors">
-                    Book Directly
-                  </a>
-                )}
-                {venue.website_url && (
-                  <a href={venue.website_url} target="_blank" rel="noopener noreferrer" className="text-center text-xs uppercase tracking-widest text-text-muted hover:text-gold transition-colors">
-                    Official Website
-                  </a>
-                )}
-                {venue.instagram_url && (
-                  <a href={venue.instagram_url} target="_blank" rel="noopener noreferrer" className="text-center text-xs uppercase tracking-widest text-text-muted hover:text-gold transition-colors">
-                    Instagram
-                  </a>
-                )}
-                {venue.phone && (
-                  <a href={`tel:${venue.phone}`} className="text-center text-xs uppercase tracking-widest text-text-muted hover:text-gold transition-colors">
-                    {venue.phone}
-                  </a>
-                )}
-                {/* Compact directions in sidebar too */}
-                {venue.latitude && venue.longitude && (
-                  <div className="pt-2 border-t border-white/5">
-                    <p className="text-[10px] uppercase tracking-widest text-text-dim mb-2">Get Directions</p>
-                    <DirectionButtons lat={venue.latitude} lng={venue.longitude} name={venue.name} />
-                  </div>
-                )}
-              </div>
+              <VenueCTAPanel
+                venueId={venue.id}
+                venueName={venue.name}
+                advisoryRating={venue.advisory_rating ?? undefined}
+                reservationLink={venue.reservation_link ?? undefined}
+                websiteUrl={venue.website_url ?? undefined}
+                instagramUrl={venue.instagram_url ?? undefined}
+                phone={venue.phone ?? undefined}
+                lat={venue.latitude ?? undefined}
+                lng={venue.longitude ?? undefined}
+              />
             </div>
           </div>
         </div>

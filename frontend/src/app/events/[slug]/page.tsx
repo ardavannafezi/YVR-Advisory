@@ -4,11 +4,11 @@ import { notFound } from "next/navigation";
 import { format, isPast } from "date-fns";
 import { api } from "@/lib/api";
 import { Badge } from "@/components/ui/Badge";
-import { GoldButton } from "@/components/ui/GoldButton";
 import { EventJsonLd } from "@/components/events/EventJsonLd";
 import { EventGallery } from "@/components/events/EventGallery";
 import { EventVideo } from "@/components/events/EventVideo";
 import { EventSimilar } from "@/components/events/EventSimilar";
+import { EventCTASidebar } from "@/components/events/EventCTASidebar";
 import type { Event } from "@/types";
 
 export const revalidate = 300;
@@ -232,86 +232,23 @@ export default async function EventDetailPage({ params }: { params: { slug: stri
 
             {/* Right — sticky CTAs */}
             <div className="lg:col-span-1">
-              <div className="sticky top-28">
-                <div className="card-surface p-6 space-y-3">
-                  <p className="text-[10px] uppercase tracking-widest text-gold mb-4">Reserve Your Spot</p>
-
-                  {entryClosed ? (
-                    <p className="text-text-muted text-sm">Entry for this event has closed.</p>
-                  ) : (
-                    <>
-                      {hasGuestlistCTA && (
-                        <Link href={`/guestlist?event_id=${event.id}`} className="block">
-                          <GoldButton className="w-full">Join Guestlist</GoldButton>
-                        </Link>
-                      )}
-                      {hasTicketCTA && (
-                        <a href={event.ticket_url!} target="_blank" rel="noopener noreferrer" className="block">
-                          <GoldButton variant={hasGuestlistCTA ? "outline" : "solid"} className="w-full">
-                            Get Tickets
-                          </GoldButton>
-                        </a>
-                      )}
-                      {hasReserveCTA && (
-                        <Link href={`/reserve?venue_id=${event.venue_id}&event_id=${event.id}`} className="block">
-                          <GoldButton variant="ghost" className="w-full">Reserve Table</GoldButton>
-                        </Link>
-                      )}
-                      {!hasGuestlistCTA && !hasTicketCTA && !hasReserveCTA && (
-                        <p className="text-text-muted text-sm">Check back for availability.</p>
-                      )}
-                    </>
-                  )}
-
-                  {/* Event meta summary */}
-                  <div className="pt-4 border-t border-white/8 space-y-2">
-                    <div className="flex justify-between text-[11px]">
-                      <span className="text-text-dim">Date</span>
-                      <span className="text-text-muted">{format(date, "MMM d, yyyy")}</span>
-                    </div>
-                    <div className="flex justify-between text-[11px]">
-                      <span className="text-text-dim">Time</span>
-                      <span className="text-text-muted">{format(date, "h:mm a")}</span>
-                    </div>
-                    {event.venue && (
-                      <div className="flex justify-between text-[11px]">
-                        <span className="text-text-dim">Venue</span>
-                        <span className="text-text-muted">{event.venue.name}</span>
-                      </div>
-                    )}
-                    {event.venue?.establishment_type && (
-                      <div className="flex justify-between text-[11px]">
-                        <span className="text-text-dim">Type</span>
-                        <span className="text-text-muted">{event.venue.establishment_type}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
+              <EventCTASidebar
+                eventId={event.id}
+                venueId={event.venue_id ?? undefined}
+                eventName={event.name}
+                venueName={event.venue?.name}
+                venueEstType={event.venue?.establishment_type ?? undefined}
+                date={event.date}
+                hasGuestlistCTA={hasGuestlistCTA}
+                hasTicketCTA={hasTicketCTA}
+                ticketUrl={event.ticket_url ?? undefined}
+                hasReserveCTA={hasReserveCTA}
+                entryClosed={entryClosed}
+              />
             </div>
           </div>
         </div>
 
-        {/* Mobile sticky CTA bar */}
-        {!entryClosed && (hasGuestlistCTA || hasTicketCTA || hasReserveCTA) && (
-          <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur border-t border-white/10 p-4 flex gap-3">
-            {hasGuestlistCTA && (
-              <Link href={`/guestlist?event_id=${event.id}`} className="flex-1">
-                <GoldButton className="w-full">Join Guestlist</GoldButton>
-              </Link>
-            )}
-            {hasTicketCTA && !hasGuestlistCTA && (
-              <a href={event.ticket_url!} target="_blank" rel="noopener noreferrer" className="flex-1">
-                <GoldButton className="w-full">Get Tickets</GoldButton>
-              </a>
-            )}
-            {hasReserveCTA && (
-              <Link href={`/reserve?venue_id=${event.venue_id}&event_id=${event.id}`} className="flex-1">
-                <GoldButton variant="outline" className="w-full">Reserve</GoldButton>
-              </Link>
-            )}
-          </div>
-        )}
       </div>
 
       {/* Similar events */}
