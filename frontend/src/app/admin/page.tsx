@@ -28,6 +28,11 @@ const sections = [
     title: "Reservations",
     description: "Approve or reject table reservation requests.",
   },
+  {
+    href: "/admin/settings",
+    title: "Settings",
+    description: "Configure email (SMTP) and Telegram notifications.",
+  },
 ];
 
 export default function AdminDashboardPage() {

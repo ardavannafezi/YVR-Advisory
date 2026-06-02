@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.dependencies import get_db
 from app.models.guestlist import GuestlistEntry
 from app.schemas.guestlist import GuestlistCreate, GuestlistOut
-from app.utils.notifications import send_email, send_telegram
+from app.utils.notifications import load_db_notif_settings, send_email, send_telegram
 
 router = APIRouter(prefix="/api/guestlist", tags=["guestlist"])
 
@@ -17,6 +17,8 @@ async def submit_guestlist(data: GuestlistCreate, db: AsyncSession = Depends(get
     db.add(entry)
     await db.commit()
     await db.refresh(entry)
+
+    notif = await load_db_notif_settings(db)
 
     tg_msg = (
         f"🎟 <b>New Guestlist Signup</b>\n"
@@ -32,7 +34,7 @@ async def submit_guestlist(data: GuestlistCreate, db: AsyncSession = Depends(get
     <p>— YVR Advisory</p>
     """
 
-    asyncio.create_task(send_telegram(tg_msg))
-    asyncio.create_task(send_email(entry.email, "You're on the guestlist — YVR Advisory", user_html))
+    asyncio.create_task(send_telegram(tg_msg, **notif))
+    asyncio.create_task(send_email(entry.email, "You're on the guestlist — YVR Advisory", user_html, **notif))
 
     return entry

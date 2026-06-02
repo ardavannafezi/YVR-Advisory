@@ -25,7 +25,9 @@ from app.schemas.event import EventCreate, EventOut, EventUpdate, SocialProofUpd
 from app.schemas.guestlist import GuestlistOut
 from app.schemas.reservation import ReservationOut, ReservationUpdate
 from app.schemas.venue import AdminVenueRow, ViewCountUpdate, VenueCreate, VenueOut, VenueUpdate
+from app.models.notification_settings import NotificationSettings
 from app.services.analytics_service import get_summary
+from app.utils.notifications import send_email, send_telegram
 from app.utils.security import create_access_token, hash_password, verify_password
 from app.utils.slugify import slugify
 
@@ -261,6 +263,14 @@ async def admin_create_post(data: BlogPostCreate, db: AsyncSession = Depends(get
     return post
 
 
+@router.get("/blog/{post_id}", response_model=BlogPostOut, dependencies=[Depends(get_current_admin)])
+async def admin_get_post(post_id: int, db: AsyncSession = Depends(get_db)):
+    post = await db.get(BlogPost, post_id)
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+    return post
+
+
 @router.put("/blog/{post_id}", response_model=BlogPostOut, dependencies=[Depends(get_current_admin)])
 async def admin_update_post(post_id: int, data: BlogPostUpdate, db: AsyncSession = Depends(get_db)):
     post = await db.get(BlogPost, post_id)
@@ -339,3 +349,74 @@ async def admin_analytics_emails(db: AsyncSession = Depends(get_db)):
         .limit(100)
     )
     return [{"email": r.email, "submissions": r.submissions} for r in result]
+
+
+# ─── Notification settings ────────────────────────────────────────────────────
+
+class NotificationSettingsIn(BaseModel):
+    smtp_host: str = ""
+    smtp_port: int = 587
+    smtp_user: str = ""
+    smtp_password: str = ""
+    email_from: str = ""
+    telegram_bot_token: str = ""
+    telegram_chat_id: str = ""
+
+
+class NotificationSettingsOut(BaseModel):
+    smtp_host: str = ""
+    smtp_port: int = 587
+    smtp_user: str = ""
+    smtp_password: str = ""
+    email_from: str = ""
+    telegram_bot_token: str = ""
+    telegram_chat_id: str = ""
+
+    model_config = {"from_attributes": True}
+
+
+class TestEmailRequest(BaseModel):
+    to: str
+
+
+@router.get("/settings/notifications", response_model=NotificationSettingsOut, dependencies=[Depends(get_current_admin)])
+async def get_notification_settings(db: AsyncSession = Depends(get_db)):
+    row = await db.scalar(select(NotificationSettings).where(NotificationSettings.id == 1))
+    if not row:
+        return NotificationSettingsOut()
+    return NotificationSettingsOut.model_validate(row)
+
+
+@router.post("/settings/notifications", response_model=NotificationSettingsOut, dependencies=[Depends(get_current_admin)])
+async def save_notification_settings(data: NotificationSettingsIn, db: AsyncSession = Depends(get_db)):
+    row = await db.scalar(select(NotificationSettings).where(NotificationSettings.id == 1))
+    if not row:
+        row = NotificationSettings(id=1)
+        db.add(row)
+    row.smtp_host = data.smtp_host or None
+    row.smtp_port = data.smtp_port
+    row.smtp_user = data.smtp_user or None
+    row.smtp_password = data.smtp_password or None
+    row.email_from = data.email_from or None
+    row.telegram_bot_token = data.telegram_bot_token or None
+    row.telegram_chat_id = data.telegram_chat_id or None
+    await db.commit()
+    await db.refresh(row)
+    return NotificationSettingsOut.model_validate(row)
+
+
+@router.post("/settings/test-email", dependencies=[Depends(get_current_admin)])
+async def send_test_email(req: TestEmailRequest, db: AsyncSession = Depends(get_db)):
+    from app.utils.notifications import load_db_notif_settings
+    notif = await load_db_notif_settings(db)
+    html = "<p>This is a test email from YVR Advisory. Your email notifications are working.</p><br><p>— YVR Advisory</p>"
+    await send_email(req.to, "Test Email — YVR Advisory", html, **notif)
+    return {"ok": True}
+
+
+@router.post("/settings/test-telegram", dependencies=[Depends(get_current_admin)])
+async def send_test_telegram(db: AsyncSession = Depends(get_db)):
+    from app.utils.notifications import load_db_notif_settings
+    notif = await load_db_notif_settings(db)
+    await send_telegram("🔔 YVR Advisory — Telegram notifications are working.", **notif)
+    return {"ok": True}

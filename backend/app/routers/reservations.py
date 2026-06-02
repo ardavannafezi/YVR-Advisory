@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.dependencies import get_db
 from app.models.reservation import TableReservation
 from app.schemas.reservation import ReservationCreate, ReservationOut
-from app.utils.notifications import send_email, send_telegram
+from app.utils.notifications import load_db_notif_settings, send_email, send_telegram
 
 router = APIRouter(prefix="/api/reservations", tags=["reservations"])
 
@@ -17,6 +17,8 @@ async def submit_reservation(data: ReservationCreate, db: AsyncSession = Depends
     db.add(reservation)
     await db.commit()
     await db.refresh(reservation)
+
+    notif = await load_db_notif_settings(db)
 
     date_str = reservation.date_requested.strftime("%b %d, %Y") if reservation.date_requested else "—"
     tg_msg = (
@@ -37,7 +39,7 @@ async def submit_reservation(data: ReservationCreate, db: AsyncSession = Depends
     <p>— YVR Advisory</p>
     """
 
-    asyncio.create_task(send_telegram(tg_msg))
-    asyncio.create_task(send_email(reservation.email, "Reservation Request Received — YVR Advisory", user_html))
+    asyncio.create_task(send_telegram(tg_msg, **notif))
+    asyncio.create_task(send_email(reservation.email, "Reservation Request Received — YVR Advisory", user_html, **notif))
 
     return reservation

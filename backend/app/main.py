@@ -10,6 +10,7 @@ from sqlalchemy.dialects.postgresql import insert as pg_insert
 from app.config import settings
 from app.database import AsyncSessionLocal
 from app.models.admin_user import AdminUser
+from app.models.notification_settings import NotificationSettings  # noqa: F401
 from app.routers import admin, analytics, blog, events, guestlist, music, reservations, seo, tonight, venues, webhooks
 from app.utils.security import hash_password
 from app.utils.seed_venues import seed as seed_venues
