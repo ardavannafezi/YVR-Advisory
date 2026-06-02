@@ -29,3 +29,22 @@ class WebhookResponse(BaseModel):
     status: str
     action: str  # "created" | "updated"
     event_id: int
+
+
+class N8nBlogPayload(BaseModel):
+    title: str
+    body: str
+    summary: str | None = None
+    cover_image_url: str | None = None
+    tags: list[str] = []
+    music_type: str | None = None
+    author: str | None = None
+    is_published: bool = True
+    external_id: str | None = None
+
+
+class BlogWebhookResponse(BaseModel):
+    status: str
+    action: str  # "created" | "updated"
+    post_id: int
+    slug: str

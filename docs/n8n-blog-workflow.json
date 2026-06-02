@@ -1,0 +1,240 @@
+{
+  "name": "YVR Advisory — AI Blog Generator v2",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "weeksInterval": 1,
+              "triggerAtDay": [1],
+              "triggerAtHour": 9,
+              "triggerAtMinute": 0
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger",
+      "name": "Schedule (Weekly Monday 9am)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://back.yvradvisory.ca/api/webhooks/context",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "={{ $vars.YVR_WEBHOOK_API_KEY }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "fetch-context",
+      "name": "Fetch YVR Context",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Pick a topic for this week and build the full prompt context from the API response.\n// Uses deterministic week-number rotation so re-runs produce same topic.\n\nconst ctx = $input.item.json;\n\nconst topicTemplates = [\n  { topic: \"best nightclubs in Gastown Vancouver\", focus: \"gastown\", music: \"house\" },\n  { topic: \"top rooftop bars in Vancouver for summer\", focus: \"rooftop\", music: null },\n  { topic: \"Granville Street nightlife guide Vancouver\", focus: \"granville\", music: null },\n  { topic: \"best hip-hop nights in Vancouver clubs\", focus: \"hip-hop scene\", music: \"hip-hop\" },\n  { topic: \"Yaletown cocktail bars Vancouver insider guide\", focus: \"yaletown\", music: null },\n  { topic: \"Vancouver nightlife dress code guide what to wear\", focus: \"dress code\", music: null },\n  { topic: \"best Latin nights in Vancouver where to dance salsa\", focus: \"latin\", music: \"latin\" },\n  { topic: \"how to get on the guestlist at Vancouver clubs\", focus: \"guestlist tips\", music: null },\n  { topic: \"Vancouver bottle service VIP table reservation guide\", focus: \"vip\", music: null },\n  { topic: \"Coal Harbour bars and nightlife Vancouver\", focus: \"coal-harbour\", music: null },\n  { topic: \"best techno and electronic music clubs in Vancouver\", focus: \"techno\", music: \"techno\" },\n  { topic: \"Vancouver nightlife for tourists ultimate 2025 guide\", focus: \"tourists\", music: null },\n  { topic: \"Vancouver afrobeats nights and African-Caribbean clubs\", focus: \"afrobeats\", music: \"afrobeats\" },\n  { topic: \"best R&B nights in Vancouver — where to dance\", focus: \"r&b\", music: \"r&b\" },\n  { topic: \"Vancouver bar hopping routes — neighbourhood by neighbourhood\", focus: \"bar hopping\", music: null },\n  { topic: \"how to book a table reservation in Vancouver nightclub\", focus: \"reservations\", music: null }\n];\n\nconst week = Math.floor(Date.now() / (1000 * 60 * 60 * 24 * 7));\nconst pick = topicTemplates[week % topicTemplates.length];\n\n// Build venue list for internal linking — only active venues\nconst venues = ctx.venues || [];\nconst venueLines = venues\n  .filter(v => v.is_active)\n  .map(v => `  - ${v.name} (${v.establishment_type || 'venue'}, ${v.neighbourhood || 'Vancouver'}, music: ${(v.music_types || []).join('/')||'varied'}) → ${v.url}`)\n  .join('\\n');\n\n// Build tag options for GPT to choose from\nconst availableTags = [\n  ...(ctx.existing_blog_tags || []),\n  ...pick.focus.split(' ')\n].filter((t, i, a) => a.indexOf(t) === i).join(', ');\n\nreturn [{\n  json: {\n    topic: pick.topic,\n    music_type: pick.music,\n    site_url: ctx.site_url || 'https://yvradvisory.ca',\n    key_pages: ctx.key_pages || {},\n    venue_list: venueLines,\n    available_tags: availableTags,\n    all_music_types: (ctx.all_music_types || []).join(', '),\n    all_vibe_tags: (ctx.all_vibe_tags || []).join(', '),\n  }\n}];"
+      },
+      "id": "pick-topic",
+      "name": "Pick Topic & Build Context",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://www.reddit.com/r/vancouver/search.json?q={{ encodeURIComponent($json.topic) }}&sort=new&limit=5&t=year",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "YVRAdvisoryBot/1.0 (https://yvradvisory.ca)"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "reddit-search",
+      "name": "Reddit Search",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 200]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=https://www.googleapis.com/customsearch/v1?key={{ $vars.GOOGLE_CSE_API_KEY }}&cx={{ $vars.GOOGLE_CSE_ID }}&q={{ encodeURIComponent($json.topic + ' Vancouver 2025') }}&num=5",
+        "options": {}
+      },
+      "id": "google-search",
+      "name": "Google Search (optional)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [900, 420],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Merge Reddit + Google results into a concise research brief for GPT.\n// Reddit node result\nconst redditData = $('Reddit Search').item.json;\nconst googleData = $('Google Search (optional)').item.json;\nconst topicCtx = $('Pick Topic & Build Context').item.json;\n\nlet redditInsights = '';\ntry {\n  const posts = (redditData?.data?.children || []).slice(0, 4);\n  redditInsights = posts.map(p => {\n    const d = p.data;\n    return `• r/vancouver: \"${d.title}\" (${d.score} upvotes, ${d.num_comments} comments) — ${d.url}`;\n  }).join('\\n');\n} catch(e) { redditInsights = 'No Reddit data available.'; }\n\nlet googleInsights = '';\ntry {\n  const items = (googleData?.items || []).slice(0, 3);\n  googleInsights = items.map(i => `• ${i.title} — ${i.link}`).join('\\n');\n} catch(e) { googleInsights = ''; }\n\nreturn [{\n  json: {\n    ...topicCtx,\n    reddit_insights: redditInsights,\n    google_insights: googleInsights,\n  }\n}];"
+      },
+      "id": "merge-research",
+      "name": "Merge Research",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "resource": "chat",
+        "operation": "complete",
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "messages": {
+          "values": [
+            {
+              "role": "system",
+              "content": "You are a Vancouver nightlife expert and senior content writer for YVR Advisory (yvradvisory.ca) — a premium nightlife advisory platform covering Vancouver's finest clubs, bars, and lounges.\n\nYour blog posts must be:\n1. SEO-optimized for Google AND generative AI engines (ChatGPT, Perplexity, Claude)\n2. Written in HTML using <h2>, <h3>, <p>, <ul>, <li> tags only\n3. Minimum 800 words\n4. Vancouver-specific: always name actual neighbourhoods (Gastown, Granville, Yaletown, Coal Harbour, Davie Village)\n5. Include 3–5 INTERNAL links using <a href=\"{venue_url}\">{venue name}</a> format — only link to venues from the provided list\n6. Include 2–3 EXTERNAL links to reputable sources (Georgia Straight, Tourism Vancouver, Reddit r/vancouver, Yelp Vancouver, Narcity Vancouver) — use exact URLs from the research data provided, never fabricate URLs\n7. End with a CTA paragraph linking to both the guestlist page and reserve page\n8. Tone: confident insider, luxury-adjacent but approachable, never generic\n\nIMPORTANT: Output ONLY valid JSON. No markdown. No code fences. No extra text outside the JSON."
+            },
+            {
+              "role": "user",
+              "content": "=Write a complete SEO blog post about: {{ $json.topic }}\n\n--- SITE CONTEXT (use for internal links) ---\nSite URL: {{ $json.site_url }}\nKey pages:\n  Guestlist: {{ $json.key_pages.guestlist }}\n  Reservations: {{ $json.key_pages.reserve }}\n  All venues: {{ $json.key_pages.venues }}\n  Events: {{ $json.key_pages.events }}\n  Where to Go Tonight quiz: {{ $json.key_pages.tonight }}\n\nActive venues (name, type, neighbourhood, music → page URL):\n{{ $json.venue_list }}\n\nAvailable blog tags to choose from: {{ $json.available_tags }}\nAvailable music types: {{ $json.all_music_types }}\n\n--- RECENT RESEARCH (use for external links & fresh facts) ---\nReddit r/vancouver:\n{{ $json.reddit_insights }}\n\nGoogle results:\n{{ $json.google_insights }}\n\n--- INSTRUCTIONS ---\n- Verify venues are still active (they are — they're from our live database)\n- Use Reddit/Google URLs above for external links only if they look trustworthy (reddit.com, georgiastraight.com, tourismvancouver.com, narcity.com, yelp.com). Never fabricate external URLs.\n- If no good external URLs available in research, link to reddit.com/r/vancouver and tourismvancouver.com/nightlife generally\n- Choose 3–6 tags from available tags that best match this post\n\nRespond with this exact JSON:\n{\n  \"title\": \"SEO title, 55–60 chars, include 'Vancouver'\",\n  \"summary\": \"Meta description 140–155 chars, include 'Vancouver' and a value hook\",\n  \"body\": \"Full article HTML here — min 800 words, internal + external links included\",\n  \"author\": \"YVR Advisory\",\n  \"tags\": [\"tag1\", \"tag2\", \"tag3\"],\n  \"music_type\": \"{{ $json.music_type }}\" \n}"
+            }
+          ]
+        },
+        "options": {
+          "temperature": 0.65,
+          "maxTokens": 3000
+        }
+      },
+      "id": "openai-generate",
+      "name": "Generate with GPT-4o",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1.3,
+      "position": [1340, 300],
+      "credentials": {
+        "openAiApi": {
+          "id": "openai-credentials",
+          "name": "OpenAI API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse GPT response and build the webhook payload.\nconst raw = $input.item.json.message.content;\nlet parsed;\ntry {\n  parsed = JSON.parse(raw);\n} catch (e) {\n  const cleaned = raw.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n  parsed = JSON.parse(cleaned);\n}\n\n// Validate required fields\nif (!parsed.title || !parsed.body) throw new Error('GPT response missing title or body');\n\n// music_type: use GPT's answer if non-empty, else fall back to topic picker\nconst topicCtx = $('Pick Topic & Build Context').item.json;\nconst music = (parsed.music_type && parsed.music_type !== 'null' && parsed.music_type !== '')\n  ? parsed.music_type\n  : topicCtx.music_type || null;\n\n// Tags: deduplicate, lowercase, max 8\nconst tags = [...new Set((parsed.tags || []).map(t => t.toLowerCase().trim()))].slice(0, 8);\n\n// external_id: stable per-topic so re-runs in same week are idempotent updates\nconst week = Math.floor(Date.now() / (1000 * 60 * 60 * 24 * 7));\nconst topicSlug = topicCtx.topic.replace(/[^a-z0-9]+/gi, '-').toLowerCase().slice(0, 40);\n\nreturn [{\n  json: {\n    title: parsed.title,\n    summary: parsed.summary || null,\n    body: parsed.body,\n    author: parsed.author || 'YVR Advisory',\n    tags,\n    music_type: music,\n    is_published: true,\n    external_id: `n8n-blog-w${week}-${topicSlug}`,\n    cover_image_url: null\n  }\n}];"
+      },
+      "id": "parse-response",
+      "name": "Parse & Build Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1560, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://back.yvradvisory.ca/api/webhooks/n8n-blog",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "={{ $vars.YVR_WEBHOOK_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyContentType": "json",
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true
+            }
+          }
+        }
+      },
+      "id": "post-to-yvr",
+      "name": "POST to YVR Advisory",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1780, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "const res = $input.item.json;\nconst statusCode = res.statusCode;\nconst body = res.body;\n\nif (statusCode !== 200 && statusCode !== 201) {\n  throw new Error(`YVR API error ${statusCode}: ${JSON.stringify(body)}`);\n}\n\nconsole.log(`Blog post ${body.action}: ID=${body.post_id} slug=${body.slug}`);\n\nreturn [{ json: {\n  success: true,\n  action: body.action,\n  post_id: body.post_id,\n  slug: body.slug,\n  url: 'https://yvradvisory.ca/blog/' + body.slug\n}}];"
+      },
+      "id": "log-result",
+      "name": "Log Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2000, 300]
+    }
+  ],
+  "connections": {
+    "Schedule (Weekly Monday 9am)": {
+      "main": [[{ "node": "Fetch YVR Context", "type": "main", "index": 0 }]]
+    },
+    "Fetch YVR Context": {
+      "main": [[{ "node": "Pick Topic & Build Context", "type": "main", "index": 0 }]]
+    },
+    "Pick Topic & Build Context": {
+      "main": [
+        [
+          { "node": "Reddit Search", "type": "main", "index": 0 },
+          { "node": "Google Search (optional)", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Reddit Search": {
+      "main": [[{ "node": "Merge Research", "type": "main", "index": 0 }]]
+    },
+    "Google Search (optional)": {
+      "main": [[{ "node": "Merge Research", "type": "main", "index": 1 }]]
+    },
+    "Merge Research": {
+      "main": [[{ "node": "Generate with GPT-4o", "type": "main", "index": 0 }]]
+    },
+    "Generate with GPT-4o": {
+      "main": [[{ "node": "Parse & Build Payload", "type": "main", "index": 0 }]]
+    },
+    "Parse & Build Payload": {
+      "main": [[{ "node": "POST to YVR Advisory", "type": "main", "index": 0 }]]
+    },
+    "POST to YVR Advisory": {
+      "main": [[{ "node": "Log Result", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": ""
+  },
+  "staticData": null,
+  "tags": ["yvr-advisory", "blog", "seo"],
+  "triggerCount": 0,
+  "meta": {
+    "templateCredsSetupCompleted": false
+  }
+}

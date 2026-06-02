@@ -294,6 +294,56 @@ async def admin_delete_post(post_id: int, db: AsyncSession = Depends(get_db)):
     await db.commit()
 
 
+# ─── n8n Context ─────────────────────────────────────────────────────────────
+
+@router.get("/n8n-context", dependencies=[Depends(get_current_admin)])
+async def admin_n8n_context(db: AsyncSession = Depends(get_db)):
+    """Same data as GET /api/webhooks/context but JWT-protected for admin preview."""
+    from app.config import settings as cfg
+
+    venues_rows = (await db.execute(
+        select(Venue).where(Venue.is_active == True).order_by(Venue.name)
+    )).scalars().all()
+
+    tag_rows = (await db.execute(
+        select(BlogPost.tags).where(BlogPost.is_published == True)
+    )).all()
+    existing_blog_tags: list[str] = sorted({t for (tags,) in tag_rows if tags for t in tags})
+
+    SITE = cfg.frontend_url
+    return {
+        "site_url": SITE,
+        "venues": [
+            {
+                "name": v.name,
+                "slug": v.slug,
+                "url": f"{SITE}/venues/{v.slug}",
+                "establishment_type": v.establishment_type,
+                "neighbourhood": v.neighbourhood,
+                "music_types": v.music_types or [],
+                "vibe_tags": v.vibe_tags or [],
+                "price_tier": v.price_tier,
+                "is_active": v.is_active,
+            }
+            for v in venues_rows
+        ],
+        "all_music_types": sorted({mt for v in venues_rows for mt in (v.music_types or [])}),
+        "all_vibe_tags": sorted({tag for v in venues_rows for tag in (v.vibe_tags or [])}),
+        "existing_blog_tags": existing_blog_tags,
+        "event_music_types": ["house", "techno", "hip-hop", "r&b", "latin", "edm", "open-format", "top40", "afrobeats"],
+        "establishment_types": ["Nightclub", "Cocktail Bar", "Bar & Restaurant", "Rooftop Lounge"],
+        "key_pages": {
+            "home": SITE,
+            "venues": f"{SITE}/venues",
+            "events": f"{SITE}/events",
+            "blog": f"{SITE}/blog",
+            "tonight": f"{SITE}/tonight",
+            "guestlist": f"{SITE}/guestlist",
+            "reserve": f"{SITE}/reserve",
+        },
+    }
+
+
 # ─── Guestlist ───────────────────────────────────────────────────────────────
 
 @router.get("/guestlist", response_model=list[GuestlistOut], dependencies=[Depends(get_current_admin)])

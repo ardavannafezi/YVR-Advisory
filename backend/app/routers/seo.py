@@ -21,31 +21,66 @@ Allow: /
 Disallow: /admin/
 
 Sitemap: {SITE}/sitemap.xml
+
+# AI crawlers — machine-readable content index
+# https://llmstxt.org
+User-agent: GPTBot
+Allow: /
+Allow: /llms.txt
+
+User-agent: ClaudeBot
+Allow: /
+Allow: /llms.txt
+
+User-agent: PerplexityBot
+Allow: /
+Allow: /llms.txt
+
+User-agent: ChatGPT-User
+Allow: /
+Allow: /llms.txt
 """
     return Response(content=content, media_type="text/plain")
 
 
+def _url_tag(loc: str, lastmod: str | None = None, changefreq: str = "weekly", priority: str = "0.8") -> str:
+    lastmod_tag = f"<lastmod>{lastmod}</lastmod>" if lastmod else ""
+    return f"  <url><loc>{loc}</loc>{lastmod_tag}<changefreq>{changefreq}</changefreq><priority>{priority}</priority></url>"
+
+
 @router.get("/sitemap.xml", response_class=Response)
 async def sitemap(db: AsyncSession = Depends(get_db)):
-    static_urls = ["/", "/venues", "/events", "/blog", "/music", "/tonight", "/reserve", "/guestlist"]
+    from datetime import datetime, timezone
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
-    venues = await db.execute(select(Venue.slug).where(Venue.is_active == True))
-    events = await db.execute(select(Event.slug).where(Event.is_published == True))
-    posts = await db.execute(select(BlogPost.slug).where(BlogPost.is_published == True))
+    static_entries = [
+        ("/", "daily", "1.0"),
+        ("/venues", "daily", "0.9"),
+        ("/events", "daily", "0.9"),
+        ("/tonight", "daily", "0.9"),
+        ("/blog", "weekly", "0.8"),
+        ("/music", "weekly", "0.8"),
+        ("/guestlist", "monthly", "0.7"),
+        ("/reserve", "monthly", "0.7"),
+    ]
 
-    urls = (
-        [f"{SITE}{p}" for p in static_urls]
-        + [f"{SITE}/venues/{s}" for (s,) in venues]
-        + [f"{SITE}/events/{s}" for (s,) in events]
-        + [f"{SITE}/blog/{s}" for (s,) in posts]
-    )
+    venues = (await db.execute(
+        select(Venue.slug, Venue.updated_at).where(Venue.is_active == True)
+    )).all()
+    events = (await db.execute(
+        select(Event.slug, Event.updated_at).where(Event.is_published == True)
+    )).all()
+    posts = (await db.execute(
+        select(BlogPost.slug, BlogPost.updated_at).where(BlogPost.is_published == True)
+    )).all()
 
-    url_tags = "\n".join(
-        f"  <url><loc>{u}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>"
-        for u in urls
-    )
+    url_tags = [_url_tag(f"{SITE}{p}", now, cf, pri) for p, cf, pri in static_entries]
+    url_tags += [_url_tag(f"{SITE}/venues/{s}", u.strftime("%Y-%m-%d") if u else None, "weekly", "0.8") for s, u in venues]
+    url_tags += [_url_tag(f"{SITE}/events/{s}", u.strftime("%Y-%m-%d") if u else None, "daily", "0.9") for s, u in events]
+    url_tags += [_url_tag(f"{SITE}/blog/{s}", u.strftime("%Y-%m-%d") if u else None, "monthly", "0.7") for s, u in posts]
+
     xml = f"""<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-{url_tags}
+{chr(10).join(url_tags)}
 </urlset>"""
     return Response(content=xml, media_type="application/xml")

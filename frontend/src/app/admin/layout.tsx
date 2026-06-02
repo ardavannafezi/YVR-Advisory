@@ -11,6 +11,7 @@ const adminLinks = [
   { href: "/admin/analytics", label: "Analytics" },
   { href: "/admin/venues", label: "Venues" },
   { href: "/admin/events", label: "Events" },
+  { href: "/admin/blog", label: "Blog" },
   { href: "/admin/guestlist", label: "Guestlist" },
   { href: "/admin/reservations", label: "Reservations" },
 ];
