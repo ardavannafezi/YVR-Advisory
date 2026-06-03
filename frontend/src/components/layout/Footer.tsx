@@ -1,15 +1,18 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-white/5 mt-24">
+    <footer className="border-t border-[#3a1f6a]/25 mt-24">
       <div className="max-w-7xl mx-auto px-6 py-16 grid grid-cols-1 md:grid-cols-4 gap-10">
         <div className="md:col-span-2">
-          <p className="font-serif text-2xl text-text-primary mb-3">YVR Advisory</p>
-          <p className="text-text-muted text-sm leading-relaxed max-w-xs">
-            Your guide to Vancouver&apos;s finest nightlife experiences. Personalized recommendations, curated events, and exclusive access.
+          <Link href="/" className="inline-flex items-center mb-4">
+            <Image src="/gold.png" alt="YVR Advisory" width={140} height={40} className="h-10 w-auto object-contain" />
+          </Link>
+          <p className="text-text-muted text-sm leading-relaxed max-w-xs mt-2">
+            Vancouver&apos;s independent nightlife guide — curated venues, upcoming events, and honest advice. No affiliations, no commissions.
           </p>
           <div className="mt-6 flex gap-4">
             <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-text-dim hover:text-gold transition-colors text-xs uppercase tracking-widest">
@@ -19,7 +22,7 @@ export function Footer() {
         </div>
 
         <div>
-          <p className="text-xs uppercase tracking-widest text-gold mb-5">Explore</p>
+          <p className="text-[10px] uppercase tracking-[0.3em] text-gold mb-5">Explore</p>
           <ul className="flex flex-col gap-3">
             {[
               { href: "/venues", label: "Venues" },
@@ -38,7 +41,7 @@ export function Footer() {
         </div>
 
         <div>
-          <p className="text-xs uppercase tracking-widest text-gold mb-5">Access</p>
+          <p className="text-[10px] uppercase tracking-[0.3em] text-gold mb-5">Access</p>
           <ul className="flex flex-col gap-3">
             {[
               { href: "/guestlist", label: "Join Guestlist" },
@@ -54,7 +57,7 @@ export function Footer() {
         </div>
       </div>
 
-      <div className="border-t border-white/5">
+      <div className="border-t border-[#3a1f6a]/20">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <p className="text-text-dim text-[11px] leading-relaxed text-center">
             Venue information, hours, pricing, and event details are provided for general guidance only and may not reflect current conditions.
@@ -63,7 +66,7 @@ export function Footer() {
         </div>
       </div>
 
-      <div className="border-t border-white/5">
+      <div className="border-t border-[#3a1f6a]/20">
         <div className="max-w-7xl mx-auto px-6 py-5 flex flex-col md:flex-row justify-between items-center gap-2">
           <p className="text-text-dim text-xs">© {year} YVR Advisory. All rights reserved.</p>
           <p className="text-text-dim text-xs">Vancouver, BC</p>

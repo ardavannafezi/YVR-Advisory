@@ -45,7 +45,7 @@ export async function FeaturedVenues({
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 items-stretch">
         {venues.map((venue, i) => (
           <VenueCard key={venue.id} venue={venue} index={i} />
         ))}

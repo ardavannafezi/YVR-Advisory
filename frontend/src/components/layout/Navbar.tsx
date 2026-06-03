@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -39,11 +40,15 @@ export function Navbar() {
         )}
       >
         <nav className="max-w-7xl mx-auto px-6 flex items-center justify-between h-20">
-          <Link
-            href="/"
-            className="font-sans font-bold text-lg tracking-tight text-text-primary hover:text-gold transition-colors"
-          >
-            YVR Advisory
+          <Link href="/" className="flex items-center">
+            <Image
+              src="/white.png"
+              alt="YVR Advisory"
+              width={140}
+              height={40}
+              className="h-9 w-auto object-contain"
+              priority
+            />
           </Link>
 
           {/* Desktop links */}
@@ -124,12 +129,8 @@ export function Navbar() {
               className="md:hidden fixed top-0 right-0 h-full w-[82%] max-w-xs bg-[#0d0d0d] border-l border-white/[0.06] z-[100] flex flex-col px-8 pt-10 pb-10"
             >
               <div className="mb-10">
-                <Link
-                  href="/"
-                  onClick={() => setMenuOpen(false)}
-                  className="font-sans font-bold text-xl text-text-primary"
-                >
-                  YVR Advisory
+                <Link href="/" onClick={() => setMenuOpen(false)} className="flex items-center">
+                  <Image src="/white.png" alt="YVR Advisory" width={120} height={36} className="h-8 w-auto object-contain" />
                 </Link>
               </div>
 

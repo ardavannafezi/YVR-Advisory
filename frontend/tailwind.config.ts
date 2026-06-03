@@ -9,8 +9,8 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "#0a0a0a",
-        surface: "rgba(255,255,255,0.03)",
+        background: "#070510",
+        surface: "rgba(18, 8, 40, 0.6)",
         gold: {
           DEFAULT: "#c9a84c",
           light: "#d9be7a",
@@ -18,11 +18,11 @@ const config: Config = {
         },
         text: {
           primary: "#f5f5f0",
-          muted: "#9a9a9a",
-          dim: "#5a5a5a",
+          muted: "#9488b0",
+          dim: "#463d65",
         },
         border: {
-          DEFAULT: "rgba(255,255,255,0.08)",
+          DEFAULT: "rgba(75, 45, 125, 0.25)",
           gold: "#c9a84c",
         },
       },
@@ -32,7 +32,7 @@ const config: Config = {
       },
       backgroundImage: {
         "gold-gradient": "linear-gradient(135deg, #c9a84c 0%, #d9be7a 50%, #a07830 100%)",
-        "dark-gradient": "linear-gradient(180deg, rgba(10,10,10,0) 0%, #0a0a0a 100%)",
+        "dark-gradient": "linear-gradient(180deg, rgba(7,5,16,0) 0%, #070510 100%)",
       },
     },
   },
