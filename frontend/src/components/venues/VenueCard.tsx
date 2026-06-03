@@ -24,9 +24,9 @@ export function VenueCard({ venue, index = 0 }: VenueCardProps) {
     >
       <Link
         href={`/venues/${venue.slug}`}
-        className="group h-full flex flex-col rounded-2xl overflow-hidden bg-[#08031a]/90 border border-[#2a0f50]/35 hover:border-gold/35 hover:bg-[#0e0528]/90 backdrop-blur-sm transition-all duration-300"
+        className="group h-full flex flex-col rounded-2xl overflow-hidden bg-[#0d0d0d] border border-white/[0.07] hover:border-gold/30 transition-all duration-300"
       >
-        {/* Image — B&W, color on hover */}
+        {/* Image — B&W, reveals color on hover */}
         <div className="relative h-52 flex-shrink-0 overflow-hidden">
           {venue.image_url ? (
             <Image
@@ -37,18 +37,18 @@ export function VenueCard({ venue, index = 0 }: VenueCardProps) {
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
           ) : (
-            <div className="absolute inset-0 bg-gradient-to-br from-[#1a0540]/60 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-br from-gold/6 to-transparent" />
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
 
           <div className="absolute top-3 right-3 flex items-center gap-2">
             {venue.logo_url && (
-              <div className="relative w-8 h-8 bg-[#030209]/80 border border-white/10 rounded-lg overflow-hidden">
+              <div className="relative w-8 h-8 bg-black/80 border border-white/10 rounded-lg overflow-hidden">
                 <Image src={venue.logo_url} alt={`${venue.name} logo`} fill className="object-contain p-0.5" sizes="32px" />
               </div>
             )}
             {venue.price_tier && (
-              <span className="text-[10px] uppercase tracking-widest text-gold bg-[#030209]/80 border border-gold/25 px-2 py-0.5 rounded-md">
+              <span className="text-[10px] uppercase tracking-widest text-gold bg-black/80 border border-gold/25 px-2 py-0.5 rounded-md">
                 {venue.price_tier}
               </span>
             )}

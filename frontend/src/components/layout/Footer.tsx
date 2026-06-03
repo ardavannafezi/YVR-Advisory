@@ -5,7 +5,7 @@ export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-[#3a1f6a]/25 mt-24">
+    <footer className="border-t border-white/[0.05] mt-24">
       <div className="max-w-7xl mx-auto px-6 py-16 grid grid-cols-1 md:grid-cols-4 gap-10">
         <div className="md:col-span-2">
           <Link href="/" className="inline-flex items-center mb-4">
@@ -57,7 +57,7 @@ export function Footer() {
         </div>
       </div>
 
-      <div className="border-t border-[#3a1f6a]/20">
+      <div className="border-t border-white/[0.05]">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <p className="text-text-dim text-[11px] leading-relaxed text-center">
             Venue information, hours, pricing, and event details are provided for general guidance only and may not reflect current conditions.
@@ -66,7 +66,7 @@ export function Footer() {
         </div>
       </div>
 
-      <div className="border-t border-[#3a1f6a]/20">
+      <div className="border-t border-white/[0.05]">
         <div className="max-w-7xl mx-auto px-6 py-5 flex flex-col md:flex-row justify-between items-center gap-2">
           <p className="text-text-dim text-xs">© {year} YVR Advisory. All rights reserved.</p>
           <p className="text-text-dim text-xs">Vancouver, BC</p>
