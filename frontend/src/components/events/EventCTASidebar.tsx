@@ -17,11 +17,14 @@ interface Props {
   ticketUrl?: string;
   hasReserveCTA: boolean;
   entryClosed: boolean;
+  guestlistClosed: boolean;
+  venueHasGuestlist: boolean;
 }
 
 export function EventCTASidebar({
   eventId, venueId, eventName, venueName, venueEstType,
-  date, hasGuestlistCTA, hasTicketCTA, ticketUrl, hasReserveCTA, entryClosed,
+  date, hasGuestlistCTA, hasTicketCTA, ticketUrl, hasReserveCTA,
+  entryClosed, guestlistClosed, venueHasGuestlist,
 }: Props) {
   const [modal, setModal] = useState<"guestlist" | "reservation" | null>(null);
   const d = new Date(date);
@@ -48,6 +51,13 @@ export function EventCTASidebar({
             <p className="text-text-muted text-sm">Entry for this event has closed.</p>
           ) : (
             <>
+              {/* Guestlist closed notice */}
+              {venueHasGuestlist && guestlistClosed && (
+                <p className="text-[11px] uppercase tracking-widest text-text-dim border border-white/10 px-3 py-2">
+                  Guestlist closed
+                </p>
+              )}
+
               {hasGuestlistCTA && (
                 <button onClick={() => setModal("guestlist")} className="block w-full">
                   <GoldButton className="w-full">Join Guestlist</GoldButton>
@@ -67,7 +77,7 @@ export function EventCTASidebar({
                   </GoldButton>
                 </a>
               )}
-              {!hasGuestlistCTA && !hasTicketCTA && !hasReserveCTA && (
+              {!hasGuestlistCTA && !hasTicketCTA && !hasReserveCTA && !guestlistClosed && (
                 <p className="text-text-muted text-sm">Check back for availability.</p>
               )}
             </>

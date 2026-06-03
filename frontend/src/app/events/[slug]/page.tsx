@@ -59,11 +59,8 @@ export default async function EventDetailPage({ params }: { params: { slug: stri
   const entryClosed = event.entry_closes_at ? isPast(new Date(event.entry_closes_at)) : false;
   const guestlistClosed = event.guestlist_closes_at ? isPast(new Date(event.guestlist_closes_at)) : false;
 
-  const images = event.gallery?.length
-    ? event.gallery
-    : event.image_url
-    ? [event.image_url]
-    : [];
+  const heroImage = event.image_url || null;
+  const galleryImages = event.gallery?.length ? event.gallery : [];
 
   const hasGuestlistCTA = event.our_guestlist && !guestlistClosed && (event.venue?.guestlist_enabled ?? false);
   const hasTicketCTA = !!event.ticket_url && !entryClosed;
@@ -74,10 +71,10 @@ export default async function EventDetailPage({ params }: { params: { slug: stri
       <EventJsonLd event={event} />
 
       <div className="pt-20">
-        {/* Hero Gallery */}
-        {images.length > 0 ? (
+        {/* Hero — full-width event image */}
+        {heroImage ? (
           <div className="relative">
-            <EventGallery images={images} alt={event.name} variant="full" autoPlay />
+            <EventGallery images={[heroImage]} alt={event.name} variant="full" autoPlay={false} />
             <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent pointer-events-none" />
           </div>
         ) : (
@@ -152,6 +149,14 @@ export default async function EventDetailPage({ params }: { params: { slug: stri
               {event.description && (
                 <div className="mb-8">
                   <p className="text-text-muted leading-relaxed text-base">{event.description}</p>
+                </div>
+              )}
+
+              {/* Gallery */}
+              {galleryImages.length > 0 && (
+                <div className="mb-10">
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-gold mb-4">Gallery</p>
+                  <EventGallery images={galleryImages} alt={event.name} variant="slider" />
                 </div>
               )}
 
@@ -245,6 +250,8 @@ export default async function EventDetailPage({ params }: { params: { slug: stri
                 ticketUrl={event.ticket_url ?? undefined}
                 hasReserveCTA={hasReserveCTA}
                 entryClosed={entryClosed}
+                guestlistClosed={guestlistClosed}
+                venueHasGuestlist={event.venue?.guestlist_enabled ?? false}
               />
             </div>
           </div>
