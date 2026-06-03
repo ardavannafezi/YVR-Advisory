@@ -16,8 +16,8 @@ html {
 }
 
 body {
-  background-color: #070510;
-  color: #f5f5f0;
+  background-color: #030209;
+  color: #f0eef8;
   font-family: var(--font-inter);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -25,17 +25,17 @@ body {
 
 ::selection {
   background: rgba(201, 168, 76, 0.3);
-  color: #f5f5f0;
+  color: #f0eef8;
 }
 
 ::-webkit-scrollbar {
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #070510;
+  background: #030209;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1e0a3a;
+  background: #150830;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
@@ -50,11 +50,11 @@ body {
     border-color: #c9a84c;
   }
   .gold-glow {
-    box-shadow: 0 0 24px rgba(201, 168, 76, 0.12);
+    box-shadow: 0 0 24px rgba(201, 168, 76, 0.10);
   }
   .card-surface {
-    background: rgba(18, 8, 40, 0.7);
-    border: 1px solid rgba(70, 40, 110, 0.28);
+    background: rgba(8, 3, 22, 0.85);
+    border: 1px solid rgba(55, 20, 100, 0.32);
   }
   .scrollbar-hide {
     -ms-overflow-style: none;

@@ -126,7 +126,7 @@ export function Navbar() {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
-              className="md:hidden fixed top-0 right-0 h-full w-[82%] max-w-xs bg-[#0d0d0d] border-l border-white/[0.06] z-[100] flex flex-col px-8 pt-10 pb-10"
+              className="md:hidden fixed top-0 right-0 h-full w-[82%] max-w-xs bg-[#06021a] border-l border-white/[0.06] z-[100] flex flex-col px-8 pt-10 pb-10"
             >
               <div className="mb-10">
                 <Link href="/" onClick={() => setMenuOpen(false)} className="flex items-center">

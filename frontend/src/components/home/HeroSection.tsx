@@ -17,13 +17,13 @@ export function HeroSection() {
       {/* Background + cinematic gradients */}
       <motion.div style={{ y: bgY }} className="absolute inset-0 z-0">
         {/* Left-to-right: dark left panel for text (desktop only) */}
-        <div className="absolute inset-0 z-10 hidden lg:block bg-gradient-to-r from-[#070510] via-[#070510]/85 to-[#070510]/5" />
+        <div className="absolute inset-0 z-10 hidden lg:block bg-gradient-to-r from-[#030209] via-[#030209]/85 to-[#030209]/5" />
         {/* Top vignette */}
-        <div className="absolute inset-0 z-[9] bg-gradient-to-b from-[#070510]/70 via-transparent to-transparent" />
+        <div className="absolute inset-0 z-[9] bg-gradient-to-b from-[#030209]/70 via-transparent to-transparent" />
         {/* Bottom fade into site */}
-        <div className="absolute inset-0 z-[9] bg-gradient-to-t from-[#070510] via-[#070510]/20 to-transparent" />
+        <div className="absolute inset-0 z-[9] bg-gradient-to-t from-[#030209] via-[#030209]/20 to-transparent" />
         {/* Mobile: full dark overlay */}
-        <div className="absolute inset-0 z-10 lg:hidden bg-[#070510]/65" />
+        <div className="absolute inset-0 z-10 lg:hidden bg-[#030209]/65" />
         {/* Image */}
         <div
           className="w-full h-full bg-cover bg-center bg-no-repeat"
@@ -105,7 +105,7 @@ export function HeroSection() {
           >
             <Link
               href="/tonight"
-              className="inline-flex items-center justify-center uppercase text-[10px] font-bold tracking-[0.22em] bg-gold text-[#070510] px-9 py-4 hover:bg-gold-light transition-colors duration-200"
+              className="inline-flex items-center justify-center uppercase text-[10px] font-bold tracking-[0.22em] bg-gold text-[#030209] px-9 py-4 hover:bg-gold-light transition-colors duration-200"
             >
               Advise Me Tonight
             </Link>
