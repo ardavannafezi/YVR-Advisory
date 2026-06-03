@@ -37,8 +37,6 @@ interface FormState {
   entry_types: string[];
   our_guestlist: boolean;
   our_reservation: boolean;
-  guestlist_closes_at: string;
-  entry_closes_at: string;
   lineup: LineupArtist[];
 }
 
@@ -47,7 +45,6 @@ const EMPTY_FORM: FormState = {
   description: "", image_url: "", ticket_url: "", is_published: true,
   gallery_urls: "", video_url: "",
   entry_types: [], our_guestlist: false, our_reservation: false,
-  guestlist_closes_at: "", entry_closes_at: "",
   lineup: [],
 };
 
@@ -67,8 +64,6 @@ function buildPayload(form: FormState) {
     entry_types: form.entry_types.length ? form.entry_types : null,
     our_guestlist: form.our_guestlist,
     our_reservation: form.our_reservation,
-    guestlist_closes_at: form.guestlist_closes_at ? new Date(form.guestlist_closes_at).toISOString() : null,
-    entry_closes_at: form.entry_closes_at ? new Date(form.entry_closes_at).toISOString() : null,
     lineup: form.lineup.filter(a => a.name.trim()).map(a => ({
       name: a.name.trim(),
       instagram: a.instagram || null,
@@ -94,8 +89,6 @@ function eventToForm(e: any): FormState {
     entry_types: e.entry_types || [],
     our_guestlist: e.our_guestlist ?? false,
     our_reservation: e.our_reservation ?? false,
-    guestlist_closes_at: e.guestlist_closes_at ? new Date(e.guestlist_closes_at).toISOString().slice(0, 16) : "",
-    entry_closes_at: e.entry_closes_at ? new Date(e.entry_closes_at).toISOString().slice(0, 16) : "",
     lineup: (e.lineup || []).map((a: any) => ({
       name: a.name || "",
       instagram: a.instagram || "",
@@ -223,12 +216,6 @@ function EventForm({ form, setForm, onSubmit, saving, error, submitLabel }: {
               Reservation through us
             </label>
           </div>
-          <Field label="Guestlist Closes At">
-            <input type="datetime-local" value={form.guestlist_closes_at} onChange={e => set("guestlist_closes_at", e.target.value)} className={inputCls} />
-          </Field>
-          <Field label="Entry Closes At">
-            <input type="datetime-local" value={form.entry_closes_at} onChange={e => set("entry_closes_at", e.target.value)} className={inputCls} />
-          </Field>
           <div className="md:col-span-2">
             <Field label="External Ticket URL">
               <input value={form.ticket_url} onChange={e => set("ticket_url", e.target.value)} className={inputCls} placeholder="https://dice.fm/…" />

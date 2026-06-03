@@ -62,16 +62,20 @@ app = FastAPI(
     redoc_url="/redoc" if settings.environment != "production" else None,
 )
 
-allowed_origins = [
+_base_origins = [
     "https://yvradvisory.ca",
     "https://www.yvradvisory.ca",
     "http://localhost:3000",
     settings.frontend_url,
 ]
+if settings.extra_cors_origins:
+    _base_origins.extend([o.strip() for o in settings.extra_cors_origins.split(",") if o.strip()])
+
+allowed_origins = list(set(o for o in _base_origins if o))
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=list(set(allowed_origins)),
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

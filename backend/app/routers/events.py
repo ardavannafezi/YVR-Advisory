@@ -148,6 +148,80 @@ async def increment_interest(event_id: int, db: AsyncSession = Depends(get_db)):
     return {"social_proof_count": event.social_proof_count}
 
 
+@router.get("/schema")
+async def get_event_schema(db: AsyncSession = Depends(get_db)):
+    from app.models.venue import Venue
+    result = await db.execute(
+        select(Venue).where(Venue.is_active == True).order_by(Venue.name)
+    )
+    venues = result.scalars().all()
+
+    return {
+        "description": "Complete reference for creating events on YVR Advisory. All available values and field formats.",
+        "fields": {
+            "name": {"type": "string", "required": True, "max_length": 300, "example": "Saturday Night Vibes"},
+            "venue_id": {"type": "integer", "required": False, "note": "Use available_venues list to find the correct id. Leave null for auto-create via webhook."},
+            "date": {"type": "datetime (ISO 8601 UTC)", "required": True, "example": "2025-06-14T22:00:00Z", "note": "Event start time. Always include timezone offset or use Z for UTC."},
+            "category": {"type": "string", "required": False, "max_length": 100, "example": "rave, latin night, themed, industry night"},
+            "music_type": {"type": "string (enum)", "required": False, "allowed_values": "see available_music_types"},
+            "description": {"type": "string", "required": False, "note": "2–4 sentence event description shown to users."},
+            "image_url": {"type": "string (URL)", "required": False, "note": "Hero image for event. Falls back to venue image if not set."},
+            "ticket_url": {"type": "string (URL)", "required": False, "note": "External ticket link (e.g. dice.fm). Shown as Tickets CTA if our_guestlist and our_reservation are false."},
+            "is_published": {"type": "boolean", "default": True, "note": "Set false to hide from public listings."},
+            "gallery": {"type": "array of strings (URLs)", "required": False, "note": "Additional event images shown in gallery slider."},
+            "video_url": {"type": "string (URL)", "required": False, "note": "YouTube URL or direct MP4. Shown in event detail page."},
+            "entry_types": {
+                "type": "array of strings (enum)",
+                "required": False,
+                "allowed_values": ["guestlist", "tickets", "reservation"],
+                "note": "Informational badges shown on card. Does not control CTA visibility."
+            },
+            "our_guestlist": {"type": "boolean", "default": False, "note": "Enable YVR Advisory guestlist CTA. Venue must also have guestlist_enabled=true. Guestlist closes at venue's guestlist_close_time on the event day (Pacific time)."},
+            "our_reservation": {"type": "boolean", "default": False, "note": "Enable YVR Advisory bottle service / table reservation CTA. Venue must also have bottle_service_enabled=true."},
+            "lineup": {
+                "type": "array of objects",
+                "required": False,
+                "item_schema": {
+                    "name": "string (required)",
+                    "instagram": "string URL (optional)",
+                    "tiktok": "string URL (optional)",
+                    "youtube": "string URL (optional)"
+                },
+                "example": [{"name": "DJ Example", "instagram": "https://instagram.com/djexample"}]
+            },
+            "external_id": {"type": "string", "required": False, "note": "Unique external identifier for upsert via n8n webhook. Prevents duplicate events."},
+            "social_proof_count": {"type": "integer", "required": False, "note": "Number shown as 'X people interested'. Auto-assigned random 4–12 on creation."}
+        },
+        "guestlist_logic": {
+            "note": "Guestlist availability is controlled by BOTH the event flag and the venue flag.",
+            "rule": "CTA shows when: event.our_guestlist=true AND venue.guestlist_enabled=true AND current time is before venue.guestlist_close_time on the event's date (Pacific time).",
+            "close_time_source": "venue.guestlist_close_time (HH:MM Pacific). Guestlist always closes at this time on the calendar day of the event."
+        },
+        "available_music_types": [
+            "hip-hop", "house", "techno", "latin", "r&b", "edm", "pop", "live", "top-40", "k-pop", "country", "rock"
+        ],
+        "available_entry_types": [
+            {"value": "guestlist", "label": "Guestlist"},
+            {"value": "tickets", "label": "Tickets"},
+            {"value": "reservation", "label": "Bottle Service / Reservation"}
+        ],
+        "available_venues": [
+            {
+                "id": v.id,
+                "name": v.name,
+                "slug": v.slug,
+                "neighbourhood": v.neighbourhood,
+                "establishment_type": v.establishment_type,
+                "guestlist_enabled": v.guestlist_enabled,
+                "bottle_service_enabled": v.bottle_service_enabled,
+                "guestlist_close_time": v.guestlist_close_time,
+                "music_types": v.music_types,
+            }
+            for v in venues
+        ]
+    }
+
+
 @router.get("/{slug}", response_model=EventOut)
 async def get_event(slug: str, db: AsyncSession = Depends(get_db)):
     event = await db.scalar(

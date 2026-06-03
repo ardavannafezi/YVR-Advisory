@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import Any
+from zoneinfo import ZoneInfo
 
 from pydantic import BaseModel
 
@@ -65,6 +66,23 @@ class EventOut(EventBase):
                 object.__setattr__(self, "description", self.venue.description)
             if not self.music_type and self.venue.music_types:
                 object.__setattr__(self, "music_type", self.venue.music_types[0] if self.venue.music_types else None)
+
+        # Auto-compute guestlist_closes_at from venue's guestlist_close_time if not already set
+        if (
+            self.our_guestlist
+            and self.venue
+            and self.venue.guestlist_close_time
+            and not self.guestlist_closes_at
+        ):
+            try:
+                pt = ZoneInfo("America/Vancouver")
+                h, m = (int(x) for x in self.venue.guestlist_close_time.split(":"))
+                event_date_pt = self.date.astimezone(pt)
+                close_dt_pt = event_date_pt.replace(hour=h, minute=m, second=0, microsecond=0)
+                close_dt_utc = close_dt_pt.astimezone(ZoneInfo("UTC"))
+                object.__setattr__(self, "guestlist_closes_at", close_dt_utc)
+            except Exception:
+                pass
 
 
 class EventList(BaseModel):

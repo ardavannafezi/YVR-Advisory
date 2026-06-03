@@ -172,6 +172,15 @@ export function EventCard({ event, index = 0 }: EventCardProps) {
                   Tickets
                 </a>
               )}
+              {!hasGuestlist && !hasReservation && !hasTickets && !entryClosed && (
+                <Link
+                  href={`/events/${event.slug}`}
+                  onClick={e => e.stopPropagation()}
+                  className="text-[10px] uppercase tracking-widest text-text-muted border border-white/15 px-3 py-1.5 hover:border-gold/30 hover:text-gold transition-colors"
+                >
+                  View Event
+                </Link>
+              )}
             </div>
           </div>
         </div>

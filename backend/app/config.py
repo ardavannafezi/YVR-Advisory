@@ -14,6 +14,8 @@ class Settings(BaseSettings):
     admin_email: str = "admin@yvradvisory.ca"
     admin_password: str = ""
 
+    extra_cors_origins: str = ""
+
     telegram_bot_token: str = ""
     telegram_chat_id: str = ""
 
