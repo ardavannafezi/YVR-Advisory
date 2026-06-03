@@ -148,8 +148,8 @@ function EventSliderCard({
         {!event.image_url && (
           <div className="flex items-center gap-2 mb-2">
             <div className="bg-background/90 border border-white/10 px-2 py-1 text-center">
-              <p className="text-gold text-[9px] uppercase tracking-widest">{format(date, "MMM")}</p>
-              <p className="text-text-primary font-serif text-base leading-none">{format(date, "d")}</p>
+              <p className="text-gold text-[9px] uppercase tracking-widest">{ptMonthShort(date)}</p>
+              <p className="text-text-primary font-serif text-base leading-none">{ptDay(date)}</p>
             </div>
             {event.music_type && <Badge label={event.music_type} variant="gold" />}
           </div>
