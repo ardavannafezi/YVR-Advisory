@@ -23,7 +23,7 @@ export function BlogJsonLd({ post }: { post: BlogPost }) {
       "@type": "Organization",
       name: "YVR Advisory",
       url: SITE,
-      logo: { "@type": "ImageObject", url: `${SITE}/logo.png` },
+      logo: { "@type": "ImageObject", url: `${SITE}/white.png` },
     },
     inLanguage: "en-CA",
   };

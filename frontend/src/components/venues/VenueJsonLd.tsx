@@ -1,9 +1,21 @@
 import type { Venue } from "@/types";
 
+function schemaType(estType?: string | null) {
+  switch (estType) {
+    case "Cocktail Bar":
+    case "Bar & Restaurant":
+      return "BarOrPub";
+    case "Rooftop Lounge":
+    case "Nightclub":
+    default:
+      return "NightClub";
+  }
+}
+
 export function VenueJsonLd({ venue }: { venue: Venue }) {
   const schema = {
     "@context": "https://schema.org",
-    "@type": "NightClub",
+    "@type": schemaType(venue.establishment_type),
     name: venue.name,
     description: venue.description,
     address: {

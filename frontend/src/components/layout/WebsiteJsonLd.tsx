@@ -19,7 +19,7 @@ export function WebsiteJsonLd() {
       "@type": "Organization",
       name: "YVR Advisory",
       url: SITE,
-      logo: { "@type": "ImageObject", url: `${SITE}/logo.png` },
+      logo: { "@type": "ImageObject", url: `${SITE}/white.png` },
       sameAs: [],
       areaServed: { "@type": "City", name: "Vancouver", addressCountry: "CA" },
       knowsAbout: [

@@ -18,7 +18,7 @@ const playfair = Playfair_Display({
   display: "swap",
 });
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://yvradvisory.com";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://yvradvisory.ca";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -48,13 +48,13 @@ export const metadata: Metadata = {
     siteName: "YVR Advisory",
     title: "YVR Advisory | Vancouver Nightlife & Events",
     description: "Your guide to Vancouver's finest nightlife.",
-    images: [{ url: `${SITE_URL}/og-default.jpg`, width: 1200, height: 630, alt: "YVR Advisory" }],
+    images: [{ url: "/api/og", width: 1200, height: 630, alt: "YVR Advisory" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "YVR Advisory | Vancouver Nightlife & Events",
     description: "Your guide to Vancouver's finest nightlife.",
-    images: [`${SITE_URL}/og-default.jpg`],
+    images: ["/api/og"],
   },
   alternates: { canonical: SITE_URL },
   robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
