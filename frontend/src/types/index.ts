@@ -59,6 +59,12 @@ export interface Venue {
   website_url?: string;
   instagram_url?: string;
   reservation_link?: string | null;
+
+  // Feature flags
+  guestlist_enabled: boolean;
+  bottle_service_enabled: boolean;
+  guestlist_close_time?: string | null;
+
   is_featured: boolean;
   is_active: boolean;
   primary_categories?: string[];

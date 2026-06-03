@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { format } from "date-fns";
+import { ptMonthShort, ptDay, ptWeekdayTime } from "@/lib/date";
 import { api } from "@/lib/api";
 import { EventFormModal } from "@/components/events/EventFormModal";
 import { Badge } from "@/components/ui/Badge";
@@ -117,8 +117,9 @@ function EventSliderCard({
   wide?: boolean;
 }) {
   const date = new Date(event.date);
-  const hasGuestlist = event.our_guestlist;
-  const hasReservation = event.our_reservation;
+  const guestlistClosed = event.guestlist_closes_at ? new Date(event.guestlist_closes_at) < new Date() : false;
+  const hasGuestlist = event.our_guestlist && !guestlistClosed && (event.venue?.guestlist_enabled ?? false);
+  const hasReservation = event.our_reservation && (event.venue?.bottle_service_enabled ?? false);
 
   return (
     <div
@@ -132,8 +133,8 @@ function EventSliderCard({
           <img src={event.image_url} alt={event.name} className="w-full h-full object-cover opacity-80" />
           <div className="absolute inset-0 bg-gradient-to-t from-background/60 to-transparent" />
           <div className="absolute top-2 left-2 bg-background/90 backdrop-blur-sm px-2 py-1.5 text-center border border-white/10">
-            <p className="text-gold text-[9px] uppercase tracking-widest">{format(date, "MMM")}</p>
-            <p className="text-text-primary font-serif text-base leading-none">{format(date, "d")}</p>
+            <p className="text-gold text-[9px] uppercase tracking-widest">{ptMonthShort(date)}</p>
+            <p className="text-text-primary font-serif text-base leading-none">{ptDay(date)}</p>
           </div>
           {event.music_type && (
             <div className="absolute top-2 right-2">
@@ -159,7 +160,7 @@ function EventSliderCard({
             {event.name}
           </h4>
         </Link>
-        <p className="text-text-dim text-[10px] mb-3">{format(date, "EEE, h:mm a")}</p>
+        <p className="text-text-dim text-[10px] mb-3">{ptWeekdayTime(date)}</p>
 
         <div className="flex gap-2">
           {hasGuestlist && (

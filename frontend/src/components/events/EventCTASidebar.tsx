@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { format } from "date-fns";
+import { ptDateShort, ptTime } from "@/lib/date";
 import { GoldButton } from "@/components/ui/GoldButton";
 import { EventFormModal } from "@/components/events/EventFormModal";
 
@@ -77,11 +77,11 @@ export function EventCTASidebar({
           <div className="pt-4 border-t border-white/8 space-y-2">
             <div className="flex justify-between text-[11px]">
               <span className="text-text-dim">Date</span>
-              <span className="text-text-muted">{format(d, "MMM d, yyyy")}</span>
+              <span className="text-text-muted">{ptDateShort(d)}</span>
             </div>
             <div className="flex justify-between text-[11px]">
               <span className="text-text-dim">Time</span>
-              <span className="text-text-muted">{format(d, "h:mm a")}</span>
+              <span className="text-text-muted">{ptTime(d)} PT</span>
             </div>
             {venueName && (
               <div className="flex justify-between text-[11px]">

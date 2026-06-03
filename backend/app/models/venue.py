@@ -61,6 +61,12 @@ class Venue(Base):
     website_url: Mapped[str | None] = mapped_column(String(1000))
     instagram_url: Mapped[str | None] = mapped_column(String(1000))
     reservation_link: Mapped[str | None] = mapped_column(String(1000))
+
+    # Feature flags
+    guestlist_enabled: Mapped[bool] = mapped_column(Boolean, default=False)
+    bottle_service_enabled: Mapped[bool] = mapped_column(Boolean, default=False)
+    guestlist_close_time: Mapped[str | None] = mapped_column(String(10))  # "HH:MM" Pacific time
+
     is_featured: Mapped[bool] = mapped_column(Boolean, default=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())

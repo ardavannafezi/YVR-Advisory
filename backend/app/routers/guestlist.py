@@ -1,6 +1,8 @@
 import asyncio
+from datetime import datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dependencies import get_db
@@ -12,9 +14,48 @@ from app.utils.notifications import load_db_notif_settings, send_email, send_tel
 
 router = APIRouter(prefix="/api/guestlist", tags=["guestlist"])
 
+PT = ZoneInfo("America/Vancouver")
+
+
+def _compute_guestlist_close(event: Event, venue: Venue | None) -> datetime | None:
+    """Return effective guestlist close datetime (UTC). Event-level takes priority; falls back to venue default."""
+    if event.guestlist_closes_at:
+        return event.guestlist_closes_at
+    if venue and venue.guestlist_close_time:
+        try:
+            h, m = map(int, venue.guestlist_close_time.split(":"))
+        except ValueError:
+            return None
+        event_pt = event.date.astimezone(PT)
+        close_pt = event_pt.replace(hour=h, minute=m, second=0, microsecond=0)
+        if close_pt <= event_pt:
+            close_pt += timedelta(days=1)
+        return close_pt.astimezone(timezone.utc)
+    return None
+
 
 @router.post("", response_model=GuestlistOut, status_code=status.HTTP_201_CREATED)
 async def submit_guestlist(data: GuestlistCreate, db: AsyncSession = Depends(get_db)):
+    event: Event | None = None
+    venue: Venue | None = None
+
+    if data.event_id:
+        event = await db.get(Event, data.event_id)
+        if event and event.venue_id:
+            venue = await db.get(Venue, event.venue_id)
+    if venue is None and data.venue_id:
+        venue = await db.get(Venue, data.venue_id)
+
+    # Venue must have guestlist enabled
+    if venue and not venue.guestlist_enabled:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Guestlist not available for this venue")
+
+    # Guestlist must still be open
+    if event:
+        close_dt = _compute_guestlist_close(event, venue)
+        if close_dt and datetime.now(timezone.utc) >= close_dt:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Guestlist signup has closed")
+
     entry = GuestlistEntry(**data.model_dump())
     db.add(entry)
     await db.commit()
@@ -22,24 +63,9 @@ async def submit_guestlist(data: GuestlistCreate, db: AsyncSession = Depends(get
 
     notif = await load_db_notif_settings(db)
 
-    # Resolve event and venue names for notification
-    event_name = "—"
-    event_date = "—"
-    venue_name = "—"
-
-    if entry.event_id:
-        event = await db.get(Event, entry.event_id)
-        if event:
-            event_name = event.name
-            event_date = event.date.strftime("%-d %b %Y, %-I:%M %p") if event.date else "—"
-            if event.venue_id:
-                venue = await db.get(Venue, event.venue_id)
-                if venue:
-                    venue_name = venue.name
-    elif entry.venue_id:
-        venue = await db.get(Venue, entry.venue_id)
-        if venue:
-            venue_name = venue.name
+    event_name = event.name if event else "—"
+    event_date = event.date.astimezone(PT).strftime("%-d %b %Y, %-I:%M %p PT") if event and event.date else "—"
+    venue_name = venue.name if venue else "—"
 
     tg_msg = (
         f"🎟 <b>New Guestlist Signup</b>\n"

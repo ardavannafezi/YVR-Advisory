@@ -3,11 +3,12 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { format, isPast } from "date-fns";
+import { isPast } from "date-fns";
 import { fadeUp } from "@/styles/animations";
 import { Badge } from "@/components/ui/Badge";
 import { EventGallery } from "@/components/events/EventGallery";
 import { EventFormModal } from "@/components/events/EventFormModal";
+import { ptMonthShort, ptDay, ptWeekdayTime } from "@/lib/date";
 import type { Event } from "@/types";
 
 interface EventCardProps {
@@ -24,6 +25,8 @@ const ENTRY_LABELS: Record<string, string> = {
 export function EventCard({ event, index = 0 }: EventCardProps) {
   const [modal, setModal] = useState<"guestlist" | "reservation" | null>(null);
   const date = new Date(event.date);
+
+  const guestlistClosed = event.guestlist_closes_at ? isPast(new Date(event.guestlist_closes_at)) : false;
   const entryClosed = event.entry_closes_at ? isPast(new Date(event.entry_closes_at)) : false;
 
   const images = event.gallery?.length
@@ -32,9 +35,9 @@ export function EventCard({ event, index = 0 }: EventCardProps) {
     ? [event.image_url]
     : [];
 
-  const hasGuestlist = !entryClosed && event.our_guestlist;
-  const hasReservation = !entryClosed && event.our_reservation;
-  const hasTickets = !entryClosed && !!event.ticket_url && !hasGuestlist && !hasReservation;
+  const hasGuestlist = event.our_guestlist && !guestlistClosed && (event.venue?.guestlist_enabled ?? false);
+  const hasReservation = event.our_reservation && !entryClosed && (event.venue?.bottle_service_enabled ?? false);
+  const hasTickets = !hasGuestlist && !hasReservation && !!event.ticket_url && !entryClosed;
 
   return (
     <>
@@ -69,8 +72,8 @@ export function EventCard({ event, index = 0 }: EventCardProps) {
 
           {/* Date badge */}
           <div className="absolute top-3 left-3 z-30 bg-background/90 backdrop-blur-sm px-3 py-2 text-center border border-white/10">
-            <p className="text-gold text-[10px] uppercase tracking-widest">{format(date, "MMM")}</p>
-            <p className="text-text-primary font-serif text-xl leading-none">{format(date, "d")}</p>
+            <p className="text-gold text-[10px] uppercase tracking-widest">{ptMonthShort(date)}</p>
+            <p className="text-text-primary font-serif text-xl leading-none">{ptDay(date)}</p>
           </div>
 
           {/* Entry closed overlay */}
@@ -104,7 +107,7 @@ export function EventCard({ event, index = 0 }: EventCardProps) {
               </Link>
             )}
             {event.venue?.name && " · "}
-            {format(date, "EEE, h:mm a")}
+            {ptWeekdayTime(date)}
           </p>
 
           {/* Event name */}

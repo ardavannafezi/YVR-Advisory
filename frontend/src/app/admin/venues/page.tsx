@@ -57,6 +57,9 @@ interface FormState {
   website_url: string;
   instagram_url: string;
   reservation_link: string;
+  guestlist_enabled: boolean;
+  bottle_service_enabled: boolean;
+  guestlist_close_time: string;
   is_active: boolean;
   is_featured: boolean;
   faqs: { question: string; answer: string }[];
@@ -78,6 +81,7 @@ const EMPTY_FORM: FormState = {
   image_url: "", logo_url: "", gallery_urls: "",
   latitude: "", longitude: "",
   website_url: "", instagram_url: "", reservation_link: "",
+  guestlist_enabled: false, bottle_service_enabled: false, guestlist_close_time: "",
   is_active: true, is_featured: false,
   faqs: [],
 };
@@ -120,6 +124,9 @@ function buildPayload(form: FormState) {
     website_url: form.website_url || null,
     instagram_url: form.instagram_url || null,
     reservation_link: form.reservation_link || null,
+    guestlist_enabled: form.guestlist_enabled,
+    bottle_service_enabled: form.bottle_service_enabled,
+    guestlist_close_time: form.guestlist_close_time || null,
     is_active: form.is_active,
     is_featured: form.is_featured,
     faqs: form.faqs.length > 0 ? form.faqs : null,
@@ -162,6 +169,9 @@ function venueToForm(v: any): FormState {
     website_url: v.website_url || "",
     instagram_url: v.instagram_url || "",
     reservation_link: v.reservation_link || "",
+    guestlist_enabled: v.guestlist_enabled ?? false,
+    bottle_service_enabled: v.bottle_service_enabled ?? false,
+    guestlist_close_time: v.guestlist_close_time || "",
     is_active: v.is_active ?? true,
     is_featured: v.is_featured ?? false,
     faqs: v.faqs || [],
@@ -483,6 +493,26 @@ function VenueForm({
             </div>
           ))}
           {form.faqs.length === 0 && <p className="text-text-muted text-xs">No FAQs yet.</p>}
+        </div>
+      </div>
+
+      {/* Services */}
+      <div className={sectionCls}>
+        <p className={sectionTitle}>Services & Access</p>
+        <div className="flex gap-6 flex-wrap mb-4">
+          <label className="flex items-center gap-2 text-sm text-text-muted cursor-pointer">
+            <input type="checkbox" checked={form.guestlist_enabled} onChange={e => set("guestlist_enabled", e.target.checked)} className="accent-gold" />
+            Guestlist enabled
+          </label>
+          <label className="flex items-center gap-2 text-sm text-text-muted cursor-pointer">
+            <input type="checkbox" checked={form.bottle_service_enabled} onChange={e => set("bottle_service_enabled", e.target.checked)} className="accent-gold" />
+            Bottle service enabled
+          </label>
+        </div>
+        <div className="max-w-xs">
+          <Field label='Default guestlist close time (HH:MM, Pacific) e.g. "02:00"'>
+            <input value={form.guestlist_close_time} onChange={e => set("guestlist_close_time", e.target.value)} className={inputCls} placeholder="02:00" />
+          </Field>
         </div>
       </div>
 

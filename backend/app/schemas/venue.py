@@ -50,6 +50,12 @@ class VenueBase(BaseModel):
     website_url: str | None = None
     instagram_url: str | None = None
     reservation_link: str | None = None
+
+    # Feature flags
+    guestlist_enabled: bool = False
+    bottle_service_enabled: bool = False
+    guestlist_close_time: str | None = None  # "HH:MM" Pacific time default close
+
     is_featured: bool = False
     is_active: bool = True
 

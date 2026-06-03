@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { format, isPast } from "date-fns";
+import { isPast } from "date-fns";
 import { api } from "@/lib/api";
+import { ptDateLong, ptGuestlistClose, ptTime } from "@/lib/date";
 import { Badge } from "@/components/ui/Badge";
 import { EventJsonLd } from "@/components/events/EventJsonLd";
 import { EventGallery } from "@/components/events/EventGallery";
@@ -17,7 +18,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   try {
     const event = await api.get<Event>(`/api/events/${params.slug}`);
     const venueName = event.venue?.name || "Vancouver";
-    const dateStr = format(new Date(event.date), "MMMM d, yyyy");
+    const dateStr = ptDateLong(new Date(event.date));
     const performers = event.lineup?.map(a => a.name).join(", ");
     const description =
       event.description ||
@@ -64,9 +65,9 @@ export default async function EventDetailPage({ params }: { params: { slug: stri
     ? [event.image_url]
     : [];
 
-  const hasGuestlistCTA = event.our_guestlist && !guestlistClosed;
+  const hasGuestlistCTA = event.our_guestlist && !guestlistClosed && (event.venue?.guestlist_enabled ?? false);
   const hasTicketCTA = !!event.ticket_url && !entryClosed;
-  const hasReserveCTA = event.our_reservation && !!event.venue_id && !entryClosed;
+  const hasReserveCTA = event.our_reservation && !!event.venue_id && !entryClosed && (event.venue?.bottle_service_enabled ?? false);
 
   return (
     <>
@@ -107,9 +108,9 @@ export default async function EventDetailPage({ params }: { params: { slug: stri
 
               {/* Meta */}
               <div className="flex flex-wrap gap-x-4 gap-y-1 text-text-muted text-sm mb-6">
-                <span>{format(date, "EEEE, MMMM d, yyyy")}</span>
+                <span>{ptDateLong(date)}</span>
                 <span>·</span>
-                <span>{format(date, "h:mm a")}</span>
+                <span>{ptTime(date)} PT</span>
                 {event.venue && (
                   <>
                     <span>·</span>
@@ -127,14 +128,14 @@ export default async function EventDetailPage({ params }: { params: { slug: stri
                     <p className="text-[11px] uppercase tracking-widest text-text-dim">
                       {guestlistClosed
                         ? "Guestlist closed"
-                        : `Guestlist closes ${format(new Date(event.guestlist_closes_at), "EEE, MMM d · h:mm a")}`}
+                        : `Guestlist closes ${ptGuestlistClose(new Date(event.guestlist_closes_at))} PT`}
                     </p>
                   )}
                   {event.entry_closes_at && (
                     <p className="text-[11px] uppercase tracking-widest text-text-dim">
                       {entryClosed
                         ? "Entry closed"
-                        : `Entry closes ${format(new Date(event.entry_closes_at), "EEE, MMM d · h:mm a")}`}
+                        : `Entry closes ${ptGuestlistClose(new Date(event.entry_closes_at))} PT`}
                     </p>
                   )}
                 </div>
