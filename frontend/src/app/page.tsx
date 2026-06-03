@@ -10,7 +10,7 @@ export const revalidate = 3600;
 export const metadata: Metadata = {
   title: "YVR Advisory — Vancouver Nightlife Guide | Best Clubs & Events Tonight",
   description:
-    "YVR Advisory is Vancouver's independent nightlife guide. Discover the best nightclubs, cocktail bars, and events in Vancouver tonight — curated venues, honest recommendations, no commissions.",
+    "YVR Advisory is Vancouver's nightlife advisor. Discover the best nightclubs, cocktail bars, and events in Vancouver tonight — curated venues, guestlist access, and honest recommendations.",
   keywords: [
     "Vancouver nightlife",
     "nightclubs Vancouver",
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "YVR Advisory — Vancouver Nightlife Guide",
     description:
-      "Your independent guide to Vancouver nightclubs, bars, and events. Find the best nights in YVR — curated, unbiased, always current.",
+      "Your advisor for Vancouver nightclubs, bars, and events. Find the best nights in YVR — curated, always current.",
     url: "/",
   },
 };

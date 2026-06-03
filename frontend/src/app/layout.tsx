@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     template: "%s | YVR Advisory",
   },
   description:
-    "YVR Advisory is Vancouver's independent nightlife guide — curated nightclubs, cocktail bars, upcoming events, and personalized recommendations. No affiliations. Just honest advice.",
+    "YVR Advisory is Vancouver's nightlife advisor — curated nightclubs, cocktail bars, upcoming events, and personalized recommendations to help you find the best night out.",
   keywords: [
     "Vancouver nightlife",
     "nightclubs Vancouver",

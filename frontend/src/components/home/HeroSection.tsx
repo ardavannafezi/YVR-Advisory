@@ -94,7 +94,7 @@ export function HeroSection() {
             transition={{ duration: 0.7, delay: 1.08 }}
             className="text-text-muted text-sm md:text-base leading-relaxed mb-11 max-w-sm mx-auto lg:mx-0"
           >
-            Your independent advisor for Vancouver&apos;s finest nightclubs, bars, and events — curated, unbiased, always current.
+            Your advisor for Vancouver&apos;s finest nightclubs, bars, and events — curated recommendations, guestlist access, always current.
           </motion.p>
 
           <motion.div

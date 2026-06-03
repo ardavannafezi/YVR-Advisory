@@ -18,7 +18,7 @@ const PILLARS = [
   {
     number: "03",
     title: "Honest Advice",
-    body: "Tell us your vibe, your group, your budget. Our advisor matches you to the right place — no commissions, no affiliations. Just guidance.",
+    body: "Tell us your vibe, your group, your budget. Our advisor matches you to the right place — and at select partner venues, we can get you on the list.",
   },
 ];
 
@@ -60,7 +60,7 @@ export function AdvisorSection() {
             viewport={{ once: true }}
             className="text-text-muted text-base leading-relaxed lg:max-w-md"
           >
-            YVR Advisory is Vancouver&apos;s independent nightlife guide. We&apos;re not affiliated with any venue or promoter — we scout, curate, and advise so you spend less time wondering and more time experiencing the best nights the city has to offer.
+            YVR Advisory is Vancouver&apos;s nightlife advisor. We scout, curate, and guide — helping you find the right venue for your night. We work with a select group of clubs to offer guestlist access, and cover the broader scene so you always have the full picture.
           </motion.p>
         </div>
 

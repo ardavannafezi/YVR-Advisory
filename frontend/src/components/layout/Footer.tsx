@@ -12,7 +12,7 @@ export function Footer() {
             <Image src="/gold.png" alt="YVR Advisory" width={140} height={40} className="h-10 w-auto object-contain" />
           </Link>
           <p className="text-text-muted text-sm leading-relaxed max-w-xs mt-2">
-            Vancouver&apos;s independent nightlife guide — curated venues, upcoming events, and honest advice. No affiliations, no commissions.
+            Vancouver&apos;s nightlife advisor — curated venues, upcoming events, and guestlist access at select clubs.
           </p>
           <div className="mt-6 flex gap-4">
             <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-text-dim hover:text-gold transition-colors text-xs uppercase tracking-widest">
