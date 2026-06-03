@@ -75,7 +75,10 @@ async def list_venues(
         .outerjoin(VenueView, Venue.id == VenueView.venue_id)
         .outerjoin(VenueAdvisoryRating, Venue.id == VenueAdvisoryRating.venue_id)
         .where(*filters)
-        .order_by(func.coalesce(VenueView.view_count, 0).desc())
+        .order_by(
+            func.coalesce(VenueAdvisoryRating.rating, 0).desc(),
+            func.coalesce(VenueView.view_count, 0).desc(),
+        )
     )
 
     count_q = select(func.count()).select_from(

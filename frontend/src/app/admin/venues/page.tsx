@@ -723,26 +723,31 @@ export default function AdminVenuesPage() {
             { key: "is_active", label: "Active", render: r => r.is_active ? "Yes" : "No" },
             {
               key: "advisory_rating",
-              label: "Rating",
+              label: "Advisory Rating",
               render: r => (
-                <div className="flex items-center gap-1">
-                  <input
-                    type="number"
-                    min={0}
-                    max={10}
-                    step={0.1}
-                    value={ratingEdits[r.id] ?? ""}
-                    onChange={e => setRatingEdits(s => ({ ...s, [r.id]: e.target.value }))}
-                    className="w-16 bg-white/5 border border-white/10 px-2 py-1 text-xs text-text-primary focus:outline-none focus:border-gold/50"
-                    placeholder="0–10"
-                  />
-                  <button
-                    onClick={() => setRating(r.id)}
-                    disabled={ratingSaving[r.id]}
-                    className="text-[10px] uppercase tracking-widest text-gold hover:text-gold/70 transition-colors disabled:opacity-40"
-                  >
-                    {ratingSaving[r.id] ? "…" : "Set"}
-                  </button>
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-1">
+                    <input
+                      type="number"
+                      min={0}
+                      max={10}
+                      step={0.1}
+                      value={ratingEdits[r.id] ?? ""}
+                      onChange={e => setRatingEdits(s => ({ ...s, [r.id]: e.target.value }))}
+                      className="w-16 bg-white/5 border border-white/10 px-2 py-1 text-xs text-text-primary focus:outline-none focus:border-gold/50"
+                      placeholder="0–10"
+                    />
+                    <button
+                      onClick={() => setRating(r.id)}
+                      disabled={ratingSaving[r.id]}
+                      className="text-[10px] uppercase tracking-widest text-gold hover:text-gold/70 transition-colors disabled:opacity-40"
+                    >
+                      {ratingSaving[r.id] ? "…" : "Set"}
+                    </button>
+                  </div>
+                  {r.advisory_rating != null && (
+                    <span className="text-[9px] text-gold/50">saved: {r.advisory_rating}</span>
+                  )}
                 </div>
               ),
             },

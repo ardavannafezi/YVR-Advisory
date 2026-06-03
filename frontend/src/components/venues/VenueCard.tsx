@@ -33,7 +33,7 @@ export function VenueCard({ venue, index = 0 }: VenueCardProps) {
               src={venue.image_url}
               alt={venue.name}
               fill
-              className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105"
+              className="object-cover transition-all duration-700 group-hover:scale-105"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
           ) : (
@@ -80,7 +80,7 @@ export function VenueCard({ venue, index = 0 }: VenueCardProps) {
             <p className="text-[10px] uppercase tracking-widest text-text-dim mt-0.5">{venue.hospitality_company}</p>
           )}
 
-          <p className="mt-2 text-text-muted text-sm line-clamp-2 leading-relaxed flex-1">
+          <p className="mt-2 text-text-muted text-sm line-clamp-3 leading-relaxed flex-1">
             {venue.description ?? " "}
           </p>
 
@@ -88,6 +88,12 @@ export function VenueCard({ venue, index = 0 }: VenueCardProps) {
             {(venue.vibe_tags ?? []).slice(0, 3).map((tag) => (
               <Badge key={tag} label={tag} variant="dim" />
             ))}
+          </div>
+
+          <div className="mt-4 pt-4 border-t border-white/[0.06]">
+            <span className="text-[10px] uppercase tracking-[0.2em] text-gold group-hover:text-gold-light transition-colors">
+              View Venue →
+            </span>
           </div>
         </div>
       </Link>
