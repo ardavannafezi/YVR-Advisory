@@ -29,7 +29,7 @@ export function HeroSection() {
           className="w-full h-full bg-cover bg-center bg-no-repeat"
           style={{
             backgroundImage:
-              "url('/hero-bg.jpg'), url('https://images.unsplash.com/photo-1566737236500-c8ac43014a67?w=1920&q=80')",
+              "url('/hero-bg.png'), url('/kharl-anthony-paica-2G_Bjzy1PIk-unsplash.jpg')",
           }}
         />
       </motion.div>
