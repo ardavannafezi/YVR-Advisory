@@ -4,7 +4,9 @@ from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dependencies import get_db
+from app.models.event import Event
 from app.models.guestlist import GuestlistEntry
+from app.models.venue import Venue
 from app.schemas.guestlist import GuestlistCreate, GuestlistOut
 from app.utils.notifications import load_db_notif_settings, send_email, send_telegram
 
@@ -20,11 +22,32 @@ async def submit_guestlist(data: GuestlistCreate, db: AsyncSession = Depends(get
 
     notif = await load_db_notif_settings(db)
 
+    # Resolve event and venue names for notification
+    event_name = "—"
+    event_date = "—"
+    venue_name = "—"
+
+    if entry.event_id:
+        event = await db.get(Event, entry.event_id)
+        if event:
+            event_name = event.name
+            event_date = event.date.strftime("%-d %b %Y, %-I:%M %p") if event.date else "—"
+            if event.venue_id:
+                venue = await db.get(Venue, event.venue_id)
+                if venue:
+                    venue_name = venue.name
+    elif entry.venue_id:
+        venue = await db.get(Venue, entry.venue_id)
+        if venue:
+            venue_name = venue.name
+
     tg_msg = (
         f"🎟 <b>New Guestlist Signup</b>\n"
         f"👤 {entry.full_name} | {entry.email}\n"
         f"👥 Party of {entry.party_size or 1}\n"
-        f"📍 Event ID: {entry.event_id or '—'} | Venue ID: {entry.venue_id or '—'}"
+        f"🎉 Event: {event_name}\n"
+        f"📅 Date: {event_date}\n"
+        f"📍 Venue: {venue_name}"
     )
     user_html = f"""
     <p>Hi {entry.full_name},</p>
