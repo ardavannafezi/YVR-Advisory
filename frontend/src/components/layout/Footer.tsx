@@ -15,7 +15,7 @@ export function Footer() {
             Vancouver&apos;s nightlife advisor — curated venues, upcoming events, and guestlist access at select clubs.
           </p>
           <div className="mt-6 flex gap-4">
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-text-dim hover:text-gold transition-colors text-xs uppercase tracking-widest">
+            <a href="https://instagram.com/yvradvisory" target="_blank" rel="noopener noreferrer" className="text-text-dim hover:text-gold transition-colors text-xs uppercase tracking-widest">
               Instagram
             </a>
           </div>
@@ -27,9 +27,9 @@ export function Footer() {
             {[
               { href: "/venues", label: "Venues" },
               { href: "/events", label: "Events" },
-              { href: "/music", label: "Music" },
+              { href: "/where-to-go", label: "Where to Go" },
               { href: "/blog", label: "Journal" },
-              { href: "/tonight", label: "Where to Go Tonight" },
+              { href: "/about", label: "About" },
             ].map(({ href, label }) => (
               <li key={href}>
                 <Link href={href} className="text-text-muted text-sm hover:text-text-primary transition-colors">

@@ -224,6 +224,26 @@ export default async function EventDetailPage({ params }: { params: { slug: stri
                     </div>
                     <span className="ml-auto text-gold text-lg opacity-0 group-hover:opacity-100 transition-opacity">›</span>
                   </Link>
+                  {event.venue.latitude && event.venue.longitude && (
+                    <div className="flex gap-2 mt-2">
+                      <a
+                        href={`https://www.google.com/maps/dir/?api=1&destination=${event.venue.latitude},${event.venue.longitude}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 text-center text-[10px] uppercase tracking-widest py-2.5 border border-white/10 text-text-muted hover:border-gold/40 hover:text-gold transition-colors"
+                      >
+                        Google Maps
+                      </a>
+                      <a
+                        href={`https://maps.apple.com/?daddr=${event.venue.latitude},${event.venue.longitude}&q=${encodeURIComponent(event.venue.name)}&dirflg=d`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 text-center text-[10px] uppercase tracking-widest py-2.5 border border-white/10 text-text-muted hover:border-gold/40 hover:text-gold transition-colors"
+                      >
+                        Apple Maps
+                      </a>
+                    </div>
+                  )}
                 </div>
               )}
 

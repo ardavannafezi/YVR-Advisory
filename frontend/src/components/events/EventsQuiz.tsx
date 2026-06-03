@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
 import type { Event } from "@/types";
@@ -11,26 +11,28 @@ const STEPS = [
   {
     key: "venue_types",
     question: "What type of venue?",
-    hint: "Pick one or more",
+    hint: "Select one or more",
     options: ["Nightclub", "Cocktail Bar", "Bar & Restaurant", "Rooftop Lounge"],
+    optional: false,
   },
   {
     key: "music_types",
-    question: "What music are you into?",
+    question: "What music moves you?",
     hint: "Select all that apply",
     options: ["hip-hop", "house", "techno", "latin", "r&b", "edm", "pop", "live"],
+    optional: false,
   },
   {
     key: "date",
-    question: "When are you going?",
-    hint: "Optional — skip to see all",
+    question: "When are you going out?",
+    hint: "Optional — skip to see all dates",
     options: ["Tonight", "This Weekend", "This Week"],
     optional: true,
   },
 ];
 
 const DATE_MAP: Record<string, string> = {
-  "Tonight": "tonight",
+  Tonight: "tonight",
   "This Weekend": "weekend",
   "This Week": "week",
 };
@@ -68,23 +70,16 @@ export function EventsQuiz({ onResults, onSkip, listRef }: Props) {
   }, []);
 
   const currentStep = STEPS[step];
-  const progress = ((step) / STEPS.length) * 100;
 
   function toggleMulti(key: "venue_types" | "music_types", val: string) {
     setAnswers(prev => {
       const arr = prev[key];
-      return {
-        ...prev,
-        [key]: arr.includes(val) ? arr.filter(v => v !== val) : [...arr, val],
-      };
+      return { ...prev, [key]: arr.includes(val) ? arr.filter(v => v !== val) : [...arr, val] };
     });
   }
 
   function toggleDate(val: string) {
-    setAnswers(prev => ({
-      ...prev,
-      date: prev.date === DATE_MAP[val] ? null : DATE_MAP[val],
-    }));
+    setAnswers(prev => ({ ...prev, date: prev.date === DATE_MAP[val] ? null : DATE_MAP[val] }));
   }
 
   function canAdvance() {
@@ -150,179 +145,236 @@ export function EventsQuiz({ onResults, onSkip, listRef }: Props) {
   }
 
   const slideVariants = {
-    enter: (dir: number) => ({ x: dir > 0 ? 40 : -40, opacity: 0 }),
-    center: { x: 0, opacity: 1, transition: { duration: 0.35, ease: [0.25, 0.46, 0.45, 0.94] } },
-    exit: (dir: number) => ({ x: dir > 0 ? -40 : 40, opacity: 0, transition: { duration: 0.25 } }),
+    enter: (dir: number) => ({ x: dir > 0 ? 50 : -50, opacity: 0 }),
+    center: { x: 0, opacity: 1, transition: { duration: 0.38, ease: [0.25, 0.46, 0.45, 0.94] } },
+    exit: (dir: number) => ({ x: dir > 0 ? -50 : 50, opacity: 0, transition: { duration: 0.22 } }),
   };
 
   return (
-    <section className="relative flex flex-col items-center justify-center min-h-[70vh] px-6 py-16 overflow-hidden">
-      {/* Background accent */}
+    <section className="relative min-h-[88vh] flex flex-col overflow-hidden bg-[#080808]">
+      {/* Ambient background */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-gold/[0.03] blur-3xl" />
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(201,168,76,0.07),transparent)]" />
+        <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[#080808] to-transparent" />
       </div>
 
-      <div className="relative w-full max-w-2xl">
-        {/* Header */}
-        <div className="text-center mb-10">
-          <p className="text-[10px] uppercase tracking-[0.25em] text-gold mb-3">Event Discovery</p>
-          <h1 className="font-serif text-4xl md:text-5xl text-text-primary">Find Your Night</h1>
+      {/* Top bar — questionnaire label + skip */}
+      <div className="relative z-10 flex items-center justify-between px-6 sm:px-10 pt-8 pb-0">
+        <div className="flex items-center gap-3">
+          <div className="w-5 h-px bg-gold" />
+          <span className="text-[10px] uppercase tracking-[0.3em] text-gold">Event Questionnaire</span>
         </div>
+        <button
+          onClick={onSkip}
+          className="flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-text-dim border border-white/15 px-5 py-2.5 hover:border-gold/40 hover:text-gold transition-all duration-200"
+        >
+          Skip — Browse All Events
+          <span className="text-gold/60">↓</span>
+        </button>
+      </div>
 
-        {hasPrefs ? (
-          /* Returning user — use saved prefs */
+      {/* Main content */}
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 py-12">
+        <div className="w-full max-w-2xl">
+          {/* Page heading */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center space-y-6"
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className="text-center mb-14"
           >
-            <p className="text-text-muted text-sm">Using your saved preferences.</p>
-            <div className="flex flex-wrap justify-center gap-2">
-              {[...answers.venue_types, ...answers.music_types].map(tag => (
-                <span key={tag} className="text-[11px] px-3 py-1 border border-gold/40 text-gold uppercase tracking-widest">
-                  {tag}
-                </span>
-              ))}
-            </div>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
-              <button
-                onClick={usePrefs}
-                disabled={loading}
-                className="bg-gold text-black text-sm px-8 py-3 font-medium hover:bg-gold/90 transition-colors disabled:opacity-50"
-              >
-                {loading ? "Finding events…" : "Find Events"}
-              </button>
-              <button
-                onClick={resetPrefs}
-                className="text-sm text-text-muted border border-white/10 px-6 py-3 hover:border-white/25 transition-colors"
-              >
-                Reset preferences
-              </button>
-            </div>
-            <button onClick={onSkip} className="text-xs uppercase tracking-widest text-text-muted border border-white/20 px-5 py-2 hover:border-white/40 hover:text-text-primary transition-colors">
-              Skip — show all events
-            </button>
+            <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl text-text-primary mb-4">
+              Find Your Night
+            </h1>
+            <p className="text-text-muted text-sm max-w-sm mx-auto leading-relaxed">
+              Answer {STEPS.length} quick questions and we&apos;ll surface the events that match your taste.
+            </p>
           </motion.div>
-        ) : (
-          <>
-            {/* Progress bar */}
-            <div className="mb-10">
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-[10px] uppercase tracking-widest text-text-dim">
-                  Step {step + 1} of {STEPS.length}
-                </span>
-                <span className="text-[10px] text-text-dim">{Math.round(((step + 1) / STEPS.length) * 100)}%</span>
+
+          {hasPrefs ? (
+            /* Returning user */
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center space-y-8"
+            >
+              <div>
+                <p className="text-[10px] uppercase tracking-widest text-text-dim mb-4">Your saved preferences</p>
+                <div className="flex flex-wrap justify-center gap-2">
+                  {[...answers.venue_types, ...answers.music_types].map(tag => (
+                    <span key={tag} className="text-[11px] px-4 py-2 border border-gold/40 text-gold uppercase tracking-widest">
+                      {tag}
+                    </span>
+                  ))}
+                </div>
               </div>
-              <div className="h-px bg-white/10 w-full overflow-hidden">
+              <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
+                <button
+                  onClick={usePrefs}
+                  disabled={loading}
+                  className="bg-gold text-[#080808] text-[11px] uppercase tracking-[0.2em] px-10 py-4 font-semibold hover:bg-gold-light transition-colors disabled:opacity-50"
+                >
+                  {loading ? "Finding events…" : "Use These Preferences"}
+                </button>
+                <button
+                  onClick={resetPrefs}
+                  className="text-[11px] uppercase tracking-[0.2em] text-text-muted border border-white/15 px-8 py-4 hover:border-white/30 hover:text-text-primary transition-colors"
+                >
+                  Retake Questionnaire
+                </button>
+              </div>
+            </motion.div>
+          ) : (
+            <>
+              {/* Step dots */}
+              <div className="flex items-center justify-center gap-3 mb-10">
+                {STEPS.map((_, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <motion.div
+                      animate={{
+                        backgroundColor: i < step ? "#c9a84c" : i === step ? "transparent" : "transparent",
+                        borderColor: i <= step ? "#c9a84c" : "rgba(255,255,255,0.15)",
+                        scale: i === step ? 1.15 : 1,
+                      }}
+                      transition={{ duration: 0.3 }}
+                      className="w-6 h-6 rounded-full border flex items-center justify-center"
+                    >
+                      {i < step ? (
+                        <span className="text-[9px] text-[#080808] font-bold">✓</span>
+                      ) : (
+                        <span className={`text-[10px] font-semibold ${i === step ? "text-gold" : "text-white/20"}`}>
+                          {i + 1}
+                        </span>
+                      )}
+                    </motion.div>
+                    {i < STEPS.length - 1 && (
+                      <motion.div
+                        animate={{ backgroundColor: i < step ? "#c9a84c" : "rgba(255,255,255,0.08)" }}
+                        transition={{ duration: 0.3 }}
+                        className="w-12 h-px"
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* Progress bar */}
+              <div className="h-px bg-white/8 w-full overflow-hidden mb-10">
                 <motion.div
                   className="h-full bg-gold"
                   animate={{ width: `${((step + 1) / STEPS.length) * 100}%` }}
                   transition={{ duration: 0.4, ease: "easeOut" }}
                 />
               </div>
-            </div>
 
-            {/* Question */}
-            <AnimatePresence mode="wait" custom={direction}>
-              <motion.div
-                key={step}
-                custom={direction}
-                variants={slideVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-              >
-                <div className="mb-8">
-                  <h2 className="font-serif text-2xl md:text-3xl text-text-primary mb-1">
-                    {currentStep.question}
-                  </h2>
-                  <p className="text-text-dim text-sm">{currentStep.hint}</p>
-                </div>
-
-                {/* Option tags */}
-                <div className="flex flex-wrap gap-3">
-                  {currentStep.options.map(opt => {
-                    const key = currentStep.key;
-                    let active = false;
-                    if (key === "venue_types") active = answers.venue_types.includes(opt);
-                    else if (key === "music_types") active = answers.music_types.includes(opt);
-                    else if (key === "date") active = answers.date === DATE_MAP[opt];
-
-                    return (
-                      <button
-                        key={opt}
-                        onClick={() => {
-                          if (key === "venue_types") toggleMulti("venue_types", opt);
-                          else if (key === "music_types") toggleMulti("music_types", opt);
-                          else toggleDate(opt);
-                        }}
-                        className={`px-5 py-2.5 text-sm border transition-all duration-200 ${
-                          active
-                            ? "border-gold bg-gold/10 text-gold"
-                            : "border-white/15 text-text-muted hover:border-white/30 hover:text-text-primary"
-                        }`}
-                      >
-                        {opt}
-                      </button>
-                    );
-                  })}
-                </div>
-              </motion.div>
-            </AnimatePresence>
-
-            {/* Navigation */}
-            <div className="flex items-center justify-between mt-10">
-              <div>
-                {step > 0 && (
-                  <button
-                    onClick={back}
-                    className="text-[11px] uppercase tracking-widest text-text-dim hover:text-text-muted transition-colors"
-                  >
-                    ← Back
-                  </button>
-                )}
-              </div>
-              <div className="flex flex-col items-end gap-3">
-                <button
-                  onClick={advance}
-                  disabled={loading || (!canAdvance() && !currentStep.optional)}
-                  className="bg-gold text-black text-sm px-8 py-3 font-medium hover:bg-gold/90 transition-colors disabled:opacity-40"
+              {/* Question */}
+              <AnimatePresence mode="wait" custom={direction}>
+                <motion.div
+                  key={step}
+                  custom={direction}
+                  variants={slideVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
                 >
-                  {loading
-                    ? "Finding events…"
-                    : step < STEPS.length - 1
-                    ? "Next →"
-                    : "Find Events"}
-                </button>
-                {currentStep.optional && (
+                  <div className="mb-8">
+                    <p className="text-[10px] uppercase tracking-[0.25em] text-gold mb-3">
+                      Step {step + 1} of {STEPS.length}
+                      {currentStep.optional && (
+                        <span className="ml-2 text-text-dim normal-case tracking-normal">· optional</span>
+                      )}
+                    </p>
+                    <h2 className="font-serif text-3xl md:text-4xl text-text-primary mb-2">
+                      {currentStep.question}
+                    </h2>
+                    <p className="text-text-dim text-sm">{currentStep.hint}</p>
+                  </div>
+
+                  {/* Options */}
+                  <div className="flex flex-wrap gap-3">
+                    {currentStep.options.map(opt => {
+                      const key = currentStep.key;
+                      let active = false;
+                      if (key === "venue_types") active = answers.venue_types.includes(opt);
+                      else if (key === "music_types") active = answers.music_types.includes(opt);
+                      else if (key === "date") active = answers.date === DATE_MAP[opt];
+
+                      return (
+                        <button
+                          key={opt}
+                          onClick={() => {
+                            if (key === "venue_types") toggleMulti("venue_types", opt);
+                            else if (key === "music_types") toggleMulti("music_types", opt);
+                            else toggleDate(opt);
+                          }}
+                          className={`px-6 py-3 text-sm border transition-all duration-200 capitalize ${
+                            active
+                              ? "border-gold bg-gold/12 text-gold font-medium"
+                              : "border-white/12 text-text-muted hover:border-white/30 hover:text-text-primary hover:bg-white/[0.03]"
+                          }`}
+                        >
+                          {opt}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              </AnimatePresence>
+
+              {/* Navigation */}
+              <div className="flex items-center justify-between mt-12">
+                <div>
+                  {step > 0 ? (
+                    <button
+                      onClick={back}
+                      className="text-[11px] uppercase tracking-widest text-text-dim hover:text-text-muted transition-colors flex items-center gap-2"
+                    >
+                      ← Back
+                    </button>
+                  ) : (
+                    <div />
+                  )}
+                </div>
+
+                <div className="flex flex-col items-end gap-3">
                   <button
                     onClick={advance}
-                    disabled={loading}
-                    className="text-xs uppercase tracking-widest text-text-muted border border-white/20 px-5 py-2 hover:border-white/40 hover:text-text-primary transition-colors"
+                    disabled={loading || (!canAdvance() && !currentStep.optional)}
+                    className="bg-gold text-[#080808] text-[11px] uppercase tracking-[0.2em] px-10 py-4 font-semibold hover:bg-gold-light transition-colors disabled:opacity-35"
                   >
-                    Skip this step →
+                    {loading
+                      ? "Finding events…"
+                      : step < STEPS.length - 1
+                      ? "Continue →"
+                      : "Find My Events"}
                   </button>
-                )}
+                  {currentStep.optional && (
+                    <button
+                      onClick={advance}
+                      disabled={loading}
+                      className="text-[10px] uppercase tracking-widest text-text-dim hover:text-text-muted transition-colors"
+                    >
+                      Skip this step →
+                    </button>
+                  )}
+                </div>
               </div>
-            </div>
-
-            {/* Skip all */}
-            <div className="text-center mt-8">
-              <button
-                onClick={onSkip}
-                className="text-xs uppercase tracking-widest text-text-muted border border-white/20 px-5 py-2 hover:border-white/40 hover:text-text-primary transition-colors"
-              >
-                Skip — show all events
-              </button>
-            </div>
-          </>
-        )}
+            </>
+          )}
+        </div>
       </div>
 
-      {/* Scroll hint */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 opacity-30">
-        <span className="text-[10px] uppercase tracking-widest text-text-dim">Scroll to browse all</span>
-        <div className="w-px h-6 bg-white/20" />
+      {/* Bottom fade hint */}
+      <div className="relative z-10 flex justify-center pb-8">
+        <div className="flex flex-col items-center gap-2 opacity-40">
+          <span className="text-[9px] uppercase tracking-[0.35em] text-text-dim">or scroll to browse</span>
+          <motion.div
+            animate={{ y: [0, 4, 0] }}
+            transition={{ repeat: Infinity, duration: 1.8, ease: "easeInOut" }}
+            className="w-px h-6 bg-gradient-to-b from-gold/30 to-transparent"
+          />
+        </div>
       </div>
     </section>
   );

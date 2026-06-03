@@ -61,8 +61,8 @@ function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
 
 function DirectionButtons({ lat, lng, name }: { lat: number; lng: number; name: string }) {
   const encoded = encodeURIComponent(name);
-  const googleUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&destination_place_id=${encoded}`;
-  const appleUrl = `https://maps.apple.com/?daddr=${lat},${lng}&dirflg=d`;
+  const googleUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+  const appleUrl = `https://maps.apple.com/?daddr=${lat},${lng}&q=${encoded}&dirflg=d`;
 
   return (
     <div className="flex gap-2">
@@ -312,13 +312,14 @@ export default async function VenueDetailPage({ params }: { params: { slug: stri
               )}
 
               {/* Upcoming events */}
-              <VenueEventsSlider venueId={venue.id} venueName={venue.name} />
+              <div id="venue-events">
+                <VenueEventsSlider venueId={venue.id} venueName={venue.name} />
+              </div>
             </div>
 
             {/* ── Right column: CTA panel ── */}
             <div className="flex flex-col gap-4">
               <VenueCTAPanel
-                venueId={venue.id}
                 venueName={venue.name}
                 advisoryRating={venue.advisory_rating ?? undefined}
                 reservationLink={venue.reservation_link ?? undefined}
@@ -327,6 +328,8 @@ export default async function VenueDetailPage({ params }: { params: { slug: stri
                 phone={venue.phone ?? undefined}
                 lat={venue.latitude ?? undefined}
                 lng={venue.longitude ?? undefined}
+                guestlistEnabled={venue.guestlist_enabled}
+                bottleServiceEnabled={venue.bottle_service_enabled}
               />
             </div>
           </div>

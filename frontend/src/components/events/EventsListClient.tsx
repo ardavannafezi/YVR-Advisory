@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import { api } from "@/lib/api";
 import { EventCard } from "@/components/events/EventCard";
 import { SkeletonGrid } from "@/components/ui/SkeletonCard";
@@ -10,7 +11,7 @@ const MUSIC_OPTIONS = ["hip-hop", "house", "techno", "latin", "r&b", "edm", "pop
 const ENTRY_OPTIONS = [
   { value: "guestlist", label: "Guestlist" },
   { value: "tickets", label: "Tickets" },
-  { value: "reservation", label: "Bottle Service / Reservation" },
+  { value: "reservation", label: "Bottle Service" },
 ];
 const DATE_OPTIONS = [
   { label: "Tonight", value: "tonight" },
@@ -45,23 +46,24 @@ function buildDateParams(dateFilter: string | null): { date_from?: string; date_
 
 interface Props {
   initialData: PaginatedList<Event>;
-  recommendedResults?: Event[];
-  recommendedSimilar?: Event[];
-  showRecommended?: boolean;
+  initialMusicFilter?: string | null;
+  initialDateFilter?: string | null;
+  initialEntryFilter?: string | null;
 }
 
-export function EventsListClient({ initialData, recommendedResults, recommendedSimilar, showRecommended }: Props) {
+export function EventsListClient({ initialData, initialMusicFilter, initialDateFilter, initialEntryFilter }: Props) {
   const [items, setItems] = useState<Event[]>(initialData.items);
   const [total, setTotal] = useState(initialData.total);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
 
-  const [musicFilter, setMusicFilter] = useState<string | null>(null);
-  const [entryFilter, setEntryFilter] = useState<string | null>(null);
-  const [dateFilter, setDateFilter] = useState<string | null>(null);
+  const [musicFilter, setMusicFilter] = useState<string | null>(initialMusicFilter ?? null);
+  const [entryFilter, setEntryFilter] = useState<string | null>(initialEntryFilter ?? null);
+  const [dateFilter, setDateFilter] = useState<string | null>(initialDateFilter ?? null);
 
-  const prevFilters = useRef({ musicFilter, entryFilter, dateFilter });
+  const prevFilters = useRef({ musicFilter: initialMusicFilter ?? null, entryFilter: initialEntryFilter ?? null, dateFilter: initialDateFilter ?? null });
+  const isFirstMount = useRef(true);
 
   const fetchEvents = useCallback(async (pg: number, reset = false) => {
     if (reset) setLoading(true); else setLoadingMore(true);
@@ -76,11 +78,7 @@ export function EventsListClient({ initialData, recommendedResults, recommendedS
         ...(dateParams.date_to ? { date_to: dateParams.date_to } : {}),
       });
       const data = await api.get<PaginatedList<Event>>(`/api/events?${qs}`, { cache: "no-store" });
-      if (reset) {
-        setItems(data.items);
-      } else {
-        setItems(prev => [...prev, ...data.items]);
-      }
+      if (reset) setItems(data.items); else setItems(prev => [...prev, ...data.items]);
       setTotal(data.total);
       setPage(pg);
     } catch {}
@@ -90,155 +88,148 @@ export function EventsListClient({ initialData, recommendedResults, recommendedS
     }
   }, [musicFilter, entryFilter, dateFilter]);
 
-  // Refetch when filters change
   useEffect(() => {
+    if (isFirstMount.current) {
+      isFirstMount.current = false;
+      if (initialMusicFilter || initialDateFilter || initialEntryFilter) {
+        fetchEvents(1, true);
+      }
+      return;
+    }
     const prev = prevFilters.current;
     if (prev.musicFilter !== musicFilter || prev.entryFilter !== entryFilter || prev.dateFilter !== dateFilter) {
       prevFilters.current = { musicFilter, entryFilter, dateFilter };
       fetchEvents(1, true);
     }
-  }, [musicFilter, entryFilter, dateFilter, fetchEvents]);
+  }, [musicFilter, entryFilter, dateFilter, fetchEvents, initialMusicFilter, initialDateFilter, initialEntryFilter]);
 
   const hasMore = items.length < total;
+  const anyFilter = musicFilter || entryFilter || dateFilter;
 
-  function toggleMusic(val: string) { setMusicFilter(f => f === val ? null : val); }
-  function toggleEntry(val: string) { setEntryFilter(f => f === val ? null : val); }
-  function toggleDate(val: string) { setDateFilter(f => f === val ? null : val); }
-
-  const displayItems = showRecommended && recommendedResults?.length ? recommendedResults : items;
-  const hasSimilar = showRecommended && recommendedSimilar?.length;
+  function clearAll() { setMusicFilter(null); setEntryFilter(null); setDateFilter(null); }
 
   return (
     <div>
-      {/* Filter bar */}
-      <div className="mb-8 space-y-4">
-        <div className="flex flex-wrap gap-2 items-center">
-          <span className="text-[10px] uppercase tracking-widest text-text-dim mr-1">Music</span>
-          {MUSIC_OPTIONS.map(opt => (
-            <button
-              key={opt}
-              onClick={() => toggleMusic(opt)}
-              className={`text-[11px] px-3 py-1.5 border transition-all duration-200 ${
-                musicFilter === opt
-                  ? "border-gold bg-gold/10 text-gold"
-                  : "border-white/10 text-text-muted hover:border-white/25"
-              }`}
-            >
-              {opt}
-            </button>
-          ))}
+      {/* Filter panel */}
+      <div className="mb-10 border border-white/[0.06] bg-[#0c0c0c] p-6 space-y-5">
+        {/* When row */}
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="text-[10px] uppercase tracking-[0.25em] text-gold w-16 flex-shrink-0">When</span>
+          <div className="flex flex-wrap gap-2">
+            {DATE_OPTIONS.map(opt => (
+              <button
+                key={opt.value}
+                onClick={() => setDateFilter(f => f === opt.value ? null : opt.value)}
+                className={`text-[11px] uppercase tracking-[0.15em] px-5 py-2 border transition-all duration-200 ${
+                  dateFilter === opt.value
+                    ? "border-gold bg-gold/12 text-gold"
+                    : "border-white/10 text-text-muted hover:border-white/25 hover:text-text-primary"
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
         </div>
 
-        <div className="flex flex-wrap gap-2 items-center">
-          <span className="text-[10px] uppercase tracking-widest text-text-dim mr-1">Entry</span>
-          {ENTRY_OPTIONS.map(opt => (
-            <button
-              key={opt.value}
-              onClick={() => toggleEntry(opt.value)}
-              className={`text-[11px] px-3 py-1.5 border transition-all duration-200 ${
-                entryFilter === opt.value
-                  ? "border-gold bg-gold/10 text-gold"
-                  : "border-white/10 text-text-muted hover:border-white/25"
-              }`}
-            >
-              {opt.label}
-            </button>
-          ))}
+        {/* Divider */}
+        <div className="h-px bg-white/[0.05]" />
 
-          <span className="text-[10px] uppercase tracking-widest text-text-dim ml-3 mr-1">When</span>
-          {DATE_OPTIONS.map(opt => (
-            <button
-              key={opt.value}
-              onClick={() => toggleDate(opt.value)}
-              className={`text-[11px] px-3 py-1.5 border transition-all duration-200 ${
-                dateFilter === opt.value
-                  ? "border-gold bg-gold/10 text-gold"
-                  : "border-white/10 text-text-muted hover:border-white/25"
-              }`}
-            >
-              {opt.label}
-            </button>
-          ))}
+        {/* Music row */}
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="text-[10px] uppercase tracking-[0.25em] text-gold w-16 flex-shrink-0">Music</span>
+          <div className="flex flex-wrap gap-2">
+            {MUSIC_OPTIONS.map(opt => (
+              <button
+                key={opt}
+                onClick={() => setMusicFilter(f => f === opt ? null : opt)}
+                className={`text-[11px] uppercase tracking-[0.15em] px-5 py-2 border transition-all duration-200 ${
+                  musicFilter === opt
+                    ? "border-gold bg-gold/12 text-gold"
+                    : "border-white/10 text-text-muted hover:border-white/25 hover:text-text-primary"
+                }`}
+              >
+                {opt}
+              </button>
+            ))}
+          </div>
+        </div>
 
-          {(musicFilter || entryFilter || dateFilter) && (
+        {/* Divider */}
+        <div className="h-px bg-white/[0.05]" />
+
+        {/* Entry + clear row */}
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="text-[10px] uppercase tracking-[0.25em] text-gold w-16 flex-shrink-0">Entry</span>
+          <div className="flex flex-wrap gap-2 flex-1">
+            {ENTRY_OPTIONS.map(opt => (
+              <button
+                key={opt.value}
+                onClick={() => setEntryFilter(f => f === opt.value ? null : opt.value)}
+                className={`text-[11px] uppercase tracking-[0.15em] px-5 py-2 border transition-all duration-200 ${
+                  entryFilter === opt.value
+                    ? "border-gold bg-gold/12 text-gold"
+                    : "border-white/10 text-text-muted hover:border-white/25 hover:text-text-primary"
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+          {anyFilter && (
             <button
-              onClick={() => { setMusicFilter(null); setEntryFilter(null); setDateFilter(null); }}
-              className="text-[11px] text-text-dim hover:text-text-muted ml-2 underline-offset-2 underline"
+              onClick={clearAll}
+              className="ml-auto text-[10px] uppercase tracking-[0.15em] text-text-dim border border-white/10 px-4 py-2 hover:border-white/25 hover:text-text-muted transition-colors"
             >
-              Clear
+              Clear All ×
             </button>
           )}
         </div>
       </div>
 
       {/* Results header */}
-      {showRecommended && recommendedResults?.length ? (
-        <div className="mb-6">
-          <p className="text-[10px] uppercase tracking-widest text-gold mb-1">Recommended for You</p>
-          <p className="text-text-dim text-xs">{recommendedResults.length} events matching your taste</p>
-        </div>
-      ) : (
-        <div className="mb-6">
-          <p className="text-text-dim text-xs">{total} upcoming events</p>
-        </div>
-      )}
+      <div className="mb-6 flex items-center justify-between">
+        <p className="text-text-dim text-xs">
+          {anyFilter ? `${total} matching events` : `${total} upcoming events`}
+        </p>
+      </div>
 
       {/* Grid */}
       {loading ? (
         <SkeletonGrid count={6} />
-      ) : displayItems.length === 0 ? (
-        <div className="py-20 text-center">
-          <p className="text-text-muted text-sm">No events found. Try adjusting your filters.</p>
+      ) : items.length === 0 ? (
+        <div className="py-24 text-center border border-white/[0.05]">
+          <p className="text-[10px] uppercase tracking-[0.25em] text-text-dim mb-2">No Results</p>
+          <p className="text-text-muted text-sm">No events found — try adjusting your filters.</p>
+          {anyFilter && (
+            <button onClick={clearAll} className="mt-4 text-[11px] uppercase tracking-widest text-gold hover:text-gold-light transition-colors">
+              Clear filters
+            </button>
+          )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {displayItems.map((event, i) => (
+        <motion.div
+          key={`${musicFilter}-${entryFilter}-${dateFilter}`}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        >
+          {items.map((event, i) => (
             <EventCard key={event.id} event={event} index={i} />
           ))}
-        </div>
+        </motion.div>
       )}
 
-      {/* You might also like */}
-      {hasSimilar && (
-        <div className="mt-16">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="flex-1 h-px bg-white/5" />
-            <p className="text-[10px] uppercase tracking-widest text-text-dim">You Might Also Like</p>
-            <div className="flex-1 h-px bg-white/5" />
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {recommendedSimilar!.map((event, i) => (
-              <EventCard key={event.id} event={event} index={i} />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Load more — only when not in recommended mode */}
-      {!showRecommended && hasMore && (
-        <div className="text-center mt-10">
+      {/* Load more */}
+      {hasMore && (
+        <div className="text-center mt-12">
           <button
             onClick={() => fetchEvents(page + 1)}
             disabled={loadingMore}
-            className="text-sm border border-gold/30 text-gold px-8 py-3 hover:bg-gold/10 transition-colors disabled:opacity-40"
+            className="text-[11px] uppercase tracking-[0.2em] border border-gold/30 text-gold px-10 py-4 hover:bg-gold/8 transition-colors disabled:opacity-40"
           >
-            {loadingMore ? "Loading…" : `Load More (${total - items.length} remaining)`}
-          </button>
-        </div>
-      )}
-
-      {/* Show all events button when in recommended mode */}
-      {showRecommended && (
-        <div className="text-center mt-10">
-          <button
-            onClick={() => {
-              setMusicFilter(null);
-              setEntryFilter(null);
-              setDateFilter(null);
-            }}
-            className="text-[11px] uppercase tracking-widest text-text-dim border border-white/10 px-6 py-3 hover:border-white/25 transition-colors"
-          >
-            Show All Events
+            {loadingMore ? "Loading…" : `Load More — ${total - items.length} remaining`}
           </button>
         </div>
       )}

@@ -28,8 +28,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE}/venues`, changeFrequency: "daily", priority: 0.9, lastModified: now },
     { url: `${SITE}/events`, changeFrequency: "daily", priority: 0.9, lastModified: now },
     { url: `${SITE}/blog`, changeFrequency: "weekly", priority: 0.8, lastModified: now },
-    { url: `${SITE}/music`, changeFrequency: "weekly", priority: 0.8, lastModified: now },
-    { url: `${SITE}/tonight`, changeFrequency: "daily", priority: 0.9, lastModified: now },
+    { url: `${SITE}/where-to-go`, changeFrequency: "daily", priority: 0.8, lastModified: now },
+    { url: `${SITE}/about`, changeFrequency: "monthly", priority: 0.6, lastModified: now },
     { url: `${SITE}/guestlist`, changeFrequency: "monthly", priority: 0.7, lastModified: now },
     { url: `${SITE}/reserve`, changeFrequency: "monthly", priority: 0.7, lastModified: now },
   ];

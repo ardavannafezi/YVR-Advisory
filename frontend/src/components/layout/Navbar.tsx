@@ -10,9 +10,9 @@ import clsx from "clsx";
 const links = [
   { href: "/venues", label: "Venues" },
   { href: "/events", label: "Events" },
-  { href: "/music", label: "Music" },
+  { href: "/where-to-go", label: "Where to Go" },
   { href: "/blog", label: "Journal" },
-  { href: "/tonight", label: "Tonight" },
+  { href: "/about", label: "About" },
 ];
 
 export function Navbar() {
@@ -68,20 +68,6 @@ export function Navbar() {
             ))}
           </ul>
 
-          <div className="hidden md:flex items-center gap-4">
-            <Link
-              href="/guestlist"
-              className="text-xs uppercase tracking-widest text-gold border border-gold/40 px-5 py-2 hover:bg-gold/10 transition-colors"
-            >
-              Guestlist
-            </Link>
-            <Link
-              href="/reserve"
-              className="text-xs uppercase tracking-widest bg-gold text-background px-5 py-2 hover:bg-gold-light transition-colors font-semibold"
-            >
-              Reserve
-            </Link>
-          </div>
 
           {/* Hamburger */}
           <button
@@ -156,27 +142,6 @@ export function Navbar() {
                 ))}
               </ul>
 
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.42 }}
-                className="flex flex-col gap-3 mt-8"
-              >
-                <Link
-                  href="/guestlist"
-                  onClick={() => setMenuOpen(false)}
-                  className="text-xs uppercase tracking-widest text-gold border border-gold/40 px-5 py-4 text-center hover:bg-gold/10 transition-colors"
-                >
-                  Join Guestlist
-                </Link>
-                <Link
-                  href="/reserve"
-                  onClick={() => setMenuOpen(false)}
-                  className="text-xs uppercase tracking-widest bg-gold text-background px-5 py-4 text-center font-semibold hover:bg-gold-light transition-colors"
-                >
-                  Reserve a Table
-                </Link>
-              </motion.div>
             </motion.div>
           </>
         )}

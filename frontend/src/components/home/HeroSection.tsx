@@ -45,7 +45,10 @@ export function HeroSection() {
           <div className="w-6 h-px bg-gold" />
         </motion.div>
 
-        <h1 className="font-serif text-5xl sm:text-6xl md:text-7xl xl:text-[88px] text-text-primary leading-[0.9] mb-8">
+        <h1
+          className="font-serif text-5xl sm:text-6xl md:text-7xl xl:text-[88px] text-text-primary leading-[0.9] mb-8"
+          style={{ textShadow: "0 2px 24px rgba(0,0,0,0.7)" }}
+        >
           <span className="block mb-1">
             {LINE1.map((word, i) => (
               <motion.span
@@ -59,7 +62,7 @@ export function HeroSection() {
               </motion.span>
             ))}
           </span>
-          <span className="block text-gold">
+          <span className="block text-gold" style={{ textShadow: "0 2px 32px rgba(0,0,0,0.9), 0 0 60px rgba(201,168,76,0.25)" }}>
             {LINE2.map((word, i) => (
               <motion.span
                 key={word}
@@ -85,7 +88,8 @@ export function HeroSection() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.7, delay: 1.08 }}
-          className="text-text-muted text-sm md:text-base leading-relaxed mb-10 max-w-md mx-auto"
+          className="text-white/80 text-sm md:text-base leading-relaxed mb-10 max-w-md mx-auto"
+          style={{ textShadow: "0 1px 12px rgba(0,0,0,0.8)" }}
         >
           Your advisor for Vancouver&apos;s finest nightclubs, bars, and events — curated recommendations, guestlist access, always current.
         </motion.p>
