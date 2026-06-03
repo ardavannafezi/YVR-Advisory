@@ -13,16 +13,16 @@ export function CtaBanner() {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          className="text-gold text-xs uppercase tracking-[0.4em] mb-6"
+          className="text-gold text-[10px] uppercase tracking-[0.45em] mb-6"
         >
           Your Advisor
         </motion.p>
         <motion.h2
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-          className="font-serif text-4xl md:text-6xl text-text-primary leading-tight mb-4"
+          className="font-sans font-bold text-4xl md:text-6xl text-text-primary leading-tight mb-4"
         >
           Not Sure Where to Go?
         </motion.h2>
@@ -31,22 +31,22 @@ export function CtaBanner() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="mx-auto h-px w-16 bg-gold mb-6 origin-center"
+          className="mx-auto h-px w-12 bg-gold mb-6 origin-center"
         />
         <motion.p
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          transition={{ delay: 0.3 }}
-          className="text-text-muted mb-10 leading-relaxed"
+          transition={{ delay: 0.25 }}
+          className="text-text-muted mb-10 leading-relaxed max-w-md mx-auto"
         >
-          Answer a few quick questions and we&apos;ll match you to the perfect venue or event for tonight.
+          Answer 4 quick questions — we&apos;ll point you to the right venue or event for tonight. Free, instant, no sign-up needed.
         </motion.p>
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ delay: 0.4 }}
+          transition={{ delay: 0.35 }}
           className="flex flex-col sm:flex-row gap-4 justify-center"
         >
           <Link href="/tonight">

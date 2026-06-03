@@ -21,8 +21,12 @@ export function VenueCard({ venue, index = 0 }: VenueCardProps) {
       whileInView="visible"
       viewport={{ once: true, margin: "-80px" }}
     >
-      <Link href={`/venues/${venue.slug}`} className="group block card-surface overflow-hidden hover:border-gold/40 transition-colors duration-300">
-        <div className="relative h-56 overflow-hidden bg-white/5">
+      <Link
+        href={`/venues/${venue.slug}`}
+        className="group block rounded-2xl overflow-hidden bg-white/[0.04] border border-white/10 hover:border-gold/30 backdrop-blur-sm transition-all duration-300 hover:bg-white/[0.06]"
+      >
+        {/* Image */}
+        <div className="relative h-52 overflow-hidden bg-white/5">
           {venue.image_url ? (
             <Image
               src={venue.image_url}
@@ -32,12 +36,13 @@ export function VenueCard({ venue, index = 0 }: VenueCardProps) {
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
           ) : (
-            <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-br from-gold/8 to-transparent" />
           )}
-          <div className="absolute inset-0 bg-dark-gradient" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+
           <div className="absolute top-3 right-3 flex items-center gap-2">
             {venue.logo_url && (
-              <div className="relative w-8 h-8 bg-background/80 border border-white/10 overflow-hidden">
+              <div className="relative w-8 h-8 bg-background/80 border border-white/10 rounded-lg overflow-hidden">
                 <Image
                   src={venue.logo_url}
                   alt={`${venue.name} logo`}
@@ -48,11 +53,12 @@ export function VenueCard({ venue, index = 0 }: VenueCardProps) {
               </div>
             )}
             {venue.price_tier && (
-              <span className="text-[10px] uppercase tracking-widest text-gold bg-background/80 border border-gold/30 px-2 py-0.5">
+              <span className="text-[10px] uppercase tracking-widest text-gold bg-background/80 border border-gold/30 px-2 py-0.5 rounded-md">
                 {venue.price_tier}
               </span>
             )}
           </div>
+
           <div className="absolute bottom-3 left-3 flex gap-1.5 flex-wrap">
             {(venue.music_types ?? []).slice(0, 2).map((type) => (
               <Badge key={type} label={type} variant="gold" />
@@ -60,6 +66,7 @@ export function VenueCard({ venue, index = 0 }: VenueCardProps) {
           </div>
         </div>
 
+        {/* Info */}
         <div className="p-5">
           <div className="flex items-center justify-between mb-1">
             <p className="text-text-dim text-[10px] uppercase tracking-widest">{venue.neighbourhood ?? "—"}</p>
@@ -69,7 +76,7 @@ export function VenueCard({ venue, index = 0 }: VenueCardProps) {
               </p>
             )}
           </div>
-          <h3 className="font-serif text-xl text-text-primary group-hover:text-gold transition-colors">
+          <h3 className="font-sans font-semibold text-lg text-text-primary group-hover:text-gold transition-colors">
             {venue.name}
           </h3>
           {venue.hospitality_company && (

@@ -19,7 +19,7 @@ export function SectionHeading({ eyebrow, title, subtitle, center = false }: Sec
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="text-gold text-xs uppercase tracking-[0.3em] mb-4"
+          className="text-gold text-[10px] uppercase tracking-[0.35em] mb-4"
         >
           {eyebrow}
         </motion.p>
@@ -30,7 +30,7 @@ export function SectionHeading({ eyebrow, title, subtitle, center = false }: Sec
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
-        className="font-serif text-4xl md:text-5xl text-text-primary leading-tight"
+        className="font-sans font-bold text-4xl md:text-5xl text-text-primary leading-tight"
       >
         {title}
       </motion.h2>
@@ -39,7 +39,7 @@ export function SectionHeading({ eyebrow, title, subtitle, center = false }: Sec
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
-        className={`mt-4 h-px w-16 bg-gold origin-left ${center ? "mx-auto" : ""}`}
+        className={`mt-4 h-px w-12 bg-gold origin-left ${center ? "mx-auto" : ""}`}
       />
       {subtitle && (
         <motion.p

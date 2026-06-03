@@ -27,8 +27,20 @@ export const metadata: Metadata = {
     template: "%s | YVR Advisory",
   },
   description:
-    "Your guide to Vancouver's finest nightlife — curated venues, exclusive events, and personalized recommendations for the discerning night out.",
-  keywords: ["Vancouver nightlife", "Vancouver clubs", "Vancouver events", "YVR nightlife", "Vancouver where to go tonight"],
+    "YVR Advisory is Vancouver's independent nightlife guide — curated nightclubs, cocktail bars, upcoming events, and personalized recommendations. No affiliations. Just honest advice.",
+  keywords: [
+    "Vancouver nightlife",
+    "nightclubs Vancouver",
+    "events tonight Vancouver",
+    "Vancouver clubs",
+    "best bars Vancouver",
+    "events Vancouver",
+    "Granville Street nightlife",
+    "Gastown bars Vancouver",
+    "Yaletown lounges",
+    "YVR nightlife guide",
+    "Vancouver where to go tonight",
+  ],
   openGraph: {
     type: "website",
     locale: "en_CA",

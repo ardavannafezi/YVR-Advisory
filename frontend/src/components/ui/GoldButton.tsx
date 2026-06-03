@@ -1,7 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { useMagneticHover } from "@/hooks/useMagneticHover";
 import clsx from "clsx";
 
 interface GoldButtonProps {
@@ -23,12 +21,10 @@ export function GoldButton({
   disabled,
   className,
 }: GoldButtonProps) {
-  const { ref, springX, springY, onMouseMove, onMouseLeave } = useMagneticHover(0.35);
-
   const sizes = {
-    sm: "px-5 py-2 text-sm",
-    md: "px-8 py-3 text-sm tracking-widest",
-    lg: "px-10 py-4 text-base tracking-widest",
+    sm: "px-5 py-2 text-[11px]",
+    md: "px-8 py-3 text-[11px] tracking-widest",
+    lg: "px-10 py-4 text-[12px] tracking-widest",
   };
 
   const variants = {
@@ -38,16 +34,12 @@ export function GoldButton({
   };
 
   return (
-    <motion.button
-      ref={ref as React.Ref<HTMLButtonElement>}
+    <button
       type={type}
       onClick={onClick}
       disabled={disabled}
-      style={{ x: springX, y: springY }}
-      onMouseMove={onMouseMove as any}
-      onMouseLeave={onMouseLeave}
       className={clsx(
-        "relative inline-flex items-center justify-center uppercase transition-colors duration-200 rounded-none cursor-pointer",
+        "relative inline-flex items-center justify-center uppercase transition-colors duration-200 cursor-pointer",
         "disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none",
         sizes[size],
         variants[variant],
@@ -55,6 +47,6 @@ export function GoldButton({
       )}
     >
       {children}
-    </motion.button>
+    </button>
   );
 }
