@@ -104,7 +104,7 @@ export default async function EventDetailPage({ params }: { params: { slug: stri
               </h1>
 
               {/* Meta */}
-              <div className="flex flex-wrap gap-x-4 gap-y-1 text-text-muted text-sm mb-6">
+              <div className="flex flex-wrap gap-x-5 gap-y-1.5 text-sm mb-6" style={{color: '#b0b0b0'}}>
                 <span>{ptDateLong(date)}</span>
                 <span>·</span>
                 <span>{ptTime(date)} PT</span>
@@ -122,14 +122,14 @@ export default async function EventDetailPage({ params }: { params: { slug: stri
               {(event.guestlist_closes_at || event.entry_closes_at) && (
                 <div className="border border-white/8 bg-white/[0.02] p-4 mb-6 space-y-1">
                   {event.guestlist_closes_at && (
-                    <p className="text-[11px] uppercase tracking-widest text-text-dim">
+                    <p className="text-[11px] uppercase tracking-widest text-[#a0a0a0]">
                       {guestlistClosed
                         ? "Guestlist closed"
                         : `Guestlist closes ${ptGuestlistClose(new Date(event.guestlist_closes_at))} PT`}
                     </p>
                   )}
                   {event.entry_closes_at && (
-                    <p className="text-[11px] uppercase tracking-widest text-text-dim">
+                    <p className="text-[11px] uppercase tracking-widest text-[#a0a0a0]">
                       {entryClosed
                         ? "Entry closed"
                         : `Entry closes ${ptGuestlistClose(new Date(event.entry_closes_at))} PT`}
@@ -172,19 +172,19 @@ export default async function EventDetailPage({ params }: { params: { slug: stri
                           <div className="flex gap-3 mt-1.5">
                             {artist.instagram && (
                               <a href={artist.instagram} target="_blank" rel="noopener noreferrer"
-                                className="text-[10px] uppercase tracking-widest text-text-dim hover:text-gold transition-colors">
+                                className="text-[10px] uppercase tracking-widest text-[#888] hover:text-gold transition-colors">
                                 IG
                               </a>
                             )}
                             {artist.tiktok && (
                               <a href={artist.tiktok} target="_blank" rel="noopener noreferrer"
-                                className="text-[10px] uppercase tracking-widest text-text-dim hover:text-gold transition-colors">
+                                className="text-[10px] uppercase tracking-widest text-[#888] hover:text-gold transition-colors">
                                 TT
                               </a>
                             )}
                             {artist.youtube && (
                               <a href={artist.youtube} target="_blank" rel="noopener noreferrer"
-                                className="text-[10px] uppercase tracking-widest text-text-dim hover:text-gold transition-colors">
+                                className="text-[10px] uppercase tracking-widest text-[#888] hover:text-gold transition-colors">
                                 YT
                               </a>
                             )}
@@ -216,10 +216,10 @@ export default async function EventDetailPage({ params }: { params: { slug: stri
                         {event.venue.name}
                       </p>
                       {event.venue.neighbourhood && (
-                        <p className="text-text-dim text-[11px] mt-0.5">{event.venue.neighbourhood}</p>
+                        <p className="text-[#888] text-[11px] mt-0.5">{event.venue.neighbourhood}</p>
                       )}
                       {event.venue.address && (
-                        <p className="text-text-dim text-[11px]">{event.venue.address}</p>
+                        <p className="text-[#888] text-[11px]">{event.venue.address}</p>
                       )}
                     </div>
                     <span className="ml-auto text-gold text-lg opacity-0 group-hover:opacity-100 transition-opacity">›</span>

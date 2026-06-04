@@ -31,15 +31,16 @@ export function EventsPageClient({ initialData }: Props) {
   return (
     <>
       {/* Mobile-only header — shown instead of quiz on small screens */}
-      <div className="md:hidden pt-24 pb-8 max-w-7xl mx-auto px-6 text-center">
-        <p className="text-[10px] uppercase tracking-[0.3em] text-gold mb-3">Vancouver Events</p>
-        <h1 className="font-serif text-4xl text-text-primary mb-4">Find Your Night</h1>
-        <p className="text-text-muted text-sm mb-8">Upcoming events at Vancouver&apos;s top venues.</p>
+      <div className="md:hidden pt-24 pb-5 max-w-7xl mx-auto px-6 flex items-center justify-between">
+        <div>
+          <p className="text-[9px] uppercase tracking-[0.3em] text-gold mb-1">Vancouver Events</p>
+          <h1 className="font-serif text-2xl text-text-primary">Find Your Night</h1>
+        </div>
         <Link
           href="/where-to-go"
-          className="inline-flex items-center text-[11px] uppercase tracking-[0.2em] bg-gold text-[#0a0a0a] px-8 py-4 font-semibold hover:bg-gold-light transition-colors"
+          className="flex-shrink-0 text-[10px] uppercase tracking-[0.15em] bg-gold text-[#0a0a0a] px-4 py-2.5 font-semibold hover:bg-gold-light transition-colors"
         >
-          Plan Your Night →
+          Plan Night →
         </Link>
       </div>
 
@@ -61,7 +62,7 @@ export function EventsPageClient({ initialData }: Props) {
       {/* All events section */}
       <section
         ref={listRef as React.RefObject<HTMLElement>}
-        className={`max-w-7xl mx-auto px-6 pb-28 ${quizDone ? "pt-24 md:pt-32" : "pt-8 md:pt-16"}`}
+        className={`max-w-7xl mx-auto px-6 pb-28 ${quizDone ? "pt-24 md:pt-32" : "pt-4 md:pt-16"}`}
       >
         {quizDone ? (
           <motion.div

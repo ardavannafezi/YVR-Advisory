@@ -18,8 +18,8 @@ const config: Config = {
         },
         text: {
           primary: "#f7f6f2",
-          muted: "#787878",
-          dim: "#424242",
+          muted: "#a8a8a8",
+          dim: "#6a6a6a",
         },
         border: {
           DEFAULT: "rgba(255,255,255,0.07)",

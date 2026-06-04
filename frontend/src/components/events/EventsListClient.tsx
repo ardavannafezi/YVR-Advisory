@@ -8,11 +8,6 @@ import { SkeletonGrid } from "@/components/ui/SkeletonCard";
 import type { Event, PaginatedList } from "@/types";
 
 const MUSIC_OPTIONS = ["hip-hop", "house", "techno", "latin", "r&b", "edm", "pop", "live"];
-const ENTRY_OPTIONS = [
-  { value: "guestlist", label: "Guestlist" },
-  { value: "tickets", label: "Tickets" },
-  { value: "reservation", label: "Bottle Service" },
-];
 const DATE_OPTIONS = [
   { label: "Tonight", value: "tonight" },
   { label: "This Weekend", value: "weekend" },
@@ -60,10 +55,9 @@ export function EventsListClient({ initialData, recommendedResults, recommendedS
   const [loadingMore, setLoadingMore] = useState(false);
 
   const [musicFilter, setMusicFilter] = useState<string | null>(null);
-  const [entryFilter, setEntryFilter] = useState<string | null>(null);
   const [dateFilter, setDateFilter] = useState<string | null>(null);
 
-  const prevFilters = useRef({ musicFilter, entryFilter, dateFilter });
+  const prevFilters = useRef({ musicFilter, dateFilter });
 
   const fetchEvents = useCallback(async (pg: number, reset = false) => {
     if (reset) setLoading(true); else setLoadingMore(true);
@@ -73,7 +67,6 @@ export function EventsListClient({ initialData, recommendedResults, recommendedS
         page: String(pg),
         limit: "12",
         ...(musicFilter ? { music_type: musicFilter } : {}),
-        ...(entryFilter ? { entry_type: entryFilter } : {}),
         ...(dateParams.date_from ? { date_from: dateParams.date_from } : {}),
         ...(dateParams.date_to ? { date_to: dateParams.date_to } : {}),
       });
@@ -86,20 +79,20 @@ export function EventsListClient({ initialData, recommendedResults, recommendedS
       setLoading(false);
       setLoadingMore(false);
     }
-  }, [musicFilter, entryFilter, dateFilter]);
+  }, [musicFilter, dateFilter]);
 
   useEffect(() => {
     const prev = prevFilters.current;
-    if (prev.musicFilter !== musicFilter || prev.entryFilter !== entryFilter || prev.dateFilter !== dateFilter) {
-      prevFilters.current = { musicFilter, entryFilter, dateFilter };
+    if (prev.musicFilter !== musicFilter || prev.dateFilter !== dateFilter) {
+      prevFilters.current = { musicFilter, dateFilter };
       fetchEvents(1, true);
     }
-  }, [musicFilter, entryFilter, dateFilter, fetchEvents]);
+  }, [musicFilter, dateFilter, fetchEvents]);
 
   const hasMore = items.length < total;
-  const anyFilter = musicFilter || entryFilter || dateFilter;
+  const anyFilter = musicFilter || dateFilter;
 
-  function clearAll() { setMusicFilter(null); setEntryFilter(null); setDateFilter(null); }
+  function clearAll() { setMusicFilter(null); setDateFilter(null); }
 
   const displayItems = showRecommended && recommendedResults?.length ? recommendedResults : items;
   const hasSimilar = showRecommended && recommendedSimilar?.length;
@@ -107,16 +100,16 @@ export function EventsListClient({ initialData, recommendedResults, recommendedS
   return (
     <div>
       {/* Filter panel */}
-      <div className="mb-10 border border-white/[0.06] bg-[#0c0c0c] p-4 md:p-6 space-y-5 overflow-hidden">
+      <div className="mb-10 border border-white/[0.06] bg-[#0c0c0c] p-4 space-y-3 overflow-hidden">
         {/* When row */}
-        <div className="flex items-center gap-3">
-          <span className="text-[10px] uppercase tracking-[0.25em] text-gold w-16 flex-shrink-0">When</span>
-          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide md:flex-wrap md:overflow-visible md:pb-0">
+        <div className="flex items-start gap-3">
+          <span className="text-[10px] uppercase tracking-[0.25em] text-gold w-16 flex-shrink-0 pt-1.5">When</span>
+          <div className="flex flex-wrap gap-1.5">
             {DATE_OPTIONS.map(opt => (
               <button
                 key={opt.value}
                 onClick={() => setDateFilter(f => f === opt.value ? null : opt.value)}
-                className={`text-[11px] uppercase tracking-[0.15em] px-5 py-2 border transition-all duration-200 ${
+                className={`text-[10px] uppercase tracking-[0.1em] px-3 py-1.5 border transition-all duration-200 ${
                   dateFilter === opt.value
                     ? "border-gold bg-gold/12 text-gold"
                     : "border-white/10 text-text-muted hover:border-white/25 hover:text-text-primary"
@@ -130,15 +123,15 @@ export function EventsListClient({ initialData, recommendedResults, recommendedS
 
         <div className="h-px bg-white/[0.05]" />
 
-        {/* Music row */}
-        <div className="flex items-center gap-3">
-          <span className="text-[10px] uppercase tracking-[0.25em] text-gold w-16 flex-shrink-0">Music</span>
-          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide md:flex-wrap md:overflow-visible md:pb-0">
+        {/* Music + clear row */}
+        <div className="flex items-start gap-3">
+          <span className="text-[10px] uppercase tracking-[0.25em] text-gold w-16 flex-shrink-0 pt-1.5">Music</span>
+          <div className="flex flex-wrap gap-1.5 flex-1">
             {MUSIC_OPTIONS.map(opt => (
               <button
                 key={opt}
                 onClick={() => setMusicFilter(f => f === opt ? null : opt)}
-                className={`text-[11px] uppercase tracking-[0.15em] px-5 py-2 border transition-all duration-200 ${
+                className={`text-[10px] uppercase tracking-[0.1em] px-3 py-1.5 border transition-all duration-200 ${
                   musicFilter === opt
                     ? "border-gold bg-gold/12 text-gold"
                     : "border-white/10 text-text-muted hover:border-white/25 hover:text-text-primary"
@@ -148,34 +141,12 @@ export function EventsListClient({ initialData, recommendedResults, recommendedS
               </button>
             ))}
           </div>
-        </div>
-
-        <div className="h-px bg-white/[0.05]" />
-
-        {/* Entry + clear row */}
-        <div className="flex items-center gap-3">
-          <span className="text-[10px] uppercase tracking-[0.25em] text-gold w-16 flex-shrink-0">Entry</span>
-          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide md:flex-wrap md:overflow-visible md:pb-0 flex-1">
-            {ENTRY_OPTIONS.map(opt => (
-              <button
-                key={opt.value}
-                onClick={() => setEntryFilter(f => f === opt.value ? null : opt.value)}
-                className={`text-[11px] uppercase tracking-[0.15em] px-5 py-2 border transition-all duration-200 ${
-                  entryFilter === opt.value
-                    ? "border-gold bg-gold/12 text-gold"
-                    : "border-white/10 text-text-muted hover:border-white/25 hover:text-text-primary"
-                }`}
-              >
-                {opt.label}
-              </button>
-            ))}
-          </div>
           {anyFilter && (
             <button
               onClick={clearAll}
-              className="ml-auto text-[10px] uppercase tracking-[0.15em] text-text-dim border border-white/10 px-4 py-2 hover:border-white/25 hover:text-text-muted transition-colors"
+              className="flex-shrink-0 text-[10px] uppercase tracking-[0.15em] text-text-dim border border-white/10 px-3 py-1.5 hover:border-white/25 hover:text-text-muted transition-colors"
             >
-              Clear All ×
+              Clear ×
             </button>
           )}
         </div>
@@ -218,7 +189,7 @@ export function EventsListClient({ initialData, recommendedResults, recommendedS
         </div>
       ) : (
         <motion.div
-          key={`${musicFilter}-${entryFilter}-${dateFilter}`}
+          key={`${musicFilter}-${dateFilter}`}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.3 }}
@@ -270,6 +241,17 @@ export function EventsListClient({ initialData, recommendedResults, recommendedS
           </button>
         </div>
       )}
+
+      {/* SEO content */}
+      <section className="mt-24 pt-10 border-t border-white/[0.05]">
+        <h2 className="font-serif text-xl text-text-primary mb-3">Vancouver Nightlife Events</h2>
+        <p className="text-text-muted text-sm leading-relaxed max-w-3xl mb-4">
+          YVR Advisory curates the best upcoming events across Vancouver — from underground techno nights in Gastown to latin nights on Granville Street, hip-hop events in Yaletown, and live music at Coal Harbour rooftops. Updated weekly with the latest club nights, DJ sets, residencies, and themed events.
+        </p>
+        <p className="text-text-muted text-sm leading-relaxed max-w-3xl">
+          Use our filters to find tonight&apos;s events, this weekend&apos;s events, or browse by music genre. Join a guestlist, book a table, or grab tickets — all in one place. Vancouver&apos;s nightlife, curated.
+        </p>
+      </section>
     </div>
   );
 }
