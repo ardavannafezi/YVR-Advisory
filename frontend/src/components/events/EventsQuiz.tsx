@@ -160,7 +160,7 @@ export function EventsQuiz({ onResults, onSkip, listRef }: Props) {
       </div>
 
       {/* Top bar — questionnaire label + skip */}
-      <div className="relative z-10 flex items-center justify-between px-6 sm:px-10 pt-8 pb-0">
+      <div className="relative z-10 flex items-center justify-between px-6 sm:px-10 pt-24 pb-0">
         <div className="flex items-center gap-3">
           <div className="w-5 h-px bg-gold" />
           <span className="text-[10px] uppercase tracking-[0.3em] text-gold">Event Questionnaire</span>

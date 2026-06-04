@@ -107,11 +107,11 @@ export function EventsListClient({ initialData, recommendedResults, recommendedS
   return (
     <div>
       {/* Filter panel */}
-      <div className="mb-10 border border-white/[0.06] bg-[#0c0c0c] p-6 space-y-5">
+      <div className="mb-10 border border-white/[0.06] bg-[#0c0c0c] p-4 md:p-6 space-y-5 overflow-hidden">
         {/* When row */}
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex items-center gap-3">
           <span className="text-[10px] uppercase tracking-[0.25em] text-gold w-16 flex-shrink-0">When</span>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide md:flex-wrap md:overflow-visible md:pb-0">
             {DATE_OPTIONS.map(opt => (
               <button
                 key={opt.value}
@@ -131,9 +131,9 @@ export function EventsListClient({ initialData, recommendedResults, recommendedS
         <div className="h-px bg-white/[0.05]" />
 
         {/* Music row */}
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex items-center gap-3">
           <span className="text-[10px] uppercase tracking-[0.25em] text-gold w-16 flex-shrink-0">Music</span>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide md:flex-wrap md:overflow-visible md:pb-0">
             {MUSIC_OPTIONS.map(opt => (
               <button
                 key={opt}
@@ -153,9 +153,9 @@ export function EventsListClient({ initialData, recommendedResults, recommendedS
         <div className="h-px bg-white/[0.05]" />
 
         {/* Entry + clear row */}
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex items-center gap-3">
           <span className="text-[10px] uppercase tracking-[0.25em] text-gold w-16 flex-shrink-0">Entry</span>
-          <div className="flex flex-wrap gap-2 flex-1">
+          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide md:flex-wrap md:overflow-visible md:pb-0 flex-1">
             {ENTRY_OPTIONS.map(opt => (
               <button
                 key={opt.value}

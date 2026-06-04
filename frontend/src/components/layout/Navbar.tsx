@@ -10,7 +10,6 @@ import clsx from "clsx";
 const links = [
   { href: "/venues", label: "Venues" },
   { href: "/events", label: "Events" },
-  { href: "/where-to-go", label: "Where to Go" },
   { href: "/blog", label: "Journal" },
   { href: "/about", label: "About" },
 ];
@@ -68,6 +67,13 @@ export function Navbar() {
             ))}
           </ul>
 
+          {/* Desktop CTA */}
+          <Link
+            href="/where-to-go"
+            className="hidden md:flex items-center text-[11px] uppercase tracking-[0.2em] bg-gold text-[#0a0a0a] px-5 py-2.5 font-semibold hover:bg-gold-light transition-colors"
+          >
+            Where to Go Tonight
+          </Link>
 
           {/* Hamburger */}
           <button
@@ -141,6 +147,14 @@ export function Navbar() {
                   </motion.li>
                 ))}
               </ul>
+
+              <Link
+                href="/where-to-go"
+                onClick={() => setMenuOpen(false)}
+                className="block w-full text-center text-[11px] uppercase tracking-[0.2em] bg-gold text-[#0a0a0a] px-5 py-4 font-semibold hover:bg-gold-light transition-colors mt-6"
+              >
+                Where to Go Tonight
+              </Link>
 
             </motion.div>
           </>
