@@ -25,6 +25,20 @@ export default function AboutPage() {
         </p>
       </div>
 
+      <div className="border-t border-white/[0.06] pt-10 mb-10">
+        <p className="text-[10px] uppercase tracking-[0.3em] text-gold mb-6">For Venues &amp; Organizers</p>
+        <p className="text-text-muted text-sm leading-relaxed mb-4">
+          Venue owner, event organizer, or promoter? For inquiries, listing requests, or removal requests, reach us directly:
+        </p>
+        <a
+          href="mailto:team@yvradvisory.ca"
+          className="flex items-center gap-4 border border-white/10 px-6 py-4 hover:border-gold/40 hover:text-gold transition-colors group"
+        >
+          <span className="text-text-dim text-xs uppercase tracking-widest group-hover:text-gold transition-colors">Email</span>
+          <span className="text-text-primary text-sm ml-auto">team@yvradvisory.ca</span>
+        </a>
+      </div>
+
       <div className="border-t border-white/[0.06] pt-10 space-y-4">
         <p className="text-[10px] uppercase tracking-[0.3em] text-gold mb-6">Connect</p>
         <a

@@ -46,24 +46,24 @@ function buildDateParams(dateFilter: string | null): { date_from?: string; date_
 
 interface Props {
   initialData: PaginatedList<Event>;
-  initialMusicFilter?: string | null;
-  initialDateFilter?: string | null;
-  initialEntryFilter?: string | null;
+  recommendedResults?: Event[];
+  recommendedSimilar?: Event[];
+  showRecommended?: boolean;
+  onRetakeQuiz?: () => void;
 }
 
-export function EventsListClient({ initialData, initialMusicFilter, initialDateFilter, initialEntryFilter }: Props) {
+export function EventsListClient({ initialData, recommendedResults, recommendedSimilar, showRecommended, onRetakeQuiz }: Props) {
   const [items, setItems] = useState<Event[]>(initialData.items);
   const [total, setTotal] = useState(initialData.total);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
 
-  const [musicFilter, setMusicFilter] = useState<string | null>(initialMusicFilter ?? null);
-  const [entryFilter, setEntryFilter] = useState<string | null>(initialEntryFilter ?? null);
-  const [dateFilter, setDateFilter] = useState<string | null>(initialDateFilter ?? null);
+  const [musicFilter, setMusicFilter] = useState<string | null>(null);
+  const [entryFilter, setEntryFilter] = useState<string | null>(null);
+  const [dateFilter, setDateFilter] = useState<string | null>(null);
 
-  const prevFilters = useRef({ musicFilter: initialMusicFilter ?? null, entryFilter: initialEntryFilter ?? null, dateFilter: initialDateFilter ?? null });
-  const isFirstMount = useRef(true);
+  const prevFilters = useRef({ musicFilter, entryFilter, dateFilter });
 
   const fetchEvents = useCallback(async (pg: number, reset = false) => {
     if (reset) setLoading(true); else setLoadingMore(true);
@@ -89,24 +89,20 @@ export function EventsListClient({ initialData, initialMusicFilter, initialDateF
   }, [musicFilter, entryFilter, dateFilter]);
 
   useEffect(() => {
-    if (isFirstMount.current) {
-      isFirstMount.current = false;
-      if (initialMusicFilter || initialDateFilter || initialEntryFilter) {
-        fetchEvents(1, true);
-      }
-      return;
-    }
     const prev = prevFilters.current;
     if (prev.musicFilter !== musicFilter || prev.entryFilter !== entryFilter || prev.dateFilter !== dateFilter) {
       prevFilters.current = { musicFilter, entryFilter, dateFilter };
       fetchEvents(1, true);
     }
-  }, [musicFilter, entryFilter, dateFilter, fetchEvents, initialMusicFilter, initialDateFilter, initialEntryFilter]);
+  }, [musicFilter, entryFilter, dateFilter, fetchEvents]);
 
   const hasMore = items.length < total;
   const anyFilter = musicFilter || entryFilter || dateFilter;
 
   function clearAll() { setMusicFilter(null); setEntryFilter(null); setDateFilter(null); }
+
+  const displayItems = showRecommended && recommendedResults?.length ? recommendedResults : items;
+  const hasSimilar = showRecommended && recommendedSimilar?.length;
 
   return (
     <div>
@@ -132,7 +128,6 @@ export function EventsListClient({ initialData, initialMusicFilter, initialDateF
           </div>
         </div>
 
-        {/* Divider */}
         <div className="h-px bg-white/[0.05]" />
 
         {/* Music row */}
@@ -155,7 +150,6 @@ export function EventsListClient({ initialData, initialMusicFilter, initialDateF
           </div>
         </div>
 
-        {/* Divider */}
         <div className="h-px bg-white/[0.05]" />
 
         {/* Entry + clear row */}
@@ -189,15 +183,30 @@ export function EventsListClient({ initialData, initialMusicFilter, initialDateF
 
       {/* Results header */}
       <div className="mb-6 flex items-center justify-between">
-        <p className="text-text-dim text-xs">
-          {anyFilter ? `${total} matching events` : `${total} upcoming events`}
-        </p>
+        {showRecommended && recommendedResults?.length ? (
+          <div>
+            <p className="text-[10px] uppercase tracking-[0.25em] text-gold mb-1">Recommended for You</p>
+            <p className="text-text-dim text-xs">{recommendedResults.length} events matching your taste</p>
+          </div>
+        ) : (
+          <p className="text-text-dim text-xs">
+            {anyFilter ? `${total} matching events` : `${total} upcoming events`}
+          </p>
+        )}
+        {showRecommended && onRetakeQuiz && (
+          <button
+            onClick={onRetakeQuiz}
+            className="sm:hidden text-[10px] uppercase tracking-widest text-text-dim border border-white/10 px-4 py-2 hover:border-gold/30 hover:text-gold transition-colors"
+          >
+            ← Retake
+          </button>
+        )}
       </div>
 
       {/* Grid */}
       {loading ? (
         <SkeletonGrid count={6} />
-      ) : items.length === 0 ? (
+      ) : displayItems.length === 0 ? (
         <div className="py-24 text-center border border-white/[0.05]">
           <p className="text-[10px] uppercase tracking-[0.25em] text-text-dim mb-2">No Results</p>
           <p className="text-text-muted text-sm">No events found — try adjusting your filters.</p>
@@ -215,14 +224,30 @@ export function EventsListClient({ initialData, initialMusicFilter, initialDateF
           transition={{ duration: 0.3 }}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         >
-          {items.map((event, i) => (
+          {displayItems.map((event, i) => (
             <EventCard key={event.id} event={event} index={i} />
           ))}
         </motion.div>
       )}
 
-      {/* Load more */}
-      {hasMore && (
+      {/* You might also like */}
+      {hasSimilar && (
+        <div className="mt-20">
+          <div className="flex items-center gap-4 mb-8">
+            <div className="flex-1 h-px bg-white/[0.05]" />
+            <p className="text-[10px] uppercase tracking-[0.25em] text-text-dim">You Might Also Like</p>
+            <div className="flex-1 h-px bg-white/[0.05]" />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {recommendedSimilar!.map((event, i) => (
+              <EventCard key={event.id} event={event} index={i} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Load more — only when not in recommended mode */}
+      {!showRecommended && hasMore && (
         <div className="text-center mt-12">
           <button
             onClick={() => fetchEvents(page + 1)}
@@ -230,6 +255,18 @@ export function EventsListClient({ initialData, initialMusicFilter, initialDateF
             className="text-[11px] uppercase tracking-[0.2em] border border-gold/30 text-gold px-10 py-4 hover:bg-gold/8 transition-colors disabled:opacity-40"
           >
             {loadingMore ? "Loading…" : `Load More — ${total - items.length} remaining`}
+          </button>
+        </div>
+      )}
+
+      {/* Browse all — when in recommended mode */}
+      {showRecommended && (
+        <div className="text-center mt-12">
+          <button
+            onClick={clearAll}
+            className="text-[11px] uppercase tracking-[0.2em] text-text-dim border border-white/10 px-8 py-4 hover:border-gold/30 hover:text-gold transition-all duration-200"
+          >
+            Browse All Events
           </button>
         </div>
       )}

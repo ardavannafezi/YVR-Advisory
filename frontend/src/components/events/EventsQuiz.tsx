@@ -9,23 +9,23 @@ const STORAGE_KEY = "yvr_events_quiz";
 
 const STEPS = [
   {
-    key: "venue_types",
-    question: "What type of venue?",
-    hint: "Select one or more",
-    options: ["Nightclub", "Cocktail Bar", "Bar & Restaurant", "Rooftop Lounge"],
-    optional: false,
-  },
-  {
     key: "music_types",
-    question: "What music moves you?",
+    question: "What music are you into?",
     hint: "Select all that apply",
     options: ["hip-hop", "house", "techno", "latin", "r&b", "edm", "pop", "live"],
     optional: false,
   },
   {
+    key: "venue_types",
+    question: "What type of venue?",
+    hint: "Pick one or more",
+    options: ["Nightclub", "Cocktail Bar", "Bar & Restaurant", "Rooftop Lounge"],
+    optional: false,
+  },
+  {
     key: "date",
-    question: "When are you going out?",
-    hint: "Optional — skip to see all dates",
+    question: "When are you going?",
+    hint: "Optional — skip to see all",
     options: ["Tonight", "This Weekend", "This Week"],
     optional: true,
   },

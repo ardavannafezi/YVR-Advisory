@@ -344,6 +344,189 @@ async def get_n8n_context(db: AsyncSession = Depends(get_db)):
     }
 
 
+@router.get("/event-schema", dependencies=[Depends(_verify_api_key)])
+async def get_event_schema(db: AsyncSession = Depends(get_db)):
+    """Full event creation schema + live valid values for n8n automation."""
+    venues_rows = (await db.execute(
+        select(Venue).where(Venue.is_active == True).order_by(Venue.name)
+    )).scalars().all()
+
+    venue_list = [
+        {
+            "name": v.name,
+            "slug": v.slug,
+            "guestlist_enabled": v.guestlist_enabled,
+            "bottle_service_enabled": v.bottle_service_enabled,
+            "guestlist_close_time": v.guestlist_close_time,
+        }
+        for v in venues_rows
+    ]
+
+    return {
+        "endpoint": "POST https://back.yvradvisory.ca/api/webhooks/n8n",
+        "auth": {"header": "X-API-Key", "value": "<N8N_WEBHOOK_API_KEY env var>"},
+        "content_type": "application/json",
+
+        "upsert_logic": [
+            "1. If external_id provided → look up Event by external_id, update if found",
+            "2. Else → match by event_name + same calendar date, update if found",
+            "3. If no match → create new event",
+            "4. If venue_name not found → auto-create minimal Venue row with that name",
+        ],
+
+        "fields": {
+            "event_name": {
+                "type": "string",
+                "required": True,
+                "description": "Full event name as it should appear on the site.",
+                "example": "Techno Night ft. DJ Skrillex",
+            },
+            "venue_name": {
+                "type": "string",
+                "required": True,
+                "description": "Must match an active venue name exactly (case-sensitive). If no match, a stub venue is auto-created. Use the venue list below.",
+                "example": "Celebrities Nightclub",
+            },
+            "date": {
+                "type": "ISO 8601 datetime string with timezone",
+                "required": True,
+                "description": "Event start date/time. Include timezone offset — PT is -07:00 (PDT) or -08:00 (PST).",
+                "example": "2026-07-04T22:00:00-07:00",
+            },
+            "external_id": {
+                "type": "string | null",
+                "required": False,
+                "description": "Your unique stable ID from the source system (Eventbrite ID, RA ID, etc.). Used for idempotent upserts — send the same external_id to update rather than duplicate.",
+                "example": "eventbrite_123456",
+            },
+            "category": {
+                "type": "string | null",
+                "required": False,
+                "description": "High-level event category.",
+                "valid_values": ["rave", "latin night", "hip-hop night", "themed", "residency", "open format", "live music", "rooftop"],
+                "example": "rave",
+            },
+            "music_type": {
+                "type": "string | null",
+                "required": False,
+                "description": "Primary music genre for the event.",
+                "valid_values": ["house", "techno", "hip-hop", "r&b", "latin", "edm", "open-format", "top-40", "afrobeats", "pop", "live"],
+                "example": "techno",
+            },
+            "description": {
+                "type": "string | null",
+                "required": False,
+                "description": "Full event description shown on the detail page. Markdown not supported — plain text only.",
+                "example": "Vancouver's premier weekly techno night returns with a special back-to-back set.",
+            },
+            "image_url": {
+                "type": "string (URL) | null",
+                "required": False,
+                "description": "Full HTTPS URL to the event cover/flyer image. Recommended aspect ratio 16:9 or square.",
+                "example": "https://cdn.example.com/events/techno-night-2026-07-04.jpg",
+            },
+            "ticket_url": {
+                "type": "string (URL) | null",
+                "required": False,
+                "description": "External ticketing link (Eventbrite, RA, etc.). Shown as 'Get Tickets' CTA when present.",
+                "example": "https://www.eventbrite.com/e/123456",
+            },
+            "lineup": {
+                "type": "array of objects | null",
+                "required": False,
+                "description": "List of performers. Each object must have at minimum a 'name' key.",
+                "object_fields": {
+                    "name": "string — required. Artist/DJ name.",
+                    "time": "string | null — set time, e.g. '11:00 PM'",
+                    "instagram": "string | null — full Instagram profile URL",
+                    "tiktok": "string | null — full TikTok profile URL",
+                    "youtube": "string | null — full YouTube channel URL",
+                },
+                "example": [
+                    {"name": "DJ Skrillex", "time": "12:00 AM", "instagram": "https://instagram.com/skrillex"},
+                    {"name": "Opening DJ", "time": "10:00 PM"},
+                ],
+            },
+            "entry_types": {
+                "type": "array of strings | null",
+                "required": False,
+                "description": "How attendees can enter. Shown as badges on event card and detail page.",
+                "valid_values": ["Guestlist", "Tickets", "Door", "Bottle Service", "Reservation"],
+                "example": ["Guestlist", "Tickets"],
+            },
+            "our_guestlist": {
+                "type": "boolean",
+                "required": False,
+                "default": False,
+                "description": "Set true only if YVR Advisory is actively managing the guestlist for this event AND the venue has guestlist_enabled=true. Enables the 'Join Guestlist' CTA on the event detail page.",
+                "example": True,
+            },
+            "our_reservation": {
+                "type": "boolean",
+                "required": False,
+                "default": False,
+                "description": "Set true only if YVR Advisory is handling table/bottle reservations for this event AND the venue has bottle_service_enabled=true. Enables the 'Reserve a Table' CTA.",
+                "example": False,
+            },
+            "guestlist_closes_at": {
+                "type": "ISO 8601 datetime string | null",
+                "required": False,
+                "description": "When guestlist signup closes. After this time, the guestlist CTA is hidden and 'Guestlist closed' is shown. Usually a few hours before the event start.",
+                "example": "2026-07-04T22:00:00-07:00",
+            },
+            "entry_closes_at": {
+                "type": "ISO 8601 datetime string | null",
+                "required": False,
+                "description": "When door/ticket entry closes (e.g. last entry at 1 AM). After this time, ticket and reservation CTAs are hidden.",
+                "example": "2026-07-05T01:00:00-07:00",
+            },
+            "gallery": {
+                "type": "array of strings (URLs) | null",
+                "required": False,
+                "description": "Additional event images shown in a gallery slider on the detail page.",
+                "example": ["https://cdn.example.com/img1.jpg", "https://cdn.example.com/img2.jpg"],
+            },
+            "video_url": {
+                "type": "string (URL) | null",
+                "required": False,
+                "description": "YouTube or Vimeo URL shown in a 'Watch' section on the detail page.",
+                "example": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+            },
+        },
+
+        "example_payload": {
+            "event_name": "Techno Night ft. DJ Skrillex",
+            "venue_name": "Celebrities Nightclub",
+            "date": "2026-07-04T22:00:00-07:00",
+            "external_id": "eventbrite_999888",
+            "category": "rave",
+            "music_type": "techno",
+            "description": "Vancouver's premier weekly techno night returns with a special back-to-back set.",
+            "image_url": "https://cdn.example.com/events/techno-night.jpg",
+            "ticket_url": "https://www.eventbrite.com/e/999888",
+            "lineup": [
+                {"name": "DJ Skrillex", "time": "12:00 AM", "instagram": "https://instagram.com/skrillex"},
+                {"name": "Opening Act", "time": "10:00 PM"},
+            ],
+            "entry_types": ["Guestlist", "Tickets"],
+            "our_guestlist": True,
+            "our_reservation": False,
+            "guestlist_closes_at": "2026-07-04T22:00:00-07:00",
+            "entry_closes_at": "2026-07-05T01:00:00-07:00",
+            "gallery": None,
+            "video_url": None,
+        },
+
+        "response": {
+            "status": "ok",
+            "action": "created OR updated",
+            "event_id": 42,
+        },
+
+        "active_venues": venue_list,
+    }
+
+
 @router.post("/n8n-blog", response_model=BlogWebhookResponse, dependencies=[Depends(_verify_api_key)])
 async def n8n_blog_webhook(payload: N8nBlogPayload, db: AsyncSession = Depends(get_db)):
     existing: BlogPost | None = None

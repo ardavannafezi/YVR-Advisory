@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { api } from "@/lib/api";
-import { SkeletonGrid } from "@/components/ui/SkeletonCard";
 import { EventsPageClient } from "@/components/events/EventsPageClient";
 import type { PaginatedList, Event } from "@/types";
 
@@ -17,32 +16,21 @@ export const metadata: Metadata = {
   },
 };
 
-async function getInitialEvents(musicType?: string, entryType?: string): Promise<PaginatedList<Event>> {
+async function getInitialEvents(): Promise<PaginatedList<Event>> {
   try {
-    const qs = new URLSearchParams({ limit: "12" });
-    if (musicType) qs.set("music_type", musicType);
-    if (entryType) qs.set("entry_type", entryType);
-    return await api.get<PaginatedList<Event>>(`/api/events?${qs}`, { cache: "no-store" });
+    return await api.get<PaginatedList<Event>>("/api/events?limit=12", { cache: "no-store" });
   } catch {
     return { items: [], total: 0, page: 1, limit: 12 };
   }
 }
 
-export default async function EventsPage({ searchParams }: { searchParams: { music_type?: string; date?: string; entry_type?: string } }) {
-  const musicType = searchParams.music_type;
-  const dateFilter = searchParams.date;
-  const entryType = searchParams.entry_type;
-  const initialData = await getInitialEvents(musicType, entryType);
+export default async function EventsPage() {
+  const initialData = await getInitialEvents();
 
   return (
     <main>
       <Suspense fallback={<div className="min-h-screen" />}>
-        <EventsPageClient
-          initialData={initialData}
-          initialMusicFilter={musicType ?? null}
-          initialDateFilter={dateFilter ?? null}
-          initialEntryFilter={entryType ?? null}
-        />
+        <EventsPageClient initialData={initialData} />
       </Suspense>
     </main>
   );
