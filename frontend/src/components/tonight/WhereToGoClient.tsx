@@ -4,17 +4,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
+const STORAGE_KEY = "yvr_events_quiz";
+
 const STEPS = [
-  {
-    question: "When are you going out?",
-    key: "date",
-    options: [
-      { label: "Tonight", value: "tonight" },
-      { label: "This Weekend", value: "weekend" },
-      { label: "This Week", value: "week" },
-      { label: "Any Time", value: "" },
-    ],
-  },
   {
     question: "What's your music?",
     key: "music_type",
@@ -34,13 +26,24 @@ const STEPS = [
     ],
   },
   {
-    question: "How do you want in?",
-    key: "entry_type",
+    question: "What type of venue?",
+    key: "venue_type",
     options: [
-      { label: "Guestlist", value: "guestlist" },
-      { label: "Bottle Service", value: "reservation" },
-      { label: "Tickets", value: "tickets" },
+      { label: "Nightclub", value: "Nightclub" },
+      { label: "Cocktail Bar", value: "Cocktail Bar" },
+      { label: "Bar & Restaurant", value: "Bar & Restaurant" },
+      { label: "Rooftop Lounge", value: "Rooftop Lounge" },
       { label: "No Preference", value: "" },
+    ],
+  },
+  {
+    question: "When are you going out?",
+    key: "date",
+    options: [
+      { label: "Tonight", value: "tonight" },
+      { label: "This Weekend", value: "weekend" },
+      { label: "This Week", value: "week" },
+      { label: "Any Time", value: "" },
     ],
   },
 ];
@@ -56,11 +59,16 @@ export function WhereToGoClient() {
     if (step < STEPS.length - 1) {
       setStep(step + 1);
     } else {
-      const qs = new URLSearchParams();
-      if (next.date) qs.set("date", next.date);
-      if (next.music_type) qs.set("music_type", next.music_type);
-      if (next.entry_type) qs.set("entry_type", next.entry_type);
-      router.push(`/events${qs.toString() ? `?${qs}` : ""}`);
+      // Save in EventsQuiz format so it auto-fires recommendations
+      const prefs = {
+        music_types: next.music_type ? [next.music_type] : [],
+        venue_types: next.venue_type ? [next.venue_type] : [],
+        date: next.date || null,
+      };
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
+      } catch {}
+      router.push("/events");
     }
   }
 
