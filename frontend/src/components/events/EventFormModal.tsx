@@ -14,18 +14,18 @@ import { useState } from "react";
 const guestlistSchema = z.object({
   full_name: z.string().min(2, "Enter your full name"),
   email: z.string().email("Enter a valid email"),
-  party_size: z.string().optional(),
 });
 
 const reservationSchema = z.object({
   full_name: z.string().min(2, "Enter your full name"),
   email: z.string().email("Enter a valid email"),
   phone: z.string().optional(),
-  party_size: z.string().min(1, "Select party size"),
   occasion: z.string().optional(),
   budget_range: z.string().optional(),
   preferences: z.string().optional(),
 });
+
+const PARTY_SIZES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 type GuestlistData = z.infer<typeof guestlistSchema>;
 type ReservationData = z.infer<typeof reservationSchema>;
@@ -41,6 +41,7 @@ interface Props {
 
 function GuestlistForm({ eventId, venueId, onDone }: { eventId?: number; venueId?: number; onDone: () => void }) {
   const [serverError, setServerError] = useState<string | null>(null);
+  const [partySize, setPartySize] = useState<number | undefined>(undefined);
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<GuestlistData>({
     resolver: zodResolver(guestlistSchema),
   });
@@ -50,7 +51,7 @@ function GuestlistForm({ eventId, venueId, onDone }: { eventId?: number; venueId
     try {
       await api.post("/api/guestlist", {
         ...data,
-        party_size: data.party_size ? parseInt(data.party_size) : undefined,
+        party_size: partySize,
         event_id: eventId,
         venue_id: venueId,
         source_page: "event-modal",
@@ -66,10 +67,21 @@ function GuestlistForm({ eventId, venueId, onDone }: { eventId?: number; venueId
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4" noValidate>
       <FormField label="Full Name" placeholder="Your full name" error={errors.full_name?.message} {...register("full_name")} />
       <FormField label="Email Address" type="email" placeholder="your@email.com" error={errors.email?.message} {...register("email")} />
-      <FormField label="Party Size (optional)" as="select" error={errors.party_size?.message} {...register("party_size")}>
-        <option value="">Select...</option>
-        {["1", "2", "3", "4", "5", "6", "7", "8", "9", "10+"].map((n) => <option key={n} value={n}>{n}</option>)}
-      </FormField>
+      <div>
+        <p className="text-[10px] uppercase tracking-widest text-text-dim mb-2">Party Size (optional)</p>
+        <div className="flex flex-wrap gap-2">
+          {PARTY_SIZES.map((n) => (
+            <button
+              key={n}
+              type="button"
+              onClick={() => setPartySize(partySize === n ? undefined : n)}
+              className={`w-10 h-10 text-sm border transition-all duration-150 ${partySize === n ? "border-gold text-gold bg-gold/10" : "border-white/10 text-text-muted hover:border-gold/40 hover:text-gold"}`}
+            >
+              {n === 10 ? "10+" : n}
+            </button>
+          ))}
+        </div>
+      </div>
       {serverError && <div className="border border-red-500/40 p-3 text-sm text-red-400">{serverError}</div>}
       <GoldButton type="submit" disabled={isSubmitting} className="mt-1">
         {isSubmitting ? "Submitting…" : "Join Guestlist"}
@@ -80,6 +92,7 @@ function GuestlistForm({ eventId, venueId, onDone }: { eventId?: number; venueId
 
 function ReservationForm({ eventId, venueId, onDone }: { eventId?: number; venueId?: number; onDone: () => void }) {
   const [serverError, setServerError] = useState<string | null>(null);
+  const [partySize, setPartySize] = useState<number | undefined>(undefined);
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<ReservationData>({
     resolver: zodResolver(reservationSchema),
   });
@@ -89,7 +102,7 @@ function ReservationForm({ eventId, venueId, onDone }: { eventId?: number; venue
     try {
       await api.post("/api/reservations", {
         ...data,
-        party_size: parseInt(data.party_size),
+        party_size: partySize,
         event_id: eventId,
         venue_id: venueId,
       });
@@ -105,16 +118,25 @@ function ReservationForm({ eventId, venueId, onDone }: { eventId?: number; venue
       <FormField label="Full Name" placeholder="Your full name" error={errors.full_name?.message} {...register("full_name")} />
       <FormField label="Email Address" type="email" placeholder="your@email.com" error={errors.email?.message} {...register("email")} />
       <FormField label="Phone (optional)" type="tel" placeholder="+1 (604) 000-0000" {...register("phone")} />
-      <div className="grid grid-cols-2 gap-3">
-        <FormField label="Party Size" as="select" error={errors.party_size?.message} {...register("party_size")}>
-          <option value="">Select...</option>
-          {["1", "2", "3", "4", "5", "6", "7", "8", "9", "10+"].map((n) => <option key={n} value={n}>{n}</option>)}
-        </FormField>
-        <FormField label="Budget / Person (optional)" as="select" {...register("budget_range")}>
-          <option value="">Select...</option>
-          {["Under $30", "$30–$60", "$60–$100", "$100+"].map((b) => <option key={b} value={b}>{b}</option>)}
-        </FormField>
+      <div>
+        <p className="text-[10px] uppercase tracking-widest text-text-dim mb-2">Party Size</p>
+        <div className="flex flex-wrap gap-2">
+          {PARTY_SIZES.map((n) => (
+            <button
+              key={n}
+              type="button"
+              onClick={() => setPartySize(partySize === n ? undefined : n)}
+              className={`w-10 h-10 text-sm border transition-all duration-150 ${partySize === n ? "border-gold text-gold bg-gold/10" : "border-white/10 text-text-muted hover:border-gold/40 hover:text-gold"}`}
+            >
+              {n === 10 ? "10+" : n}
+            </button>
+          ))}
+        </div>
       </div>
+      <FormField label="Budget / Person (optional)" as="select" {...register("budget_range")}>
+        <option value="">Select...</option>
+        {["Under $30", "$30–$60", "$60–$100", "$100+"].map((b) => <option key={b} value={b}>{b}</option>)}
+      </FormField>
       <FormField label="Occasion (optional)" placeholder="Birthday, anniversary..." {...register("occasion")} />
       <FormField label="Special Requests (optional)" as="textarea" placeholder="Seating, dietary needs..." {...register("preferences")} />
       {serverError && <div className="border border-red-500/40 p-3 text-sm text-red-400">{serverError}</div>}
@@ -135,8 +157,8 @@ export function EventFormModal({ mode, eventId, venueId, eventName, venueName, o
 
   const title = mode === "guestlist" ? "Join the Guestlist" : "Book Bottle Service";
   const subtitle = mode === "guestlist"
-    ? `Guestlist entry in your name${eventName ? ` for ${eventName}` : ""}.`
-    : `Our advisory team will confirm your table shortly${venueName ? ` at ${venueName}` : ""}.`;
+    ? `Submit your request${eventName ? ` for ${eventName}` : ""}. We'll review and send a confirmation to your email.`
+    : `Our advisory team will confirm your table shortly${venueName ? ` at ${venueName}` : ""}. Check your email for details.`;
 
   return (
     <AnimatePresence>
@@ -171,8 +193,9 @@ export function EventFormModal({ mode, eventId, venueId, eventName, venueName, o
               </div>
               {mode === "guestlist" ? (
                 <>
-                  <h3 className="font-serif text-2xl text-text-primary mb-2">You&apos;re on the List</h3>
-                  <p className="text-text-muted text-sm">Your guestlist is confirmed. Show your name at the door.</p>
+                  <h3 className="font-serif text-2xl text-text-primary mb-2">Request Received</h3>
+                  <p className="text-text-muted text-sm mb-3">We&apos;ll review and send a confirmation to your email. If you don&apos;t see it, check your spam or junk folder.</p>
+                  <p className="text-text-dim text-xs">Questions? Email us at <span className="text-gold">info@yvradvisory.ca</span></p>
                 </>
               ) : (
                 <>

@@ -10,7 +10,7 @@ class ReservationCreate(BaseModel):
     venue_id: int | None = None
     event_id: int | None = None
     date_requested: datetime | None = None
-    party_size: int
+    party_size: int | None = None
     occasion: str | None = None
     preferences: str | None = None
     budget_range: str | None = None

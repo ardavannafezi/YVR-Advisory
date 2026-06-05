@@ -77,8 +77,9 @@ async def submit_guestlist(data: GuestlistCreate, db: AsyncSession = Depends(get
     )
     user_html = f"""
     <p>Hi {entry.full_name},</p>
-    <p>You're confirmed on the guestlist. Your entry is under <strong>{entry.full_name}</strong>.</p>
-    <p>Show your name at the door and you're in. See you tonight.</p>
+    <p>We've received your guestlist request for <strong>{event_name}</strong> at {venue_name}. Our team will review and confirm your spot shortly.</p>
+    <p>You'll receive a confirmation email once approved. If you don't see it, please check your <strong>spam or junk folder</strong>.</p>
+    <p>Questions? Reply to this email or reach us at <a href="mailto:info@yvradvisory.ca">info@yvradvisory.ca</a>.</p>
     <br>
     <p>— YVR Advisory</p>
     """

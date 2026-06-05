@@ -65,10 +65,16 @@ def _send_email_sync(
     msg["From"] = email_from
     msg["To"] = to
     msg.attach(MIMEText(html_body, "html"))
-    with smtplib.SMTP(smtp_host, smtp_port) as server:
-        server.starttls()
-        server.login(smtp_user, smtp_password)
-        server.sendmail(email_from, to, msg.as_string())
+    # Port 465 = implicit SSL; all others use STARTTLS
+    if smtp_port == 465:
+        with smtplib.SMTP_SSL(smtp_host, smtp_port) as server:
+            server.login(smtp_user, smtp_password)
+            server.sendmail(email_from, to, msg.as_string())
+    else:
+        with smtplib.SMTP(smtp_host, smtp_port) as server:
+            server.starttls()
+            server.login(smtp_user, smtp_password)
+            server.sendmail(email_from, to, msg.as_string())
 
 
 async def send_email(
@@ -94,4 +100,4 @@ async def send_email(
         loop = asyncio.get_event_loop()
         await loop.run_in_executor(None, _send_email_sync, to, subject, html_body, host, port, user, password, sender)
     except Exception as exc:
-        logger.warning("Email notification failed: %s", exc)
+        logger.error("Email notification failed to=%s host=%s port=%s user=%s: %s", to, smtp_host, smtp_port, smtp_user, exc, exc_info=True)
