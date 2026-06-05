@@ -8,6 +8,19 @@ import { BlogJsonLd } from "@/components/blog/BlogJsonLd";
 import type { BlogPost } from "@/types";
 
 export const revalidate = 3600;
+export const dynamicParams = true;
+
+export async function generateStaticParams() {
+  try {
+    const API = process.env.NEXT_PUBLIC_API_URL || "https://back.yvradvisory.ca";
+    const res = await fetch(`${API}/api/blog?limit=500`, { cache: "no-store" });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return (data.items || []).map((p: { slug: string }) => ({ slug: p.slug }));
+  } catch {
+    return [];
+  }
+}
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   try {

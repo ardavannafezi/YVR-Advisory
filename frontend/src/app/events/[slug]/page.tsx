@@ -13,6 +13,19 @@ import { EventCTASidebar } from "@/components/events/EventCTASidebar";
 import type { Event } from "@/types";
 
 export const revalidate = 300;
+export const dynamicParams = true;
+
+export async function generateStaticParams() {
+  try {
+    const API = process.env.NEXT_PUBLIC_API_URL || "https://back.yvradvisory.ca";
+    const res = await fetch(`${API}/api/events?limit=500`, { cache: "no-store" });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return (data.items || []).map((e: { slug: string }) => ({ slug: e.slug }));
+  } catch {
+    return [];
+  }
+}
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   try {
