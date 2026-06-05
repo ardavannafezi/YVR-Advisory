@@ -12,7 +12,7 @@ const STEPS = [
     key: "music_types",
     question: "What music are you into?",
     hint: "Select all that apply",
-    options: ["hip-hop", "house", "techno", "latin", "r&b", "edm", "pop", "live"],
+    options: ["house", "techno", "hip-hop", "r&b", "top 40", "latin", "afrobeats", "dancehall", "reggaeton", "edm", "live"],
     optional: false,
   },
   {

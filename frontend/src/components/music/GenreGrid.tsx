@@ -7,14 +7,17 @@ import { usePreferenceTracker } from "@/hooks/usePreferenceTracker";
 import type { Genre } from "@/types";
 
 const GENRE_COLORS: Record<string, string> = {
-  techno: "from-purple-900/40",
   house: "from-blue-900/40",
+  techno: "from-purple-900/40",
   "hip-hop": "from-yellow-900/40",
-  latin: "from-red-900/40",
   "r&b": "from-pink-900/40",
-  pop: "from-cyan-900/40",
+  "top 40": "from-cyan-900/40",
+  latin: "from-red-900/40",
+  afrobeats: "from-amber-900/40",
+  dancehall: "from-lime-900/40",
+  reggaeton: "from-orange-900/40",
   edm: "from-green-900/40",
-  live: "from-orange-900/40",
+  live: "from-rose-900/40",
 };
 
 export function GenreGrid({ genres }: { genres: Genre[] }) {

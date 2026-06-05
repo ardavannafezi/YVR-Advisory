@@ -7,7 +7,7 @@ import { EventCard } from "@/components/events/EventCard";
 import { SkeletonGrid } from "@/components/ui/SkeletonCard";
 import type { Event, PaginatedList } from "@/types";
 
-const MUSIC_OPTIONS = ["hip-hop", "house", "techno", "latin", "r&b", "edm", "pop", "live"];
+const MUSIC_OPTIONS = ["house", "techno", "hip-hop", "r&b", "top 40", "latin", "afrobeats", "dancehall", "reggaeton", "edm", "live"];
 const DATE_OPTIONS = [
   { label: "Tonight", value: "tonight" },
   { label: "This Weekend", value: "weekend" },

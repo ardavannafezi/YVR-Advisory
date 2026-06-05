@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useState } from "react";
 import { usePreferenceTracker } from "@/hooks/usePreferenceTracker";
 
-const MUSIC_TYPES = ["techno", "house", "hip-hop", "latin", "r&b", "pop", "edm", "live"];
+const MUSIC_TYPES = ["house", "techno", "hip-hop", "r&b", "top 40", "latin", "afrobeats", "dancehall", "reggaeton", "edm", "live"];
 const NEIGHBOURHOODS = [
   "Granville Strip", "Gastown", "Yaletown", "Coal Harbour",
   "Davie Village", "Mount Pleasant", "East Vancouver", "False Creek",
