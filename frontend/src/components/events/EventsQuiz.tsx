@@ -151,148 +151,82 @@ export function EventsQuiz({ onResults, onSkip, listRef }: Props) {
   };
 
   return (
-    <section className="relative min-h-[88vh] flex flex-col overflow-hidden bg-[#080808]">
-      {/* Ambient background */}
+    <section className="relative overflow-hidden bg-[#080808] border-b border-white/[0.06]">
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_-10%,rgba(201,168,76,0.07),transparent)]" />
-        <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[#080808] to-transparent" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_80%_at_50%_0%,rgba(201,168,76,0.05),transparent)]" />
       </div>
 
-      {/* Top bar — questionnaire label + skip */}
-      <div className="relative z-10 flex items-center justify-between px-6 sm:px-10 pt-24 pb-0">
-        <div className="flex items-center gap-3">
-          <div className="w-5 h-px bg-gold" />
-          <span className="text-[10px] uppercase tracking-[0.3em] text-gold">Event Questionnaire</span>
-        </div>
-        <button
-          onClick={onSkip}
-          className="flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-text-dim border border-white/15 px-5 py-2.5 hover:border-gold/40 hover:text-gold transition-all duration-200"
-        >
-          Skip — Browse All Events
-          <span className="text-gold/60">↓</span>
-        </button>
-      </div>
-
-      {/* Main content */}
-      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 py-12">
-        <div className="w-full max-w-2xl">
-          {/* Page heading */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="text-center mb-14"
+      <div className="relative z-10 max-w-3xl mx-auto px-6 pt-28 pb-8">
+        {/* Header row */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <h1 className="font-serif text-2xl text-text-primary">Find Your Night</h1>
+            <span className="hidden sm:inline text-[10px] uppercase tracking-[0.25em] text-text-dim border border-white/10 px-2.5 py-1">
+              {step + 1} / {STEPS.length}
+            </span>
+          </div>
+          <button
+            onClick={onSkip}
+            className="text-[10px] uppercase tracking-[0.2em] text-text-dim hover:text-gold transition-colors flex items-center gap-1.5"
           >
-            <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl text-text-primary mb-4">
-              Find Your Night
-            </h1>
-            <p className="text-text-muted text-sm max-w-sm mx-auto leading-relaxed">
-              Answer {STEPS.length} quick questions and we&apos;ll surface the events that match your taste.
-            </p>
-          </motion.div>
+            Skip ↓
+          </button>
+        </div>
 
-          {hasPrefs ? (
-            /* Returning user */
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-center space-y-8"
-            >
-              <div>
-                <p className="text-[10px] uppercase tracking-widest text-text-dim mb-4">Your saved preferences</p>
-                <div className="flex flex-wrap justify-center gap-2">
-                  {[...answers.venue_types, ...answers.music_types].map(tag => (
-                    <span key={tag} className="text-[11px] px-4 py-2 border border-gold/40 text-gold uppercase tracking-widest">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
-                <button
-                  onClick={usePrefs}
-                  disabled={loading}
-                  className="bg-gold text-[#080808] text-[11px] uppercase tracking-[0.2em] px-10 py-4 font-semibold hover:bg-gold-light transition-colors disabled:opacity-50"
-                >
-                  {loading ? "Finding events…" : "Use These Preferences"}
-                </button>
-                <button
-                  onClick={resetPrefs}
-                  className="text-[11px] uppercase tracking-[0.2em] text-text-muted border border-white/15 px-8 py-4 hover:border-white/30 hover:text-text-primary transition-colors"
-                >
-                  Retake Questionnaire
-                </button>
-              </div>
-            </motion.div>
-          ) : (
-            <>
-              {/* Step dots */}
-              <div className="flex items-center justify-center gap-3 mb-10">
-                {STEPS.map((_, i) => (
-                  <div key={i} className="flex items-center gap-3">
-                    <motion.div
-                      animate={{
-                        backgroundColor: i < step ? "#c9a84c" : i === step ? "transparent" : "transparent",
-                        borderColor: i <= step ? "#c9a84c" : "rgba(255,255,255,0.15)",
-                        scale: i === step ? 1.15 : 1,
-                      }}
-                      transition={{ duration: 0.3 }}
-                      className="w-6 h-6 rounded-full border flex items-center justify-center"
-                    >
-                      {i < step ? (
-                        <span className="text-[9px] text-[#080808] font-bold">✓</span>
-                      ) : (
-                        <span className={`text-[10px] font-semibold ${i === step ? "text-gold" : "text-white/20"}`}>
-                          {i + 1}
-                        </span>
-                      )}
-                    </motion.div>
-                    {i < STEPS.length - 1 && (
-                      <motion.div
-                        animate={{ backgroundColor: i < step ? "#c9a84c" : "rgba(255,255,255,0.08)" }}
-                        transition={{ duration: 0.3 }}
-                        className="w-12 h-px"
-                      />
-                    )}
-                  </div>
+        {/* Progress bar */}
+        <div className="h-px bg-white/[0.07] w-full overflow-hidden mb-7">
+          <motion.div
+            className="h-full bg-gold"
+            animate={{ width: `${((step + 1) / STEPS.length) * 100}%` }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+          />
+        </div>
+
+        {hasPrefs ? (
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-5 pb-2">
+            <div>
+              <p className="text-[10px] uppercase tracking-widest text-text-dim mb-3">Your preferences</p>
+              <div className="flex flex-wrap gap-2">
+                {[...answers.venue_types, ...answers.music_types].map(tag => (
+                  <span key={tag} className="text-[11px] px-3 py-1.5 border border-gold/40 text-gold uppercase tracking-widest">
+                    {tag}
+                  </span>
                 ))}
               </div>
-
-              {/* Progress bar */}
-              <div className="h-px bg-white/8 w-full overflow-hidden mb-10">
-                <motion.div
-                  className="h-full bg-gold"
-                  animate={{ width: `${((step + 1) / STEPS.length) * 100}%` }}
-                  transition={{ duration: 0.4, ease: "easeOut" }}
-                />
-              </div>
-
-              {/* Question */}
-              <AnimatePresence mode="wait" custom={direction}>
-                <motion.div
-                  key={step}
-                  custom={direction}
-                  variants={slideVariants}
-                  initial="enter"
-                  animate="center"
-                  exit="exit"
-                >
-                  <div className="mb-8">
-                    <p className="text-[10px] uppercase tracking-[0.25em] text-gold mb-3">
-                      Step {step + 1} of {STEPS.length}
-                      {currentStep.optional && (
-                        <span className="ml-2 text-text-dim normal-case tracking-normal">· optional</span>
-                      )}
-                    </p>
-                    <h2 className="font-serif text-3xl md:text-4xl text-text-primary mb-2">
-                      {currentStep.question}
-                    </h2>
-                    <p className="text-text-dim text-sm">{currentStep.hint}</p>
-                  </div>
-
-                  {/* Options */}
-                  <div className="flex flex-wrap gap-3">
+            </div>
+            <div className="flex flex-wrap gap-3 pt-1">
+              <button
+                onClick={usePrefs}
+                disabled={loading}
+                className="bg-gold text-[#080808] text-[11px] uppercase tracking-[0.2em] px-8 py-3 font-semibold hover:bg-gold-light transition-colors disabled:opacity-50"
+              >
+                {loading ? "Finding events…" : "Use These Preferences"}
+              </button>
+              <button
+                onClick={resetPrefs}
+                className="text-[11px] uppercase tracking-[0.2em] text-text-muted border border-white/15 px-6 py-3 hover:border-white/30 hover:text-text-primary transition-colors"
+              >
+                Retake
+              </button>
+            </div>
+          </motion.div>
+        ) : (
+          <>
+            <AnimatePresence mode="wait" custom={direction}>
+              <motion.div
+                key={step}
+                custom={direction}
+                variants={slideVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+              >
+                <div className="mb-5">
+                  <p className="text-[10px] uppercase tracking-[0.25em] text-gold mb-2">
+                    {currentStep.question}
+                    {currentStep.optional && <span className="ml-2 text-text-dim normal-case tracking-normal">· optional</span>}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
                     {currentStep.options.map(opt => {
                       const key = currentStep.key;
                       let active = false;
@@ -308,10 +242,10 @@ export function EventsQuiz({ onResults, onSkip, listRef }: Props) {
                             else if (key === "music_types") toggleMulti("music_types", opt);
                             else toggleDate(opt);
                           }}
-                          className={`px-6 py-3 text-sm border transition-all duration-200 capitalize ${
+                          className={`px-4 py-2 text-xs border transition-all duration-150 capitalize ${
                             active
-                              ? "border-gold bg-gold/12 text-gold font-medium"
-                              : "border-white/12 text-text-muted hover:border-white/30 hover:text-text-primary hover:bg-white/[0.03]"
+                              ? "border-gold bg-gold/10 text-gold"
+                              : "border-white/10 text-text-muted hover:border-white/25 hover:text-text-primary"
                           }`}
                         >
                           {opt}
@@ -319,62 +253,33 @@ export function EventsQuiz({ onResults, onSkip, listRef }: Props) {
                       );
                     })}
                   </div>
-                </motion.div>
-              </AnimatePresence>
-
-              {/* Navigation */}
-              <div className="flex items-center justify-between mt-12">
-                <div>
-                  {step > 0 ? (
-                    <button
-                      onClick={back}
-                      className="text-[11px] uppercase tracking-widest text-text-dim hover:text-text-muted transition-colors flex items-center gap-2"
-                    >
-                      ← Back
-                    </button>
-                  ) : (
-                    <div />
-                  )}
                 </div>
+              </motion.div>
+            </AnimatePresence>
 
-                <div className="flex flex-col items-end gap-3">
-                  <button
-                    onClick={advance}
-                    disabled={loading || (!canAdvance() && !currentStep.optional)}
-                    className="bg-gold text-[#080808] text-[11px] uppercase tracking-[0.2em] px-10 py-4 font-semibold hover:bg-gold-light transition-colors disabled:opacity-35"
-                  >
-                    {loading
-                      ? "Finding events…"
-                      : step < STEPS.length - 1
-                      ? "Continue →"
-                      : "Find My Events"}
+            <div className="flex items-center justify-between pt-1">
+              {step > 0 ? (
+                <button onClick={back} className="text-[10px] uppercase tracking-widest text-text-dim hover:text-text-muted transition-colors">
+                  ← Back
+                </button>
+              ) : <div />}
+              <div className="flex items-center gap-4">
+                {currentStep.optional && (
+                  <button onClick={advance} disabled={loading} className="text-[10px] uppercase tracking-widest text-text-dim hover:text-text-muted transition-colors">
+                    Skip →
                   </button>
-                  {currentStep.optional && (
-                    <button
-                      onClick={advance}
-                      disabled={loading}
-                      className="text-[10px] uppercase tracking-widest text-text-dim hover:text-text-muted transition-colors"
-                    >
-                      Skip this step →
-                    </button>
-                  )}
-                </div>
+                )}
+                <button
+                  onClick={advance}
+                  disabled={loading || (!canAdvance() && !currentStep.optional)}
+                  className="bg-gold text-[#080808] text-[10px] uppercase tracking-[0.2em] px-7 py-3 font-semibold hover:bg-gold-light transition-colors disabled:opacity-35"
+                >
+                  {loading ? "Searching…" : step < STEPS.length - 1 ? "Next →" : "Find Events"}
+                </button>
               </div>
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* Bottom fade hint */}
-      <div className="relative z-10 flex justify-center pb-8">
-        <div className="flex flex-col items-center gap-2 opacity-40">
-          <span className="text-[9px] uppercase tracking-[0.35em] text-text-dim">or scroll to browse</span>
-          <motion.div
-            animate={{ y: [0, 4, 0] }}
-            transition={{ repeat: Infinity, duration: 1.8, ease: "easeInOut" }}
-            className="w-px h-6 bg-gradient-to-b from-gold/30 to-transparent"
-          />
-        </div>
+            </div>
+          </>
+        )}
       </div>
     </section>
   );

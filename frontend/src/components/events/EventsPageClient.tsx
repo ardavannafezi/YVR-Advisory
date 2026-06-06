@@ -62,7 +62,7 @@ export function EventsPageClient({ initialData }: Props) {
       {/* All events section */}
       <section
         ref={listRef as React.RefObject<HTMLElement>}
-        className={`max-w-7xl mx-auto px-6 pb-28 ${quizDone ? "pt-24 md:pt-32" : "pt-4 md:pt-16"}`}
+        className={`max-w-7xl mx-auto px-6 pb-28 ${quizDone ? "pt-20 md:pt-24" : "pt-8 md:pt-12"}`}
       >
         {quizDone ? (
           <motion.div
