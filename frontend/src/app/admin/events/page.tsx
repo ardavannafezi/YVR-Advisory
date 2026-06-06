@@ -168,6 +168,11 @@ function EventForm({ form, setForm, onSubmit, saving, error, submitLabel }: {
     setForm(f => { const lineup = [...f.lineup]; lineup[i] = { ...lineup[i], [field]: value }; return { ...f, lineup }; });
   }
 
+  const datePart = form.date ? form.date.slice(0, 10) : "";
+  const timePart = form.date ? form.date.slice(11, 16) : "";
+  function handleDatePart(d: string) { set("date", d ? `${d}T${timePart || "20:00"}` : ""); }
+  function handleTimePart(t: string) { if (datePart) set("date", `${datePart}T${t}`); }
+
   return (
     <form onSubmit={onSubmit} className="space-y-0">
       {/* Basic */}
@@ -179,8 +184,11 @@ function EventForm({ form, setForm, onSubmit, saving, error, submitLabel }: {
         <Field label="Venue ID">
           <input type="number" value={form.venue_id} onChange={e => set("venue_id", e.target.value)} className={inputCls} placeholder="Leave blank to auto-create from n8n" />
         </Field>
-        <Field label="Start Date & Time *">
-          <input required type="datetime-local" value={form.date} onChange={e => set("date", e.target.value)} className={inputCls} />
+        <Field label="Date *">
+          <input required type="date" value={datePart} onChange={e => handleDatePart(e.target.value)} className={inputCls} />
+        </Field>
+        <Field label="Start Time *">
+          <input required type="time" value={timePart} onChange={e => handleTimePart(e.target.value)} className={inputCls} />
         </Field>
         <Field label="Category">
           <input value={form.category} onChange={e => set("category", e.target.value)} className={inputCls} placeholder="rave, latin night, themed…" />

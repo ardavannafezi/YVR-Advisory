@@ -211,10 +211,10 @@ async def admin_create_event(data: EventCreate, db: AsyncSession = Depends(get_d
         event = Event(**data.model_dump(), slug=slug, source="manual", social_proof_count=random.randint(4, 12))
         db.add(event)
         await db.commit()
-        await db.refresh(event)
     except IntegrityError as exc:
         await db.rollback()
         raise HTTPException(status_code=409, detail=f"Could not create event: {exc.orig}") from exc
+    event = await db.scalar(select(Event).options(selectinload(Event.venue)).where(Event.id == event.id))
     return event
 
 
@@ -236,7 +236,7 @@ async def admin_update_event(event_id: int, data: EventUpdate, db: AsyncSession 
     for k, v in data.model_dump(exclude_unset=True).items():
         setattr(event, k, v)
     await db.commit()
-    await db.refresh(event)
+    event = await db.scalar(select(Event).options(selectinload(Event.venue)).where(Event.id == event_id))
     return event
 
 
