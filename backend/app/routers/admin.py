@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
 from pydantic import BaseModel
 from sqlalchemy import func, select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -198,11 +199,22 @@ async def admin_list_events(
 
 @router.post("/events", response_model=EventOut, status_code=status.HTTP_201_CREATED, dependencies=[Depends(get_current_admin)])
 async def admin_create_event(data: EventCreate, db: AsyncSession = Depends(get_db)):
-    slug = slugify(f"{data.name} {data.date.strftime('%Y-%m-%d')}")
-    event = Event(**data.model_dump(), slug=slug, source="manual", social_proof_count=random.randint(4, 12))
-    db.add(event)
-    await db.commit()
-    await db.refresh(event)
+    base_slug = slugify(f"{data.name} {data.date.strftime('%Y-%m-%d')}")
+    slug = base_slug
+    # resolve slug collisions
+    for i in range(1, 10):
+        existing = await db.scalar(select(Event).where(Event.slug == slug))
+        if not existing:
+            break
+        slug = f"{base_slug}-{i}"
+    try:
+        event = Event(**data.model_dump(), slug=slug, source="manual", social_proof_count=random.randint(4, 12))
+        db.add(event)
+        await db.commit()
+        await db.refresh(event)
+    except IntegrityError as exc:
+        await db.rollback()
+        raise HTTPException(status_code=409, detail=f"Could not create event: {exc.orig}") from exc
     return event
 
 
