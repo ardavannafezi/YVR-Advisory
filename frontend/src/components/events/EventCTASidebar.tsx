@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ptDateShort, ptTime } from "@/lib/date";
 import { GoldButton } from "@/components/ui/GoldButton";
 import { EventFormModal } from "@/components/events/EventFormModal";
+import { gtagEvent } from "@/lib/gtag";
 
 interface Props {
   eventId: number;
@@ -59,19 +60,19 @@ export function EventCTASidebar({
               )}
 
               {hasGuestlistCTA && (
-                <button onClick={() => setModal("guestlist")} className="block w-full">
+                <button onClick={() => { gtagEvent("generate_lead", { item_name: eventName, item_category: "Guestlist", venue: venueName }); setModal("guestlist"); }} className="block w-full">
                   <GoldButton className="w-full">Join Guestlist</GoldButton>
                 </button>
               )}
               {hasReserveCTA && (
-                <button onClick={() => setModal("reservation")} className="block w-full">
+                <button onClick={() => { gtagEvent("generate_lead", { item_name: eventName, item_category: "Reservation", venue: venueName }); setModal("reservation"); }} className="block w-full">
                   <GoldButton variant={hasGuestlistCTA ? "outline" : "solid"} className="w-full">
                     Book Bottle Service
                   </GoldButton>
                 </button>
               )}
               {hasTicketCTA && (
-                <a href={ticketUrl!} target="_blank" rel="noopener noreferrer" className="block">
+                <a href={ticketUrl!} target="_blank" rel="noopener noreferrer" className="block" onClick={() => gtagEvent("begin_checkout", { item_name: eventName, item_category: "Tickets", venue: venueName, ticket_url: ticketUrl })}>
                   <GoldButton variant={hasGuestlistCTA || hasReserveCTA ? "ghost" : "solid"} className="w-full">
                     Get Tickets
                   </GoldButton>
@@ -113,17 +114,17 @@ export function EventCTASidebar({
       {!entryClosed && (hasGuestlistCTA || hasTicketCTA || hasReserveCTA) && (
         <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur border-t border-white/10 p-4 flex gap-3">
           {hasGuestlistCTA && (
-            <button onClick={() => setModal("guestlist")} className="flex-1">
+            <button onClick={() => { gtagEvent("generate_lead", { item_name: eventName, item_category: "Guestlist", venue: venueName, source: "mobile_bar" }); setModal("guestlist"); }} className="flex-1">
               <GoldButton className="w-full">Join Guestlist</GoldButton>
             </button>
           )}
           {hasReserveCTA && (
-            <button onClick={() => setModal("reservation")} className="flex-1">
+            <button onClick={() => { gtagEvent("generate_lead", { item_name: eventName, item_category: "Reservation", venue: venueName, source: "mobile_bar" }); setModal("reservation"); }} className="flex-1">
               <GoldButton variant="outline" className="w-full">Book Table</GoldButton>
             </button>
           )}
           {hasTicketCTA && !hasGuestlistCTA && !hasReserveCTA && (
-            <a href={ticketUrl!} target="_blank" rel="noopener noreferrer" className="flex-1">
+            <a href={ticketUrl!} target="_blank" rel="noopener noreferrer" className="flex-1" onClick={() => gtagEvent("begin_checkout", { item_name: eventName, item_category: "Tickets", venue: venueName, source: "mobile_bar" })}>
               <GoldButton className="w-full">Get Tickets</GoldButton>
             </a>
           )}

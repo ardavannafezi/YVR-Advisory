@@ -10,6 +10,7 @@ import { EventGallery } from "@/components/events/EventGallery";
 import { EventVideo } from "@/components/events/EventVideo";
 import { EventSimilar } from "@/components/events/EventSimilar";
 import { EventCTASidebar } from "@/components/events/EventCTASidebar";
+import { EventPageTracker } from "@/components/events/EventPageTracker";
 import type { Event } from "@/types";
 
 export const revalidate = 300;
@@ -82,6 +83,13 @@ export default async function EventDetailPage({ params }: { params: { slug: stri
   return (
     <>
       <EventJsonLd event={event} />
+      <EventPageTracker
+        eventId={event.id}
+        eventName={event.name}
+        venueName={event.venue?.name}
+        musicType={event.music_type ?? undefined}
+        date={event.date}
+      />
 
       <div className="pt-20">
         {/* Hero — full-width event image */}
