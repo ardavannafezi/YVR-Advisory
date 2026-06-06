@@ -9,7 +9,7 @@ import { AdminModal } from "@/components/admin/AdminModal";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://back.yvradvisory.ca";
 
-const MUSIC_OPTIONS = ["hip-hop", "house", "techno", "latin", "r&b", "edm", "pop", "live", "top-40", "k-pop", "country", "rock"];
+const MUSIC_OPTIONS = ["house", "techno", "hip-hop", "r&b", "top 40", "latin", "afrobeats", "dancehall", "reggaeton", "edm", "live", "pop", "k-pop", "country", "rock", "indie", "electronic"];
 const ENTRY_TYPE_OPTIONS = [
   { value: "guestlist", label: "Guestlist" },
   { value: "tickets", label: "Tickets" },

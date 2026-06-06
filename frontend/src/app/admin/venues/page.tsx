@@ -11,7 +11,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://back.yvradvisory.ca"
 const ESTABLISHMENT_TYPES = ["Nightclub", "Cocktail Bar", "Bar & Restaurant", "Rooftop Lounge"];
 const PRICE_TIERS = ["$", "$$", "$$$"];
 const DAYS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"] as const;
-const MUSIC_TYPES_OPTIONS = ["hip-hop", "house", "pop", "techno", "edm", "r&b", "live", "top-40", "latin", "k-pop", "country", "rock", "indie", "electronic"];
+const MUSIC_TYPES_OPTIONS = ["house", "techno", "hip-hop", "r&b", "top 40", "latin", "afrobeats", "dancehall", "reggaeton", "edm", "live", "pop", "k-pop", "country", "rock", "indie", "electronic"];
 const VIBE_TAGS_OPTIONS = ["luxury", "upscale", "high-energy", "bottle service", "multi-room", "intimate", "underground", "dance floor", "VIP", "rooftop", "date night", "craft cocktails", "live events", "casual", "queer-friendly", "after-hours", "art-driven", "cocktail-forward", "scenic", "dark", "moody", "polished", "inclusive"];
 const PRIMARY_CATEGORIES_OPTIONS = ["nightclub", "bar", "lounge", "live_music"];
 
