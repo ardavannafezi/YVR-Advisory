@@ -38,9 +38,9 @@ export default function HomePage() {
   return (
     <>
       <HeroSection />
+      <UpcomingEvents />
       <FeaturedVenues category="nightclub" title="Nightclubs" eyebrow="Vancouver's Best" />
       <FeaturedVenues category="lounge" title="Lounges & Bars" eyebrow="Elevated Escapes" />
-      <UpcomingEvents />
       <AdvisorSection />
       <CtaBanner />
     </>

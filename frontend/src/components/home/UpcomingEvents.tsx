@@ -38,9 +38,18 @@ export async function UpcomingEvents() {
           </div>
         )}
 
-        {/* Mobile "All Events" link */}
-        <div className="mt-8 text-center md:hidden">
-          <Link href="/events" className="text-xs uppercase tracking-widest text-gold">
+        {/* CTAs */}
+        <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <Link
+            href="/where-to-go"
+            className="w-full sm:w-auto text-center bg-gold text-[#0a0a0a] text-xs uppercase tracking-[0.2em] px-8 py-3.5 font-semibold hover:bg-gold/90 transition-colors"
+          >
+            Where to Go Tonight
+          </Link>
+          <Link
+            href="/events"
+            className="w-full sm:w-auto text-center text-xs uppercase tracking-[0.2em] text-gold border border-gold/40 px-8 py-3.5 hover:bg-gold/10 transition-colors"
+          >
             All Events →
           </Link>
         </div>
