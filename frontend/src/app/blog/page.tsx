@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 
 export default async function BlogPage() {
   try {
-    const data = await api.get<PaginatedList<BlogPost>>("/api/blog");
+    const data = await api.get<PaginatedList<BlogPost>>("/api/blog?limit=50");
     return (
       <div className="pt-32 pb-24">
         <div className="max-w-7xl mx-auto px-6">
