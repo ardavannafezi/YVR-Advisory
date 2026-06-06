@@ -101,16 +101,16 @@ export function HeroSection() {
           className="flex flex-col sm:flex-row gap-3 justify-center"
         >
           <Link
-            href="/tonight"
+            href="/where-to-go"
             className="inline-flex items-center justify-center uppercase text-[10px] font-bold tracking-[0.22em] bg-gold text-[#080808] px-9 py-4 hover:bg-gold-light transition-colors duration-200"
           >
             Advise Me Tonight
           </Link>
           <Link
-            href="/venues"
+            href="/events"
             className="inline-flex items-center justify-center uppercase text-[10px] tracking-[0.22em] border border-white/30 text-text-primary px-9 py-4 hover:border-gold/60 hover:text-gold transition-colors duration-200"
           >
-            Explore Venues
+            Explore Events
           </Link>
         </motion.div>
       </div>
