@@ -659,25 +659,32 @@ export default function AdminVenuesPage() {
       <div className="flex items-center justify-between mb-8">
         <h1 className="font-serif text-3xl text-text-primary">Venues</h1>
         <button
-          onClick={() => { setShowCreate(v => !v); setCreateError(null); setCreateForm({ ...EMPTY_FORM }); }}
+          onClick={() => { setShowCreate(true); setCreateError(null); setCreateForm({ ...EMPTY_FORM }); }}
           className="text-sm border border-gold/40 text-gold px-4 py-2 hover:bg-gold/10 transition-colors"
         >
-          {showCreate ? "Cancel" : "+ New Venue"}
+          + New Venue
         </button>
       </div>
 
       {/* Create modal */}
       {showCreate && (
-        <div className="card-surface p-6 mb-8">
-          <h2 className="font-serif text-2xl text-text-primary mb-6">Create Venue</h2>
-          <VenueForm
-            form={createForm}
-            setForm={setCreateForm}
-            onSubmit={createVenue}
-            saving={createSaving}
-            error={createError}
-            submitLabel="Create Venue"
-          />
+        <div className="fixed inset-0 z-50 bg-black/80 overflow-y-auto">
+          <div className="min-h-screen flex items-start justify-center py-8 px-4">
+            <div className="w-full max-w-4xl bg-[#111] border border-white/10 p-8">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="font-serif text-2xl text-text-primary">Create Venue</h2>
+                <button onClick={() => setShowCreate(false)} className="text-text-muted hover:text-text-primary text-2xl leading-none">&times;</button>
+              </div>
+              <VenueForm
+                form={createForm}
+                setForm={setCreateForm}
+                onSubmit={createVenue}
+                saving={createSaving}
+                error={createError}
+                submitLabel="Create Venue"
+              />
+            </div>
+          </div>
         </div>
       )}
 

@@ -375,16 +375,23 @@ export default function AdminEventsPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <h1 className="font-serif text-3xl text-text-primary">Events</h1>
-        <button onClick={() => { setShowCreate(v => !v); setCreateError(null); setCreateForm({ ...EMPTY_FORM }); }}
+        <button onClick={() => { setShowCreate(true); setCreateError(null); setCreateForm({ ...EMPTY_FORM }); }}
           className="text-sm border border-gold/40 text-gold px-4 py-2 hover:bg-gold/10 transition-colors">
-          {showCreate ? "Cancel" : "+ New Event"}
+          + New Event
         </button>
       </div>
 
       {showCreate && (
-        <div className="card-surface p-6 mb-8">
-          <h2 className="font-serif text-2xl text-text-primary mb-6">Create Event</h2>
-          <EventForm form={createForm} setForm={setCreateForm} onSubmit={createEvent} saving={createSaving} error={createError} submitLabel="Create Event" />
+        <div className="fixed inset-0 z-50 bg-black/80 overflow-y-auto">
+          <div className="min-h-screen flex items-start justify-center py-8 px-4">
+            <div className="w-full max-w-4xl bg-[#111] border border-white/10 p-8">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="font-serif text-2xl text-text-primary">Create Event</h2>
+                <button onClick={() => setShowCreate(false)} className="text-text-muted hover:text-text-primary text-2xl leading-none">&times;</button>
+              </div>
+              <EventForm form={createForm} setForm={setCreateForm} onSubmit={createEvent} saving={createSaving} error={createError} submitLabel="Create Event" />
+            </div>
+          </div>
         </div>
       )}
 
