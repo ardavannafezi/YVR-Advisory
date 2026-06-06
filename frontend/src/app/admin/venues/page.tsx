@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { adminFetch } from "@/lib/auth";
 import { DataTable } from "@/components/admin/DataTable";
 import { ErrorState } from "@/components/ui/ErrorState";
+import { AdminModal } from "@/components/admin/AdminModal";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://back.yvradvisory.ca";
 
@@ -668,46 +669,30 @@ export default function AdminVenuesPage() {
 
       {/* Create modal */}
       {showCreate && (
-        <div className="fixed inset-0 z-50 bg-black/80 overflow-y-auto">
-          <div className="min-h-screen flex items-start justify-center py-8 px-4">
-            <div className="w-full max-w-4xl bg-[#111] border border-white/10 p-8">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="font-serif text-2xl text-text-primary">Create Venue</h2>
-                <button onClick={() => setShowCreate(false)} className="text-text-muted hover:text-text-primary text-2xl leading-none">&times;</button>
-              </div>
-              <VenueForm
-                form={createForm}
-                setForm={setCreateForm}
-                onSubmit={createVenue}
-                saving={createSaving}
-                error={createError}
-                submitLabel="Create Venue"
-              />
-            </div>
-          </div>
-        </div>
+        <AdminModal title="Create Venue" onClose={() => setShowCreate(false)}>
+          <VenueForm
+            form={createForm}
+            setForm={setCreateForm}
+            onSubmit={createVenue}
+            saving={createSaving}
+            error={createError}
+            submitLabel="Create Venue"
+          />
+        </AdminModal>
       )}
 
       {/* Edit modal (full screen overlay) */}
       {editingId != null && (
-        <div className="fixed inset-0 z-50 bg-black/80 overflow-y-auto">
-          <div className="min-h-screen flex items-start justify-center py-8 px-4">
-            <div className="w-full max-w-4xl bg-[#111] border border-white/10 p-8">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="font-serif text-2xl text-text-primary">Edit Venue</h2>
-                <button onClick={() => setEditingId(null)} className="text-text-muted hover:text-text-primary text-2xl leading-none">&times;</button>
-              </div>
-              <VenueForm
-                form={editForm}
-                setForm={setEditForm}
-                onSubmit={saveEdit}
-                saving={editSaving}
-                error={editError}
-                submitLabel="Save Changes"
-              />
-            </div>
-          </div>
-        </div>
+        <AdminModal title="Edit Venue" onClose={() => setEditingId(null)}>
+          <VenueForm
+            form={editForm}
+            setForm={setEditForm}
+            onSubmit={saveEdit}
+            saving={editSaving}
+            error={editError}
+            submitLabel="Save Changes"
+          />
+        </AdminModal>
       )}
 
       {/* Table */}

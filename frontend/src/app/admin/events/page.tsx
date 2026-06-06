@@ -5,6 +5,7 @@ import { format } from "date-fns";
 import { adminFetch } from "@/lib/auth";
 import { DataTable } from "@/components/admin/DataTable";
 import { ErrorState } from "@/components/ui/ErrorState";
+import { AdminModal } from "@/components/admin/AdminModal";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://back.yvradvisory.ca";
 
@@ -382,31 +383,15 @@ export default function AdminEventsPage() {
       </div>
 
       {showCreate && (
-        <div className="fixed inset-0 z-50 bg-black/80 overflow-y-auto">
-          <div className="min-h-screen flex items-start justify-center py-8 px-4">
-            <div className="w-full max-w-4xl bg-[#111] border border-white/10 p-8">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="font-serif text-2xl text-text-primary">Create Event</h2>
-                <button onClick={() => setShowCreate(false)} className="text-text-muted hover:text-text-primary text-2xl leading-none">&times;</button>
-              </div>
-              <EventForm form={createForm} setForm={setCreateForm} onSubmit={createEvent} saving={createSaving} error={createError} submitLabel="Create Event" />
-            </div>
-          </div>
-        </div>
+        <AdminModal title="Create Event" onClose={() => setShowCreate(false)}>
+          <EventForm form={createForm} setForm={setCreateForm} onSubmit={createEvent} saving={createSaving} error={createError} submitLabel="Create Event" />
+        </AdminModal>
       )}
 
       {editingId != null && (
-        <div className="fixed inset-0 z-50 bg-black/80 overflow-y-auto">
-          <div className="min-h-screen flex items-start justify-center py-8 px-4">
-            <div className="w-full max-w-4xl bg-[#111] border border-white/10 p-8">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="font-serif text-2xl text-text-primary">Edit Event</h2>
-                <button onClick={() => setEditingId(null)} className="text-text-muted hover:text-text-primary text-2xl leading-none">&times;</button>
-              </div>
-              <EventForm form={editForm} setForm={setEditForm} onSubmit={saveEdit} saving={editSaving} error={editError} submitLabel="Save Changes" />
-            </div>
-          </div>
-        </div>
+        <AdminModal title="Edit Event" onClose={() => setEditingId(null)}>
+          <EventForm form={editForm} setForm={setEditForm} onSubmit={saveEdit} saving={editSaving} error={editError} submitLabel="Save Changes" />
+        </AdminModal>
       )}
 
       <div className="card-surface p-6">
