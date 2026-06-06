@@ -11,6 +11,7 @@ import { EventVideo } from "@/components/events/EventVideo";
 import { EventSimilar } from "@/components/events/EventSimilar";
 import { EventCTASidebar } from "@/components/events/EventCTASidebar";
 import { EventPageTracker } from "@/components/events/EventPageTracker";
+import { EventDisclaimer } from "@/components/events/EventDisclaimer";
 import type { Event } from "@/types";
 
 export const revalidate = 300;
@@ -302,6 +303,8 @@ export default async function EventDetailPage({ params }: { params: { slug: stri
 
       {/* Similar events */}
       <EventSimilar eventId={event.id} musicType={event.music_type ?? undefined} venueType={event.venue?.establishment_type ?? undefined} />
+
+      <EventDisclaimer />
     </>
   );
 }

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { EventsQuiz } from "@/components/events/EventsQuiz";
 import { EventsListClient } from "@/components/events/EventsListClient";
+import { EventDisclaimer } from "@/components/events/EventDisclaimer";
 import type { Event, PaginatedList } from "@/types";
 
 interface Props {
@@ -99,6 +100,8 @@ export function EventsPageClient({ initialData }: Props) {
           onRetakeQuiz={() => setQuizDone(false)}
         />
       </section>
+
+      <EventDisclaimer />
     </>
   );
 }
