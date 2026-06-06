@@ -6,20 +6,14 @@ import { GoldButton } from "@/components/ui/GoldButton";
 import { FormField } from "@/components/forms/FormField";
 
 interface NotifSettings {
-  smtp_host: string;
-  smtp_port: number;
-  smtp_user: string;
-  smtp_password: string;
+  resend_api_key: string;
   email_from: string;
   telegram_bot_token: string;
   telegram_chat_id: string;
 }
 
 const EMPTY: NotifSettings = {
-  smtp_host: "",
-  smtp_port: 587,
-  smtp_user: "",
-  smtp_password: "",
+  resend_api_key: "",
   email_from: "",
   telegram_bot_token: "",
   telegram_chat_id: "",
@@ -91,7 +85,7 @@ export default function AdminSettingsPage() {
   if (loading) {
     return (
       <div className="max-w-2xl space-y-4">
-        {[...Array(6)].map((_, i) => (
+        {[...Array(4)].map((_, i) => (
           <div key={i} className="h-10 bg-white/5 animate-pulse" />
         ))}
       </div>
@@ -106,41 +100,25 @@ export default function AdminSettingsPage() {
         <p className="text-text-muted text-sm">Configure email and Telegram notifications.</p>
       </div>
 
-      {/* ── SMTP / Email ── */}
       <form onSubmit={handleSave} className="flex flex-col gap-6">
+        {/* ── Resend Email ── */}
         <div>
-          <p className="text-xs uppercase tracking-widest text-gold mb-4">Email (SMTP)</p>
+          <p className="text-xs uppercase tracking-widest text-gold mb-4">Email (Resend)</p>
           <div className="card-surface p-6 flex flex-col gap-4">
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                label="SMTP Host"
-                placeholder="smtp.gmail.com"
-                value={settings.smtp_host}
-                onChange={(e) => setSettings((s) => ({ ...s, smtp_host: e.target.value }))}
-              />
-              <FormField
-                label="SMTP Port"
-                type="number"
-                placeholder="587"
-                value={String(settings.smtp_port)}
-                onChange={(e) => setSettings((s) => ({ ...s, smtp_port: parseInt(e.target.value) || 587 }))}
-              />
-            </div>
+            <p className="text-xs text-text-muted">
+              Get your API key at{" "}
+              <span className="text-gold">resend.com</span>. Add and verify{" "}
+              <span className="font-mono text-text-primary">yvradvisory.ca</span> as a sending domain first.
+            </p>
             <FormField
-              label="SMTP Username"
-              placeholder="you@gmail.com"
-              value={settings.smtp_user}
-              onChange={(e) => setSettings((s) => ({ ...s, smtp_user: e.target.value }))}
-            />
-            <FormField
-              label="SMTP Password"
+              label="Resend API Key"
               type="password"
-              placeholder="••••••••"
-              value={settings.smtp_password}
-              onChange={(e) => setSettings((s) => ({ ...s, smtp_password: e.target.value }))}
+              placeholder="re_••••••••••••••••••••••••"
+              value={settings.resend_api_key}
+              onChange={(e) => setSettings((s) => ({ ...s, resend_api_key: e.target.value }))}
             />
             <FormField
-              label="From Address (optional)"
+              label="From Address"
               placeholder="YVR Advisory <noreply@yvradvisory.ca>"
               value={settings.email_from}
               onChange={(e) => setSettings((s) => ({ ...s, email_from: e.target.value }))}
@@ -198,7 +176,7 @@ export default function AdminSettingsPage() {
               <p className="text-sm text-red-400">{testEmailError || "Failed to send."}</p>
             )}
             {testEmailStatus === "ok" && (
-              <p className="text-sm text-green-400">Test email sent. Check your inbox.</p>
+              <p className="text-sm text-green-400">Test email sent. Check your inbox (and spam).</p>
             )}
             <GoldButton type="submit" variant="outline" disabled={testEmailStatus === "sending" || !testEmail}>
               {testEmailStatus === "sending" ? "Sending…" : "Send Test Email"}

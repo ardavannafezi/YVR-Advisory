@@ -1,8 +1,5 @@
 import asyncio
 import logging
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 
 import httpx
 from sqlalchemy import select
@@ -12,6 +9,8 @@ from app.config import settings
 
 logger = logging.getLogger(__name__)
 
+RESEND_URL = "https://api.resend.com/emails"
+
 
 async def load_db_notif_settings(db: AsyncSession) -> dict:
     from app.models.notification_settings import NotificationSettings
@@ -20,10 +19,7 @@ async def load_db_notif_settings(db: AsyncSession) -> dict:
         return {}
     return {
         k: v for k, v in {
-            "smtp_host": row.smtp_host,
-            "smtp_port": row.smtp_port,
-            "smtp_user": row.smtp_user,
-            "smtp_password": row.smtp_password,
+            "resend_api_key": row.resend_api_key,
             "email_from": row.email_from,
             "telegram_bot_token": row.telegram_bot_token,
             "telegram_chat_id": row.telegram_chat_id,
@@ -50,54 +46,30 @@ async def send_telegram(
         logger.warning("Telegram notification failed: %s", exc)
 
 
-def _send_email_sync(
-    to: str,
-    subject: str,
-    html_body: str,
-    smtp_host: str,
-    smtp_port: int,
-    smtp_user: str,
-    smtp_password: str,
-    email_from: str,
-) -> None:
-    msg = MIMEMultipart("alternative")
-    msg["Subject"] = subject
-    msg["From"] = email_from
-    msg["To"] = to
-    msg.attach(MIMEText(html_body, "html"))
-    # Port 465 = implicit SSL; all others use STARTTLS
-    if smtp_port == 465:
-        with smtplib.SMTP_SSL(smtp_host, smtp_port) as server:
-            server.login(smtp_user, smtp_password)
-            server.sendmail(email_from, to, msg.as_string())
-    else:
-        with smtplib.SMTP(smtp_host, smtp_port) as server:
-            server.starttls()
-            server.login(smtp_user, smtp_password)
-            server.sendmail(email_from, to, msg.as_string())
-
-
 async def send_email(
     to: str,
     subject: str,
     html_body: str,
     *,
-    smtp_host: str = "",
-    smtp_port: int = 0,
-    smtp_user: str = "",
-    smtp_password: str = "",
+    resend_api_key: str = "",
     email_from: str = "",
     **_: object,
 ) -> None:
-    host = smtp_host or settings.smtp_host
-    port = smtp_port or settings.smtp_port
-    user = smtp_user or settings.smtp_user
-    password = smtp_password or settings.smtp_password
+    api_key = resend_api_key or settings.resend_api_key
     sender = email_from or settings.email_from
-    if not host or not user:
+    if not api_key:
+        logger.warning("Email skipped: no Resend API key configured")
         return
     try:
-        loop = asyncio.get_event_loop()
-        await loop.run_in_executor(None, _send_email_sync, to, subject, html_body, host, port, user, password, sender)
+        async with httpx.AsyncClient(timeout=10) as client:
+            resp = await client.post(
+                RESEND_URL,
+                headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+                json={"from": sender, "to": [to], "subject": subject, "html": html_body},
+            )
+            if resp.status_code >= 400:
+                logger.error("Resend API error to=%s status=%s body=%s", to, resp.status_code, resp.text)
+            else:
+                logger.info("Email sent via Resend to=%s id=%s", to, resp.json().get("id"))
     except Exception as exc:
-        logger.error("Email notification failed to=%s host=%s port=%s user=%s: %s", to, smtp_host, smtp_port, smtp_user, exc, exc_info=True)
+        logger.error("Email notification failed to=%s: %s", to, exc, exc_info=True)

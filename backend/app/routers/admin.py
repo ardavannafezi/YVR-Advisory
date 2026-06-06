@@ -404,20 +404,14 @@ async def admin_analytics_emails(db: AsyncSession = Depends(get_db)):
 # ─── Notification settings ────────────────────────────────────────────────────
 
 class NotificationSettingsIn(BaseModel):
-    smtp_host: str = ""
-    smtp_port: int = 587
-    smtp_user: str = ""
-    smtp_password: str = ""
+    resend_api_key: str = ""
     email_from: str = ""
     telegram_bot_token: str = ""
     telegram_chat_id: str = ""
 
 
 class NotificationSettingsOut(BaseModel):
-    smtp_host: str = ""
-    smtp_port: int = 587
-    smtp_user: str = ""
-    smtp_password: str = ""
+    resend_api_key: str = ""
     email_from: str = ""
     telegram_bot_token: str = ""
     telegram_chat_id: str = ""
@@ -443,10 +437,7 @@ async def save_notification_settings(data: NotificationSettingsIn, db: AsyncSess
     if not row:
         row = NotificationSettings(id=1)
         db.add(row)
-    row.smtp_host = data.smtp_host or None
-    row.smtp_port = data.smtp_port
-    row.smtp_user = data.smtp_user or None
-    row.smtp_password = data.smtp_password or None
+    row.resend_api_key = data.resend_api_key or None
     row.email_from = data.email_from or None
     row.telegram_bot_token = data.telegram_bot_token or None
     row.telegram_chat_id = data.telegram_chat_id or None
