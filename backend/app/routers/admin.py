@@ -449,9 +449,9 @@ async def save_notification_settings(data: NotificationSettingsIn, db: AsyncSess
 @router.post("/settings/test-email", dependencies=[Depends(get_current_admin)])
 async def send_test_email(req: TestEmailRequest, db: AsyncSession = Depends(get_db)):
     from app.utils.notifications import load_db_notif_settings
+    from app.utils.email_templates import test_email
     notif = await load_db_notif_settings(db)
-    html = "<p>This is a test email from YVR Advisory. Your email notifications are working.</p><br><p>— YVR Advisory</p>"
-    await send_email(req.to, "Test Email — YVR Advisory", html, **notif)
+    await send_email(req.to, "Test Email — YVR Advisory", test_email(), **notif)
     return {"ok": True}
 
 
