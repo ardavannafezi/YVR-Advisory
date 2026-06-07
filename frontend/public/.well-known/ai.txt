@@ -1,0 +1,25 @@
+# YVR Advisory — AI Access Policy
+# Vancouver's premier nightlife advisory platform
+# Site: https://yvradvisory.ca
+
+# All AI crawlers allowed to index our content
+Allow: ClaudeBot
+Allow: GPTBot
+Allow: ChatGPT-User
+Allow: PerplexityBot
+Allow: Google-Extended
+Allow: Applebot-Extended
+Allow: CCBot
+Allow: FacebookBot
+Allow: Amazonbot
+
+# Machine-readable content index (llmstxt.org spec)
+AI-Index: https://yvradvisory.ca/llms.txt
+
+# Structured data
+Sitemap: https://yvradvisory.ca/sitemap.xml
+
+# Content policy
+AI-Training: no
+AI-Search: yes
+AI-Retrieval: yes

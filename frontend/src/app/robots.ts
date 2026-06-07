@@ -5,24 +5,31 @@ const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://yvradvisory.ca";
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
-      // Standard crawlers
-      { userAgent: "*", allow: "/", disallow: ["/admin/", "/api/"] },
-      // Google AI (SGE, Bard context)
-      { userAgent: "Google-Extended", allow: "/" },
+      // Standard search crawlers
+      { userAgent: "*",                allow: "/", disallow: ["/admin/", "/api/"] },
+      // Google (incl. AI Overviews / SGE)
+      { userAgent: "Googlebot",        allow: "/" },
+      { userAgent: "Google-Extended",  allow: "/" },
       // OpenAI / ChatGPT
-      { userAgent: "GPTBot", allow: "/" },
-      { userAgent: "ChatGPT-User", allow: "/" },
+      { userAgent: "GPTBot",           allow: "/" },
+      { userAgent: "ChatGPT-User",     allow: "/" },
       // Anthropic Claude
-      { userAgent: "ClaudeBot", allow: "/" },
+      { userAgent: "ClaudeBot",        allow: "/" },
       // Perplexity
-      { userAgent: "PerplexityBot", allow: "/" },
-      // Meta / Llama
-      { userAgent: "FacebookBot", allow: "/" },
+      { userAgent: "PerplexityBot",    allow: "/" },
+      // Meta
+      { userAgent: "FacebookBot",      allow: "/" },
       // Apple
-      { userAgent: "Applebot-Extended", allow: "/" },
-      // Common Crawl (training data)
-      { userAgent: "CCBot", allow: "/" },
+      { userAgent: "Applebot",         allow: "/" },
+      { userAgent: "Applebot-Extended",allow: "/" },
+      // Common Crawl
+      { userAgent: "CCBot",            allow: "/" },
+      // Amazon
+      { userAgent: "Amazonbot",        allow: "/" },
     ],
-    sitemap: `${SITE}/sitemap.xml`,
+    sitemap: [
+      `${SITE}/sitemap.xml`,
+    ],
+    host: SITE,
   };
 }
