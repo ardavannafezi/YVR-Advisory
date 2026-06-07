@@ -32,7 +32,7 @@ export function EventsPageClient({ initialData }: Props) {
   return (
     <>
       {/* Mobile-only header — shown instead of quiz on small screens */}
-      <div className="md:hidden pt-24 pb-5 max-w-7xl mx-auto px-6 flex items-center justify-between">
+      <div className="md:hidden pt-20 pb-3 max-w-7xl mx-auto px-6 flex items-center justify-between">
         <div>
           <p className="text-[9px] uppercase tracking-[0.3em] text-gold mb-1">Vancouver Events</p>
           <h1 className="font-serif text-2xl text-text-primary">Find Your Night</h1>
@@ -63,7 +63,7 @@ export function EventsPageClient({ initialData }: Props) {
       {/* All events section */}
       <section
         ref={listRef as React.RefObject<HTMLElement>}
-        className={`max-w-7xl mx-auto px-6 pb-28 ${quizDone ? "pt-20 md:pt-24" : "pt-8 md:pt-12"}`}
+        className={`max-w-7xl mx-auto px-6 pb-28 ${quizDone ? "pt-16 md:pt-24" : "pt-3 md:pt-10"}`}
       >
         {quizDone ? (
           <motion.div

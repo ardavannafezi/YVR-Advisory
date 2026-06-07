@@ -100,16 +100,16 @@ export function EventsListClient({ initialData, recommendedResults, recommendedS
   return (
     <div>
       {/* Filter panel */}
-      <div className="mb-10 border border-white/[0.06] bg-[#0c0c0c] p-4 space-y-3 overflow-hidden">
+      <div className="mb-6 border border-white/[0.06] bg-[#0c0c0c] px-3 py-3 md:p-4 space-y-2.5 md:space-y-3">
         {/* When row */}
-        <div className="flex items-start gap-3">
-          <span className="text-[10px] uppercase tracking-[0.25em] text-gold w-16 flex-shrink-0 pt-1.5">When</span>
-          <div className="flex flex-wrap gap-1.5">
+        <div className="flex items-center gap-2 md:gap-3">
+          <span className="text-[10px] uppercase tracking-[0.25em] text-gold w-12 md:w-16 flex-shrink-0">When</span>
+          <div className="flex gap-1.5 overflow-x-auto scrollbar-none pb-0.5">
             {DATE_OPTIONS.map(opt => (
               <button
                 key={opt.value}
                 onClick={() => setDateFilter(f => f === opt.value ? null : opt.value)}
-                className={`text-[10px] uppercase tracking-[0.1em] px-3 py-1.5 border transition-all duration-200 ${
+                className={`flex-shrink-0 text-[10px] uppercase tracking-[0.1em] px-3 py-1.5 border transition-all duration-200 ${
                   dateFilter === opt.value
                     ? "border-gold bg-gold/12 text-gold"
                     : "border-white/10 text-text-muted hover:border-white/25 hover:text-text-primary"
@@ -124,14 +124,14 @@ export function EventsListClient({ initialData, recommendedResults, recommendedS
         <div className="h-px bg-white/[0.05]" />
 
         {/* Music + clear row */}
-        <div className="flex items-start gap-3">
-          <span className="text-[10px] uppercase tracking-[0.25em] text-gold w-16 flex-shrink-0 pt-1.5">Music</span>
-          <div className="flex flex-wrap gap-1.5 flex-1">
+        <div className="flex items-center gap-2 md:gap-3">
+          <span className="text-[10px] uppercase tracking-[0.25em] text-gold w-12 md:w-16 flex-shrink-0">Music</span>
+          <div className="flex gap-1.5 overflow-x-auto scrollbar-none flex-1 pb-0.5">
             {MUSIC_OPTIONS.map(opt => (
               <button
                 key={opt}
                 onClick={() => setMusicFilter(f => f === opt ? null : opt)}
-                className={`text-[10px] uppercase tracking-[0.1em] px-3 py-1.5 border transition-all duration-200 ${
+                className={`flex-shrink-0 text-[10px] uppercase tracking-[0.1em] px-3 py-1.5 border transition-all duration-200 ${
                   musicFilter === opt
                     ? "border-gold bg-gold/12 text-gold"
                     : "border-white/10 text-text-muted hover:border-white/25 hover:text-text-primary"
@@ -144,9 +144,9 @@ export function EventsListClient({ initialData, recommendedResults, recommendedS
           {anyFilter && (
             <button
               onClick={clearAll}
-              className="flex-shrink-0 text-[10px] uppercase tracking-[0.15em] text-text-dim border border-white/10 px-3 py-1.5 hover:border-white/25 hover:text-text-muted transition-colors"
+              className="flex-shrink-0 text-[10px] uppercase tracking-[0.15em] text-text-dim border border-white/10 px-2.5 py-1.5 hover:border-white/25 hover:text-text-muted transition-colors"
             >
-              Clear ×
+              ×
             </button>
           )}
         </div>

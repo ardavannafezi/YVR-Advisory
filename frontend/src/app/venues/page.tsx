@@ -40,14 +40,14 @@ export default function VenuesPage({ searchParams }: { searchParams: Record<stri
     <div className="min-h-screen">
       {/* Editorial header */}
       <div className="border-b border-white/[0.05]">
-        <div className="max-w-7xl mx-auto px-6 pt-36 pb-16">
-          <p className="text-gold text-[10px] uppercase tracking-[0.45em] mb-8">Vancouver, BC</p>
-          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
-            <h1 className="font-sans font-bold text-5xl md:text-6xl xl:text-7xl text-text-primary leading-[1.05]">
+        <div className="max-w-7xl mx-auto px-6 pt-24 pb-6 md:pt-36 md:pb-16">
+          <p className="text-gold text-[10px] uppercase tracking-[0.45em] mb-4 md:mb-8">Vancouver, BC</p>
+          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 md:gap-8">
+            <h1 className="font-sans font-bold text-4xl md:text-6xl xl:text-7xl text-text-primary leading-[1.05]">
               Vancouver<br />
               <span className="text-gold">Venues</span>
             </h1>
-            <p className="text-text-muted text-base leading-relaxed max-w-sm lg:mb-1">
+            <p className="hidden md:block text-text-muted text-base leading-relaxed max-w-sm lg:mb-1">
               Handpicked nightclubs, cocktail bars, and lounges — curated for the night you have in mind.
             </p>
           </div>
@@ -55,7 +55,7 @@ export default function VenuesPage({ searchParams }: { searchParams: Record<stri
       </div>
 
       {/* Filters + grid */}
-      <div className="max-w-7xl mx-auto px-6 py-12">
+      <div className="max-w-7xl mx-auto px-6 py-4 md:py-10">
         <div className="flex flex-col gap-4 mb-10">
           <Suspense fallback={null}>
             <VenueTabs />
