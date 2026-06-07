@@ -55,6 +55,10 @@ export const metadata: Metadata = {
     description: "Your guide to Vancouver's finest nightlife.",
     images: ["/api/og"],
   },
+  authors: [{ name: "YVR Advisory", url: SITE_URL }],
+  creator: "YVR Advisory",
+  publisher: "YVR Advisory",
+  formatDetection: { telephone: false },
   alternates: { canonical: SITE_URL },
   robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
 };

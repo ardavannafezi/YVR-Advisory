@@ -27,10 +27,13 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: "/" },
   openGraph: {
+    type: "website",
+    siteName: "YVR Advisory",
     title: "YVR Advisory — Vancouver Nightlife Guide",
     description:
       "Your advisor for Vancouver nightclubs, bars, and events. Find the best nights in YVR — curated, always current.",
     url: "/",
+    images: [{ url: "/api/og", width: 1200, height: 630, alt: "YVR Advisory — Vancouver Nightlife Guide" }],
   },
 };
 
