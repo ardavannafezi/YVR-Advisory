@@ -8,9 +8,9 @@ import { CtaBanner } from "@/components/home/CtaBanner";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "YVR Advisory — Vancouver Nightlife Guide | Best Clubs & Events Tonight",
+  title: "YVR Advisory — Vancouver Nightlife Guide",
   description:
-    "YVR Advisory is Vancouver's nightlife advisor. Discover the best nightclubs, cocktail bars, and events in Vancouver tonight — curated venues, guestlist access, and honest recommendations.",
+    "Vancouver's best nightclubs, bars, and events tonight. Curated venues, guestlist access, and personalized nightlife recommendations.",
   keywords: [
     "Vancouver nightlife",
     "nightclubs Vancouver",

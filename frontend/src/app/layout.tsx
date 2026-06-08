@@ -59,6 +59,10 @@ export const metadata: Metadata = {
   creator: "YVR Advisory",
   publisher: "YVR Advisory",
   formatDetection: { telephone: false },
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
   alternates: { canonical: SITE_URL },
   robots: { index: true, follow: true, googleBot: { index: true, follow: true } },
 };

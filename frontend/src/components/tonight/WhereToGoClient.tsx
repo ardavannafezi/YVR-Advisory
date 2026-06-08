@@ -77,6 +77,7 @@ export function WhereToGoClient() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <h1 className="sr-only">Where to Go Tonight in Vancouver — Personalized Nightlife Recommendations</h1>
       {/* Progress bar */}
       <div className="h-px bg-white/[0.06] relative">
         <motion.div
