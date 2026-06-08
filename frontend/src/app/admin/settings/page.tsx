@@ -31,6 +31,21 @@ export default function AdminSettingsPage() {
 
   const [testTgStatus, setTestTgStatus] = useState<"idle" | "sending" | "ok" | "error">("idle");
 
+  const [convertStatus, setConvertStatus] = useState<"idle" | "running" | "done" | "error">("idle");
+  const [convertResult, setConvertResult] = useState<{ converted: number; skipped: number; files: string[] } | null>(null);
+
+  async function handleConvertImages() {
+    setConvertStatus("running");
+    setConvertResult(null);
+    try {
+      const result = await adminFetch<{ converted: number; skipped: number; files: string[] }>("/api/admin/convert-images-webp", { method: "POST" });
+      setConvertResult(result);
+      setConvertStatus("done");
+    } catch {
+      setConvertStatus("error");
+    }
+  }
+
   useEffect(() => {
     adminFetch<NotifSettings>("/api/admin/settings/notifications")
       .then((d) => setSettings({ ...EMPTY, ...d }))
@@ -197,6 +212,31 @@ export default function AdminSettingsPage() {
             onClick={handleTestTelegram}
           >
             {testTgStatus === "sending" ? "Sending…" : "Send Test Telegram Message"}
+          </GoldButton>
+        </div>
+      </div>
+
+      {/* ── Convert Images to WebP ── */}
+      <div className="mt-8">
+        <p className="text-xs uppercase tracking-widest text-gold mb-4">Image Optimization</p>
+        <div className="card-surface p-6 flex flex-col gap-4">
+          <p className="text-xs text-text-muted">
+            Convert all existing JPG/PNG uploads to WebP. Run once — already-converted files are skipped. This updates venue and event image URLs in the database.
+          </p>
+          {convertStatus === "done" && convertResult && (
+            <p className="text-sm text-green-400">
+              Done — {convertResult.converted} converted, {convertResult.skipped} skipped.
+            </p>
+          )}
+          {convertStatus === "error" && (
+            <p className="text-sm text-red-400">Conversion failed. Check server logs.</p>
+          )}
+          <GoldButton
+            variant="outline"
+            disabled={convertStatus === "running"}
+            onClick={handleConvertImages}
+          >
+            {convertStatus === "running" ? "Converting…" : "Convert All Images to WebP"}
           </GoldButton>
         </div>
       </div>
