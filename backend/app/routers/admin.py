@@ -1,7 +1,10 @@
+import io
 import os
 import random
 import uuid
 from datetime import datetime, timezone
+
+from PIL import Image
 
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
 from pydantic import BaseModel
@@ -162,17 +165,80 @@ async def admin_update_venue_rating(venue_id: int, data: RatingUpdate, db: Async
     return {"venue_id": venue_id, "rating": data.rating}
 
 
+def _to_webp(content: bytes) -> bytes:
+    img = Image.open(io.BytesIO(content))
+    if img.mode not in ("RGB", "RGBA"):
+        img = img.convert("RGBA" if "transparency" in img.info or img.mode in ("RGBA", "LA", "PA") else "RGB")
+    buf = io.BytesIO()
+    img.save(buf, format="WEBP", quality=85, method=4)
+    return buf.getvalue()
+
+
 @router.post("/upload", dependencies=[Depends(get_current_admin)])
 async def admin_upload_file(file: UploadFile = File(...)):
     ext = os.path.splitext(file.filename or "")[1].lower()
     if ext not in ALLOWED_EXTS:
         raise HTTPException(status_code=400, detail="Image files only (.jpg .jpeg .png .webp .gif)")
+    content = await file.read()
+    # GIFs kept as-is (may be animated); everything else → WebP
+    if ext != ".gif":
+        content = _to_webp(content)
+        ext = ".webp"
     filename = f"{uuid.uuid4().hex}{ext}"
     dest = os.path.join(UPLOAD_DIR, "venues", filename)
-    content = await file.read()
     with open(dest, "wb") as f:
         f.write(content)
     return {"url": f"/uploads/venues/{filename}"}
+
+
+@router.post("/convert-images-webp", dependencies=[Depends(get_current_admin)])
+async def convert_existing_images_to_webp(db: AsyncSession = Depends(get_db)):
+    """One-time conversion of existing local uploads to WebP. Updates DB image_url fields."""
+    venues_dir = os.path.join(UPLOAD_DIR, "venues")
+    converted = []
+    skipped = []
+
+    if not os.path.isdir(venues_dir):
+        return {"converted": 0, "skipped": 0, "detail": "uploads/venues dir not found"}
+
+    for fname in os.listdir(venues_dir):
+        fpath = os.path.join(venues_dir, fname)
+        ext = os.path.splitext(fname)[1].lower()
+        if ext in (".webp", ".gif") or not os.path.isfile(fpath):
+            skipped.append(fname)
+            continue
+        if ext not in (".jpg", ".jpeg", ".png"):
+            skipped.append(fname)
+            continue
+        try:
+            with open(fpath, "rb") as f:
+                original = f.read()
+            webp_bytes = _to_webp(original)
+            new_fname = os.path.splitext(fname)[0] + ".webp"
+            new_path = os.path.join(venues_dir, new_fname)
+            with open(new_path, "wb") as f:
+                f.write(webp_bytes)
+
+            old_url = f"/uploads/venues/{fname}"
+            new_url = f"/uploads/venues/{new_fname}"
+
+            # Update Venue image_url
+            venues = (await db.execute(select(Venue).where(Venue.image_url == old_url))).scalars().all()
+            for v in venues:
+                v.image_url = new_url
+
+            # Update Event image_url
+            events = (await db.execute(select(Event).where(Event.image_url == old_url))).scalars().all()
+            for e in events:
+                e.image_url = new_url
+
+            os.remove(fpath)
+            converted.append(fname)
+        except Exception as exc:
+            skipped.append(f"{fname} (error: {exc})")
+
+    await db.commit()
+    return {"converted": len(converted), "skipped": len(skipped), "files": converted}
 
 
 # ─── Events ──────────────────────────────────────────────────────────────────
