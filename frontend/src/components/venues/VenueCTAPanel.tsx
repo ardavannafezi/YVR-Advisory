@@ -39,8 +39,6 @@ export function VenueCTAPanel({
   venueName, advisoryRating, reservationLink, websiteUrl, instagramUrl, phone, lat, lng,
   guestlistEnabled, bottleServiceEnabled,
 }: Props) {
-  const hasAnyCTA = guestlistEnabled || bottleServiceEnabled;
-
   return (
     <div className="card-surface p-6 flex flex-col gap-4 sticky top-24">
       {advisoryRating != null && (
@@ -53,29 +51,41 @@ export function VenueCTAPanel({
         </div>
       )}
 
-      {hasAnyCTA && (
-        <>
-          <p className="text-xs uppercase tracking-widest text-gold">Reserve or Join</p>
-          {bottleServiceEnabled && (
-            <button
-              onClick={scrollToEvents}
-              className="w-full text-center text-[11px] uppercase tracking-widest py-3 bg-gold text-black hover:bg-gold/90 transition-colors font-medium"
-            >
-              Book Bottle Service
-            </button>
-          )}
-          {guestlistEnabled && (
-            <button
-              onClick={scrollToEvents}
-              className="w-full text-center text-[11px] uppercase tracking-widest py-3 border border-gold/50 text-gold hover:bg-gold/10 transition-colors"
-            >
-              Join Guestlist
-            </button>
-          )}
-          <p className="text-[10px] text-text-dim text-center -mt-2">
-            Select an upcoming event below
+      {bottleServiceEnabled && (
+        <div className="border border-gold/30 bg-gold/[0.04] p-4 flex flex-col gap-3">
+          <div>
+            <p className="text-[9px] uppercase tracking-[0.25em] text-gold mb-1">VIP Table Experience</p>
+            <p className="font-serif text-base text-text-primary leading-snug">Private Table &amp; Bottle Service</p>
+          </div>
+          <p className="text-[11px] text-text-muted leading-relaxed">
+            Reserve exclusive seating with curated bottle packages. Our team will confirm availability, pricing, and details — tailored to your group.
           </p>
-        </>
+          <button
+            onClick={scrollToEvents}
+            className="w-full text-center text-[11px] uppercase tracking-[0.15em] py-3 bg-gold text-black hover:bg-gold/90 active:bg-gold/80 transition-colors font-semibold"
+          >
+            Reserve a Table
+          </button>
+          <p className="text-[10px] text-text-dim text-center">
+            Select an event below to begin your inquiry
+          </p>
+        </div>
+      )}
+      {guestlistEnabled && (
+        <div className={bottleServiceEnabled ? "" : ""}>
+          {!bottleServiceEnabled && <p className="text-xs uppercase tracking-widest text-gold">Reserve or Join</p>}
+          <button
+            onClick={scrollToEvents}
+            className="w-full text-center text-[11px] uppercase tracking-widest py-3 border border-gold/50 text-gold hover:bg-gold/10 transition-colors"
+          >
+            Join Guestlist
+          </button>
+          {!bottleServiceEnabled && (
+            <p className="text-[10px] text-text-dim text-center">
+              Select an upcoming event below
+            </p>
+          )}
+        </div>
       )}
 
       {reservationLink && (

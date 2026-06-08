@@ -118,8 +118,9 @@ function EventSliderCard({
 }) {
   const date = new Date(event.date);
   const guestlistClosed = event.guestlist_closes_at ? new Date(event.guestlist_closes_at) < new Date() : false;
-  const hasGuestlist = event.our_guestlist && !guestlistClosed && (event.venue?.guestlist_enabled ?? false);
-  const hasReservation = event.our_reservation && (event.venue?.bottle_service_enabled ?? false);
+  const entryClosed = event.entry_closes_at ? new Date(event.entry_closes_at) < new Date() : false;
+  const hasGuestlist = event.our_guestlist && !guestlistClosed;
+  const hasReservation = event.our_reservation && !guestlistClosed;
 
   return (
     <div
@@ -176,7 +177,7 @@ function EventSliderCard({
               onClick={onReservation}
               className="flex-1 text-[10px] uppercase tracking-widest text-text-muted border border-white/15 py-1.5 hover:border-gold/30 hover:text-gold transition-colors"
             >
-              Table
+              Reserve a Table
             </button>
           )}
           {!hasGuestlist && !hasReservation && event.ticket_url && (

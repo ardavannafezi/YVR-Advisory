@@ -113,7 +113,7 @@ export default async function VenueDetailPage({ params }: { params: { slug: stri
       <VenueViewTracker slug={venue.slug} />
       <div className="pt-20">
         {/* Hero image */}
-        <div className="relative h-[55vh] overflow-hidden">
+        <div className="relative h-[55vh] overflow-hidden bg-white/[0.04] animate-pulse">
           {venue.image_url ? (
             <Image src={venue.image_url} alt={venue.name} fill className="object-cover" priority />
           ) : (

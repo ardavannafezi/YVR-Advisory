@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
@@ -13,6 +14,7 @@ interface VenueCardProps {
 }
 
 export function VenueCard({ venue, index = 0 }: VenueCardProps) {
+  const [imgLoaded, setImgLoaded] = useState(false);
   return (
     <motion.div
       variants={fadeUp}
@@ -26,8 +28,11 @@ export function VenueCard({ venue, index = 0 }: VenueCardProps) {
         href={`/venues/${venue.slug}`}
         className="group h-full flex flex-col rounded-2xl overflow-hidden bg-[#0d0d0d] border border-white/[0.07] hover:border-gold/30 transition-all duration-300"
       >
-        {/* Image — B&W, reveals color on hover */}
+        {/* Image */}
         <div className="relative h-52 flex-shrink-0 overflow-hidden">
+          {!imgLoaded && venue.image_url && (
+            <div className="absolute inset-0 bg-white/[0.06] animate-pulse" />
+          )}
           {venue.image_url ? (
             <Image
               src={venue.image_url}
@@ -35,6 +40,7 @@ export function VenueCard({ venue, index = 0 }: VenueCardProps) {
               fill
               className="object-cover transition-all duration-700 group-hover:scale-105"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              onLoad={() => setImgLoaded(true)}
             />
           ) : (
             <div className="absolute inset-0 bg-gradient-to-br from-gold/6 to-transparent" />

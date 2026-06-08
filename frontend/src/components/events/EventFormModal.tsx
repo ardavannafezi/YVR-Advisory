@@ -141,7 +141,7 @@ function ReservationForm({ eventId, venueId, onDone }: { eventId?: number; venue
       <FormField label="Special Requests (optional)" as="textarea" placeholder="Seating, dietary needs..." {...register("preferences")} />
       {serverError && <div className="border border-red-500/40 p-3 text-sm text-red-400">{serverError}</div>}
       <GoldButton type="submit" disabled={isSubmitting} className="mt-1">
-        {isSubmitting ? "Submitting…" : "Request Bottle Service"}
+        {isSubmitting ? "Submitting…" : "Reserve a Table"}
       </GoldButton>
     </form>
   );
@@ -155,10 +155,10 @@ export function EventFormModal({ mode, eventId, venueId, eventName, venueName, o
     return () => { document.body.style.overflow = ""; };
   }, []);
 
-  const title = mode === "guestlist" ? "Join the Guestlist" : "Book Bottle Service";
+  const title = mode === "guestlist" ? "Join the Guestlist" : "Reserve a Table";
   const subtitle = mode === "guestlist"
     ? `Submit your request${eventName ? ` for ${eventName}` : ""}. We'll review and send a confirmation to your email.`
-    : `Our advisory team will confirm your table shortly${venueName ? ` at ${venueName}` : ""}. Check your email for details.`;
+    : `Submit your inquiry${venueName ? ` at ${venueName}` : ""}. Our team will follow up with availability, package options, and pricing — this is an inquiry, not a confirmed booking.`;
 
   return (
     <AnimatePresence>
@@ -199,8 +199,14 @@ export function EventFormModal({ mode, eventId, venueId, eventName, venueName, o
                 </>
               ) : (
                 <>
-                  <h3 className="font-serif text-2xl text-text-primary mb-2">Request Received</h3>
-                  <p className="text-text-muted text-sm">Our advisory team will contact you shortly to confirm all details.</p>
+                  <h3 className="font-serif text-2xl text-text-primary mb-2">Inquiry Received</h3>
+                  <p className="text-text-muted text-sm mb-3">
+                    Our team will reach out shortly with table availability, bottle package options, and pricing — tailored to your group.
+                  </p>
+                  <p className="text-[11px] text-text-dim border border-white/8 px-3 py-2">
+                    Your table is not yet confirmed. Booking is complete only once our team contacts you.
+                  </p>
+                  <p className="text-text-dim text-xs mt-3">Questions? <span className="text-gold">team@yvradvisory.ca</span></p>
                 </>
               )}
               <button onClick={onClose} className="mt-6 text-xs uppercase tracking-widest text-text-dim hover:text-text-muted transition-colors">

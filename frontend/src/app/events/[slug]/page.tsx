@@ -79,7 +79,7 @@ export default async function EventDetailPage({ params }: { params: { slug: stri
 
   const hasGuestlistCTA = event.our_guestlist && !guestlistClosed;
   const hasTicketCTA = !!event.ticket_url && !entryClosed;
-  const hasReserveCTA = event.our_reservation && !!event.venue_id && !entryClosed;
+  const hasReserveCTA = event.our_reservation && !!event.venue_id && !guestlistClosed;
 
   return (
     <>

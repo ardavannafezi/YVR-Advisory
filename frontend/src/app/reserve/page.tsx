@@ -58,8 +58,12 @@ function ReserveForm() {
           <div className="w-16 h-16 border border-gold/40 flex items-center justify-center mx-auto mb-6">
             <span className="text-gold text-2xl">✓</span>
           </div>
-          <h2 className="font-serif text-3xl text-text-primary mb-3">Request Received</h2>
-          <p className="text-text-muted">Our team will confirm your table reservation within 24 hours. Check your email for updates.</p>
+          <h2 className="font-serif text-3xl text-text-primary mb-3">Inquiry Received</h2>
+          <p className="text-text-muted mb-4">Our team will reach out with table availability, bottle package options, and pricing — tailored to your group and occasion.</p>
+          <p className="text-[11px] text-text-dim border border-white/10 px-4 py-3 max-w-sm mx-auto">
+            Your table is not yet confirmed. We will contact you to finalize your booking.
+          </p>
+          <p className="text-text-dim text-xs mt-4">Questions? <span className="text-gold">team@yvradvisory.ca</span></p>
         </motion.div>
       </div>
     );
@@ -112,7 +116,7 @@ function ReserveForm() {
           )}
 
           <GoldButton type="submit" disabled={isSubmitting} className="mt-2">
-            {isSubmitting ? "Submitting..." : "Request Reservation"}
+            {isSubmitting ? "Submitting..." : "Reserve a Table"}
           </GoldButton>
         </form>
       </div>

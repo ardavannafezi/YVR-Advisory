@@ -31,7 +31,7 @@ export function EventCard({ event, index = 0 }: EventCardProps) {
 
   // Loosened gates — show CTAs whenever the event opts in, regardless of venue flags
   const hasGuestlist = event.our_guestlist && !guestlistClosed;
-  const hasReservation = event.our_reservation && !entryClosed;
+  const hasReservation = event.our_reservation && !guestlistClosed;
   const hasTickets = !hasGuestlist && !hasReservation && !!event.ticket_url && !entryClosed;
 
   return (
@@ -134,7 +134,7 @@ export function EventCard({ event, index = 0 }: EventCardProps) {
                 onClick={e => { e.preventDefault(); setModal("reservation"); }}
                 className="text-[10px] uppercase tracking-widest text-text-muted border border-white/12 px-4 py-2 hover:border-gold/35 hover:text-gold transition-colors rounded-md"
               >
-                Reserve Table
+                Reserve a Table
               </button>
             )}
             {hasTickets && (

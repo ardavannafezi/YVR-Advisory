@@ -67,7 +67,7 @@ export function EventCTASidebar({
               {hasReserveCTA && (
                 <button onClick={() => { gtagEvent("generate_lead", { item_name: eventName, item_category: "Reservation", venue: venueName }); setModal("reservation"); }} className="block w-full">
                   <GoldButton variant={hasGuestlistCTA ? "outline" : "solid"} className="w-full">
-                    Book Bottle Service
+                    Reserve a Table
                   </GoldButton>
                 </button>
               )}
@@ -120,7 +120,7 @@ export function EventCTASidebar({
           )}
           {hasReserveCTA && (
             <button onClick={() => { gtagEvent("generate_lead", { item_name: eventName, item_category: "Reservation", venue: venueName, source: "mobile_bar" }); setModal("reservation"); }} className="flex-1">
-              <GoldButton variant="outline" className="w-full">Book Table</GoldButton>
+              <GoldButton variant="outline" className="w-full">Reserve a Table</GoldButton>
             </button>
           )}
           {hasTicketCTA && !hasGuestlistCTA && !hasReserveCTA && (
