@@ -1,7 +1,9 @@
+import io
 import os
 import random
 import uuid
 from fastapi import APIRouter, Depends, File, Header, HTTPException, UploadFile, status
+from PIL import Image
 from sqlalchemy import Date, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -51,10 +53,18 @@ async def webhook_upload(file: UploadFile = File(...)):
     ext = os.path.splitext(file.filename or "")[1].lower()
     if ext not in ALLOWED_EXTS:
         raise HTTPException(status_code=400, detail="Image files only (.jpg .jpeg .png .webp .gif)")
+    content = await file.read()
+    if ext != ".gif":
+        img = Image.open(io.BytesIO(content))
+        if img.mode not in ("RGB", "RGBA"):
+            img = img.convert("RGBA" if ("transparency" in img.info or img.mode in ("RGBA", "LA", "PA")) else "RGB")
+        buf = io.BytesIO()
+        img.save(buf, format="WEBP", quality=85, method=4)
+        content = buf.getvalue()
+        ext = ".webp"
     dest_dir = os.path.join(UPLOAD_DIR, "events")
     os.makedirs(dest_dir, exist_ok=True)
     filename = f"{uuid.uuid4().hex}{ext}"
-    content = await file.read()
     with open(os.path.join(dest_dir, filename), "wb") as f:
         f.write(content)
     return {"url": f"/uploads/events/{filename}"}
