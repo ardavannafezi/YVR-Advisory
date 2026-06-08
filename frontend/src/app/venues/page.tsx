@@ -8,10 +8,30 @@ import { SkeletonGrid } from "@/components/ui/SkeletonCard";
 import type { PaginatedList, Venue } from "@/types";
 
 export const metadata: Metadata = {
-  title: "Vancouver Nightclubs & Venues",
+  title: "Vancouver Nightclubs, Bars & Venues | YVR Advisory",
   description:
-    "Discover Vancouver's best nightclubs, lounges, and bars. Filter by music type, neighbourhood, and vibe.",
+    "Discover Vancouver's best nightclubs, cocktail bars, and lounges. Filter by music type, neighbourhood, and vibe. Curated by YVR Advisory.",
+  keywords: [
+    "Vancouver nightclubs",
+    "Vancouver bars",
+    "Granville Street clubs",
+    "Gastown bars",
+    "Yaletown lounges",
+    "Vancouver 19+ clubs",
+    "downtown Vancouver nightlife",
+    "Vancouver cocktail bars",
+    "best clubs Vancouver",
+    "Vancouver nightlife venues",
+  ],
   alternates: { canonical: "/venues" },
+  openGraph: {
+    type: "website",
+    siteName: "YVR Advisory",
+    title: "Vancouver Nightclubs, Bars & Venues | YVR Advisory",
+    description: "Handpicked nightclubs, cocktail bars, and lounges in Vancouver. Filter by music, neighbourhood, and vibe.",
+    url: "/venues",
+    images: [{ url: "/api/og", width: 1200, height: 630, alt: "Vancouver Venues — YVR Advisory" }],
+  },
 };
 
 async function VenueSection({ searchParams }: { searchParams: Record<string, string> }) {

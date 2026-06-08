@@ -4,7 +4,22 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "About YVR Advisory — Vancouver Nightlife Guide",
   description: "YVR Advisory is Vancouver's curated nightlife advisor — venues, events, guestlists, and insider access at the city's top clubs and bars.",
+  keywords: [
+    "YVR Advisory",
+    "Vancouver nightlife guide",
+    "Vancouver club advisor",
+    "Vancouver nightlife recommendations",
+    "about YVR Advisory",
+  ],
   alternates: { canonical: "/about" },
+  openGraph: {
+    type: "website",
+    siteName: "YVR Advisory",
+    title: "About YVR Advisory — Vancouver Nightlife Guide",
+    description: "Vancouver's curated nightlife advisor — venues, events, guestlists, and insider access at the city's top clubs and bars.",
+    url: "/about",
+    images: [{ url: "/api/og", width: 1200, height: 630, alt: "About YVR Advisory" }],
+  },
 };
 
 export default function AboutPage() {

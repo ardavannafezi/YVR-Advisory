@@ -25,16 +25,38 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   try {
     const post = await api.get<BlogPost>(`/api/blog/${params.slug}`);
+    const description = post.summary ||
+      `Read ${post.title} on the YVR Advisory Vancouver nightlife journal.`;
+    const keywords = [
+      ...(post.tags ?? []),
+      "Vancouver nightlife",
+      "Vancouver nightlife guide",
+      ...(post.music_type ? [post.music_type, `${post.music_type} Vancouver`] : []),
+    ];
     return {
-      title: post.title,
-      description: post.summary || post.title,
+      title: `${post.title} | YVR Advisory`,
+      description: description.slice(0, 160),
+      keywords,
       alternates: { canonical: `/blog/${post.slug}` },
       openGraph: {
-        title: post.title,
-        description: post.summary || "",
-        images: post.cover_image_url ? [{ url: post.cover_image_url }] : [],
-        url: `/blog/${post.slug}`,
         type: "article",
+        siteName: "YVR Advisory",
+        title: post.title,
+        description: description.slice(0, 160),
+        images: post.cover_image_url ? [{ url: post.cover_image_url, alt: post.title }] : [{ url: "/api/og" }],
+        url: `/blog/${post.slug}`,
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: post.title,
+        description: description.slice(0, 160),
+        images: post.cover_image_url ? [post.cover_image_url] : ["/api/og"],
+      },
+      other: {
+        "article:published_time": post.published_at ?? "",
+        "article:author": post.author ?? "YVR Advisory",
+        ...(post.tags?.length ? { "article:tag": post.tags.join(",") } : {}),
+        "article:section": "Vancouver Nightlife",
       },
     };
   } catch {

@@ -39,22 +39,32 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       event.description ||
       `${event.name} at ${venueName} on ${dateStr}.${performers ? ` Featuring ${performers}.` : ""} Book your guestlist or tickets on YVR Advisory.`;
 
+    const keywords = [
+      event.name,
+      `${event.name} Vancouver`,
+      ...(event.music_type ? [event.music_type, `${event.music_type} night Vancouver`] : []),
+      ...(event.venue?.name ? [`${event.venue.name} events`] : []),
+      "Vancouver events",
+      "Vancouver nightlife",
+    ];
     return {
       title: `${event.name} at ${venueName} — ${dateStr} | YVR Advisory`,
       description: description.slice(0, 160),
+      keywords,
       alternates: { canonical: `/events/${event.slug}` },
       openGraph: {
+        type: "website",
+        siteName: "YVR Advisory",
         title: `${event.name} at ${venueName}`,
         description: description.slice(0, 160),
-        images: event.image_url ? [{ url: event.image_url, alt: event.name }] : [],
+        images: event.image_url ? [{ url: event.image_url, alt: event.name }] : [{ url: "/api/og" }],
         url: `/events/${event.slug}`,
-        type: "website",
       },
       twitter: {
         card: "summary_large_image",
         title: `${event.name} at ${venueName}`,
         description: description.slice(0, 160),
-        images: event.image_url ? [event.image_url] : [],
+        images: event.image_url ? [event.image_url] : ["/api/og"],
       },
     };
   } catch {

@@ -8,9 +8,29 @@ import type { Genre } from "@/types";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Vancouver Music & Genres",
-  description: "Explore Vancouver nightlife by music type — techno, house, hip-hop, latin, and more.",
+  title: "Vancouver Nightlife by Music Genre | YVR Advisory",
+  description:
+    "Find Vancouver venues and events by music type — techno, house, hip-hop, Latin, R&B, and more. Discover the city's best nights by sound.",
+  keywords: [
+    "techno Vancouver",
+    "house music Vancouver",
+    "hip hop night Vancouver",
+    "latin night Vancouver",
+    "R&B club Vancouver",
+    "EDM Vancouver",
+    "Vancouver music scene",
+    "dance music Vancouver",
+    "Vancouver DJ events",
+  ],
   alternates: { canonical: "/music" },
+  openGraph: {
+    type: "website",
+    siteName: "YVR Advisory",
+    title: "Vancouver Nightlife by Music Genre | YVR Advisory",
+    description: "Find Vancouver venues and events by music — techno, house, hip-hop, Latin, R&B, and more.",
+    url: "/music",
+    images: [{ url: "/api/og", width: 1200, height: 630, alt: "Vancouver Music — YVR Advisory" }],
+  },
 };
 
 export default async function MusicPage() {

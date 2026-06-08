@@ -28,15 +28,35 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   try {
     const venue = await api.get<Venue>(`/api/venues/${params.slug}`);
+    const estType = venue.establishment_type ?? "Nightclub";
+    const description = venue.description ||
+      `${venue.name} is a ${estType.toLowerCase()} in ${venue.neighbourhood ?? "Vancouver"}. Discover events, guestlist access, and table reservations at YVR Advisory.`;
+    const keywords = [
+      venue.name,
+      `${venue.name} Vancouver`,
+      estType,
+      ...(venue.neighbourhood ? [venue.neighbourhood, `${venue.neighbourhood} ${estType.toLowerCase()}`] : []),
+      ...(venue.music_types ?? []).map(m => `${m} ${estType.toLowerCase()} Vancouver`),
+      "Vancouver nightlife",
+    ];
     return {
-      title: `${venue.name} — Vancouver ${venue.establishment_type ?? "Nightclub"}`,
-      description: venue.description || `Discover ${venue.name}, one of Vancouver's top nightlife destinations.`,
+      title: `${venue.name} — ${estType} in Vancouver | YVR Advisory`,
+      description: description.slice(0, 160),
+      keywords,
       alternates: { canonical: `/venues/${venue.slug}` },
       openGraph: {
-        title: venue.name,
-        description: venue.description || "",
-        images: venue.image_url ? [{ url: venue.image_url }] : [],
+        type: "website",
+        siteName: "YVR Advisory",
+        title: `${venue.name} — ${estType} Vancouver`,
+        description: description.slice(0, 160),
+        images: venue.image_url ? [{ url: venue.image_url, alt: venue.name }] : [{ url: "/api/og" }],
         url: `/venues/${venue.slug}`,
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: `${venue.name} — ${estType} Vancouver`,
+        description: description.slice(0, 160),
+        images: venue.image_url ? [venue.image_url] : ["/api/og"],
       },
     };
   } catch {
