@@ -7,7 +7,7 @@ import type { Venue } from "@/types";
 async function getFeaturedVenues(category?: string): Promise<Venue[]> {
   try {
     const qs = category ? `?category=${encodeURIComponent(category)}` : "";
-    return await api.get<Venue[]>(`/api/venues/featured${qs}`, { next: { revalidate: 3600 } });
+    return await api.get<Venue[]>(`/api/venues/featured${qs}`, { next: { revalidate: 60 } });
   } catch {
     return [];
   }
