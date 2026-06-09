@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://yvradvisory.ca";
 const API = process.env.NEXT_PUBLIC_API_URL || "https://back.yvradvisory.ca";
