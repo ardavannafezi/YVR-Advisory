@@ -6,6 +6,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { fadeUp } from "@/styles/animations";
 import { Badge } from "@/components/ui/Badge";
+import { resolveImageUrl } from "@/lib/image";
 import type { Venue } from "@/types";
 
 interface VenueCardProps {
@@ -15,6 +16,8 @@ interface VenueCardProps {
 
 export function VenueCard({ venue, index = 0 }: VenueCardProps) {
   const [imgLoaded, setImgLoaded] = useState(false);
+  const imageUrl = resolveImageUrl(venue.image_url);
+  const logoUrl = resolveImageUrl(venue.logo_url);
   return (
     <motion.div
       variants={fadeUp}
@@ -30,17 +33,18 @@ export function VenueCard({ venue, index = 0 }: VenueCardProps) {
       >
         {/* Image */}
         <div className="relative h-52 flex-shrink-0 overflow-hidden">
-          {!imgLoaded && venue.image_url && (
+          {!imgLoaded && imageUrl && (
             <div className="absolute inset-0 bg-white/[0.06] animate-pulse" />
           )}
-          {venue.image_url ? (
+          {imageUrl ? (
             <Image
-              src={venue.image_url}
+              src={imageUrl}
               alt={venue.name}
               fill
               className="object-cover transition-all duration-700 group-hover:scale-105"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               onLoad={() => setImgLoaded(true)}
+              onError={() => setImgLoaded(true)}
             />
           ) : (
             <div className="absolute inset-0 bg-gradient-to-br from-gold/6 to-transparent" />
@@ -48,9 +52,9 @@ export function VenueCard({ venue, index = 0 }: VenueCardProps) {
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
 
           <div className="absolute top-3 right-3 flex items-center gap-2">
-            {venue.logo_url && (
+            {logoUrl && (
               <div className="relative w-8 h-8 bg-black/80 border border-white/10 rounded-lg overflow-hidden">
-                <Image src={venue.logo_url} alt={`${venue.name} logo`} fill className="object-contain p-0.5" sizes="32px" />
+                <Image src={logoUrl} alt={`${venue.name} logo`} fill className="object-contain p-0.5" sizes="32px" />
               </div>
             )}
             {venue.price_tier && (

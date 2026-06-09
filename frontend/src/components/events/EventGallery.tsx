@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { resolveImageUrl } from "@/lib/image";
 
 interface Props {
   images: string[];
@@ -22,7 +23,8 @@ export function EventGallery({
   const [current, setCurrent] = useState(0);
   const [loaded, setLoaded] = useState<Record<number, boolean>>({});
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const count = images.length;
+  const resolvedImages = images.map(u => resolveImageUrl(u) ?? u);
+  const count = resolvedImages.length;
 
   const go = useCallback(
     (idx: number) => setCurrent(((idx % count) + count) % count),
@@ -49,12 +51,12 @@ export function EventGallery({
   if (!count) return null;
 
   if (variant === "slider") {
-    return <GallerySlider images={images} alt={alt} />;
+    return <GallerySlider images={resolvedImages} alt={alt} />;
   }
 
   if (count === 1) {
     return (
-      <SingleImage src={images[0]} alt={alt} variant={variant} />
+      <SingleImage src={resolvedImages[0]} alt={alt} variant={variant} />
     );
   }
 
@@ -68,7 +70,7 @@ export function EventGallery({
       onTouchEnd={onTouchEnd}
     >
       {/* Slides — render adjacent for smooth transitions */}
-      {images.map((src, i) => {
+      {resolvedImages.map((src, i) => {
         const active = i === current;
         const shouldRender = Math.abs(i - current) <= 1 || i === 0;
         if (!shouldRender && !loaded[i]) return null;
@@ -98,7 +100,7 @@ export function EventGallery({
 
       {/* Dot indicators */}
       <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-30 flex gap-1.5">
-        {images.map((_, i) => (
+        {resolvedImages.map((_, i) => (
           <button
             key={i}
             onClick={() => { if (timerRef.current) clearTimeout(timerRef.current); go(i); }}
@@ -128,9 +130,9 @@ export function EventGallery({
             ›
           </button>
           {/* Thumbnail strip */}
-          {images.length > 1 && (
+          {resolvedImages.length > 1 && (
             <div className="absolute bottom-0 left-0 right-0 z-30 flex gap-1 p-2 bg-gradient-to-t from-black/60 to-transparent overflow-x-auto scrollbar-none">
-              {images.map((src, i) => (
+              {resolvedImages.map((src, i) => (
                 <button
                   key={i}
                   onClick={() => { if (timerRef.current) clearTimeout(timerRef.current); go(i); }}
@@ -149,7 +151,8 @@ export function EventGallery({
   );
 }
 
-function GallerySlider({ images, alt }: { images: string[]; alt: string }) {
+function GallerySlider({ images: rawImages, alt }: { images: string[]; alt: string }) {
+  const images = rawImages.map(u => resolveImageUrl(u) ?? u);
   const [current, setCurrent] = useState(0);
   const [lightbox, setLightbox] = useState<number | null>(null);
   const count = images.length;

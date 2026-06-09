@@ -8,6 +8,7 @@ import { VenueFaqAccordion } from "@/components/venues/VenueFaqAccordion";
 import { VenueViewTracker } from "@/components/venues/VenueViewTracker";
 import { VenueEventsSlider } from "@/components/venues/VenueEventsSlider";
 import { VenueCTAPanel } from "@/components/venues/VenueCTAPanel";
+import { resolveImageUrl } from "@/lib/image";
 import type { Venue, VenueHours } from "@/types";
 
 export const revalidate = 600;
@@ -127,6 +128,9 @@ export default async function VenueDetailPage({ params }: { params: { slug: stri
     notFound();
   }
 
+  const heroImageUrl = resolveImageUrl(venue.image_url);
+  const logoImageUrl = resolveImageUrl(venue.logo_url);
+
   return (
     <>
       <VenueJsonLd venue={venue} />
@@ -134,8 +138,8 @@ export default async function VenueDetailPage({ params }: { params: { slug: stri
       <div className="pt-20">
         {/* Hero image */}
         <div className="relative h-[55vh] overflow-hidden bg-white/[0.04] animate-pulse">
-          {venue.image_url ? (
-            <Image src={venue.image_url} alt={venue.name} fill className="object-cover" priority />
+          {heroImageUrl ? (
+            <Image src={heroImageUrl} alt={venue.name} fill className="object-cover" priority />
           ) : (
             <div className="absolute inset-0 bg-gradient-to-br from-gold/10 to-transparent" />
           )}
@@ -159,10 +163,10 @@ export default async function VenueDetailPage({ params }: { params: { slug: stri
           </div>
 
           <div className="flex items-center gap-5 mb-1">
-            {venue.logo_url && (
+            {logoImageUrl && (
               <div className="relative w-16 h-16 shrink-0 bg-white/5 border border-white/10 overflow-hidden">
                 <Image
-                  src={venue.logo_url}
+                  src={logoImageUrl}
                   alt={`${venue.name} logo`}
                   fill
                   className="object-contain p-1"

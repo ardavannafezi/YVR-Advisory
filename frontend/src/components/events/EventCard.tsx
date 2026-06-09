@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/Badge";
 import { EventGallery } from "@/components/events/EventGallery";
 import { EventFormModal } from "@/components/events/EventFormModal";
 import { ptMonthShort, ptDay, ptWeekdayTime } from "@/lib/date";
+import { resolveImageUrl } from "@/lib/image";
 import type { Event } from "@/types";
 
 interface EventCardProps {
@@ -23,11 +24,12 @@ export function EventCard({ event, index = 0 }: EventCardProps) {
   const guestlistClosed = event.guestlist_closes_at ? isPast(new Date(event.guestlist_closes_at)) : false;
   const entryClosed = event.entry_closes_at ? isPast(new Date(event.entry_closes_at)) : false;
 
-  const images = event.gallery?.length
+  const images = (event.gallery?.length
     ? event.gallery
     : event.image_url
     ? [event.image_url]
-    : [];
+    : []
+  ).map(u => resolveImageUrl(u)).filter(Boolean) as string[];
 
   // Loosened gates — show CTAs whenever the event opts in, regardless of venue flags
   const hasGuestlist = event.our_guestlist && !guestlistClosed;

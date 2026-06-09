@@ -6,6 +6,7 @@ import { ptMonthShort, ptDay, ptWeekdayTime } from "@/lib/date";
 import { api } from "@/lib/api";
 import { EventFormModal } from "@/components/events/EventFormModal";
 import { Badge } from "@/components/ui/Badge";
+import { resolveImageUrl } from "@/lib/image";
 import type { Event, PaginatedList } from "@/types";
 
 interface Props {
@@ -131,7 +132,7 @@ function EventSliderCard({
       {/* Image */}
       {event.image_url && (
         <div className="relative h-32 overflow-hidden">
-          <img src={event.image_url} alt={event.name} className="w-full h-full object-cover opacity-80" />
+          <img src={resolveImageUrl(event.image_url)} alt={event.name} className="w-full h-full object-cover opacity-80" />
           <div className="absolute inset-0 bg-gradient-to-t from-background/60 to-transparent" />
           <div className="absolute top-2 left-2 bg-background/90 backdrop-blur-sm px-2 py-1.5 text-center border border-white/10">
             <p className="text-gold text-[9px] uppercase tracking-widest">{ptMonthShort(date)}</p>
