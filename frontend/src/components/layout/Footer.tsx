@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { ORGANIZATION } from "@/lib/site";
 
 export function Footer() {
   const year = new Date().getFullYear();
@@ -12,10 +13,18 @@ export function Footer() {
             <Image src="/gold.png" alt="YVR Advisory" width={140} height={40} className="h-10 w-auto object-contain" />
           </Link>
           <p className="text-text-muted text-sm leading-relaxed max-w-xs mt-2">
-            Vancouver&apos;s nightlife advisor — curated venues, upcoming events, and guestlist access at select clubs.
+            {ORGANIZATION.description}
           </p>
+          <div className="mt-4 space-y-3">
+            <a
+              href={`mailto:${ORGANIZATION.email}`}
+              className="block text-text-muted hover:text-gold transition-colors text-xs tracking-[0.18em] uppercase"
+            >
+              {ORGANIZATION.email}
+            </a>
+          </div>
           <div className="mt-6 flex gap-4">
-            <a href="https://instagram.com/yvradvisory" target="_blank" rel="noopener noreferrer" className="text-text-dim hover:text-gold transition-colors text-xs uppercase tracking-widest">
+            <a href={ORGANIZATION.instagramUrl} target="_blank" rel="noopener noreferrer" className="text-text-dim hover:text-gold transition-colors text-xs uppercase tracking-widest">
               Instagram
             </a>
           </div>
@@ -69,7 +78,7 @@ export function Footer() {
       <div className="border-t border-white/[0.05]">
         <div className="max-w-7xl mx-auto px-6 py-5 flex flex-col md:flex-row justify-between items-center gap-2">
           <p className="text-text-dim text-xs">© {year} YVR Advisory. All rights reserved.</p>
-          <p className="text-text-dim text-xs">Vancouver, BC</p>
+          <p className="text-text-dim text-xs">{ORGANIZATION.location}</p>
         </div>
       </div>
     </footer>

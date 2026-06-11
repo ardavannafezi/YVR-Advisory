@@ -4,6 +4,7 @@ import Script from "next/script";
 import "./globals.css";
 import { SiteShell } from "@/components/layout/SiteShell";
 import { WebsiteJsonLd } from "@/components/layout/WebsiteJsonLd";
+import { ORGANIZATION, SITE_URL } from "@/lib/site";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -17,8 +18,6 @@ const playfair = Playfair_Display({
   display: "swap",
 });
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://yvradvisory.ca";
-
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
@@ -26,7 +25,7 @@ export const metadata: Metadata = {
     template: "%s | YVR Advisory",
   },
   description:
-    "YVR Advisory is Vancouver's nightlife advisor — curated nightclubs, cocktail bars, upcoming events, and personalized recommendations to help you find the best night out.",
+    "YVR Advisory is an independent Vancouver nightlife guide publishing curated venues, events, guestlist access, and recommendations for the city's top nights out.",
   keywords: [
     "Vancouver nightlife",
     "nightclubs Vancouver",
@@ -55,9 +54,9 @@ export const metadata: Metadata = {
     description: "Your guide to Vancouver's finest nightlife.",
     images: ["/api/og"],
   },
-  authors: [{ name: "YVR Advisory", url: SITE_URL }],
-  creator: "YVR Advisory",
-  publisher: "YVR Advisory",
+  authors: [{ name: ORGANIZATION.name, url: SITE_URL }],
+  creator: ORGANIZATION.name,
+  publisher: ORGANIZATION.name,
   formatDetection: { telephone: false },
   icons: {
     icon: "/favicon.ico",

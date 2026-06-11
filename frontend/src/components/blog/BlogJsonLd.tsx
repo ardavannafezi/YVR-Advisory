@@ -1,12 +1,12 @@
 import type { BlogPost } from "@/types";
-
-const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://yvradvisory.ca";
+import { ORGANIZATION, SITE_URL } from "@/lib/site";
 
 export function BlogJsonLd({ post }: { post: BlogPost }) {
-  const url = `${SITE}/blog/${post.slug}`;
+  const url = `${SITE_URL}/blog/${post.slug}`;
+  const organizationId = `${SITE_URL}#organization`;
   const schema = {
     "@context": "https://schema.org",
-    "@type": "Article",
+    "@type": "BlogPosting",
     mainEntityOfPage: { "@type": "WebPage", "@id": url },
     headline: post.title,
     description: post.summary,
@@ -14,16 +14,19 @@ export function BlogJsonLd({ post }: { post: BlogPost }) {
     about: { "@type": "Thing", name: "Vancouver Nightlife" },
     author: post.author
       ? { "@type": "Person", name: post.author }
-      : { "@type": "Organization", name: "YVR Advisory", url: SITE },
+      : { "@id": organizationId },
     datePublished: post.published_at,
     dateModified: post.updated_at,
     image: post.cover_image_url,
     url,
     publisher: {
+      "@id": organizationId,
       "@type": "Organization",
-      name: "YVR Advisory",
-      url: SITE,
-      logo: { "@type": "ImageObject", url: `${SITE}/white.png` },
+      name: ORGANIZATION.name,
+      url: SITE_URL,
+      email: ORGANIZATION.email,
+      sameAs: [ORGANIZATION.instagramUrl],
+      logo: { "@type": "ImageObject", url: `${SITE_URL}/white.png` },
     },
     inLanguage: "en-CA",
   };

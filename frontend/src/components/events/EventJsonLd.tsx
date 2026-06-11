@@ -1,6 +1,8 @@
 import type { Event } from "@/types";
+import { ORGANIZATION, SITE_URL } from "@/lib/site";
 
 export function EventJsonLd({ event }: { event: Event }) {
+  const organizationId = `${SITE_URL}#organization`;
   const performers = event.lineup?.map(a => ({
     "@type": "Person",
     name: a.name,
@@ -12,7 +14,7 @@ export function EventJsonLd({ event }: { event: Event }) {
     offers.push({
       "@type": "Offer",
       name: "Guestlist",
-      url: `${process.env.NEXT_PUBLIC_SITE_URL}/guestlist?event_id=${event.id}`,
+      url: `${SITE_URL}/guestlist?event_id=${event.id}`,
       availability: "https://schema.org/InStock",
       validThrough: event.guestlist_closes_at,
     });
@@ -51,7 +53,14 @@ export function EventJsonLd({ event }: { event: Event }) {
           },
         }
       : { "@type": "Place", name: "Vancouver, BC" },
-    organizer: { "@type": "Organization", name: "YVR Advisory", url: process.env.NEXT_PUBLIC_SITE_URL },
+    organizer: {
+      "@id": organizationId,
+      "@type": "Organization",
+      name: ORGANIZATION.name,
+      url: SITE_URL,
+      email: ORGANIZATION.email,
+      sameAs: [ORGANIZATION.instagramUrl],
+    },
   };
 
   return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />;
