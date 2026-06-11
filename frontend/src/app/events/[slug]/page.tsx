@@ -296,6 +296,7 @@ export default async function EventDetailPage({ params }: { params: { slug: stri
                 eventName={event.name}
                 venueName={event.venue?.name}
                 venueEstType={event.venue?.establishment_type ?? undefined}
+                musicType={event.music_type ?? undefined}
                 date={event.date}
                 hasGuestlistCTA={hasGuestlistCTA}
                 hasTicketCTA={hasTicketCTA}

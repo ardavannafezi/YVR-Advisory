@@ -106,6 +106,10 @@ function GuestlistForm() {
             <div className="border border-red-500/40 p-3 text-sm text-red-400">{serverError}</div>
           )}
 
+          <p className="text-[10px] text-text-dim leading-relaxed">
+            Your information may be used by YVR Advisory for personalized marketing and event recommendations.
+          </p>
+
           <GoldButton type="submit" disabled={isSubmitting} className="mt-2">
             {isSubmitting ? "Submitting..." : "Join the Guestlist"}
           </GoldButton>

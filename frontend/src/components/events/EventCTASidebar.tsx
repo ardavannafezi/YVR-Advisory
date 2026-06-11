@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ptDateShort, ptTime } from "@/lib/date";
 import { GoldButton } from "@/components/ui/GoldButton";
 import { EventFormModal } from "@/components/events/EventFormModal";
+import { LeadCaptureModal } from "@/components/ui/LeadCaptureModal";
 import { gtagEvent } from "@/lib/gtag";
 
 interface Props {
@@ -12,6 +13,7 @@ interface Props {
   eventName: string;
   venueName?: string;
   venueEstType?: string;
+  musicType?: string;
   date: string;
   hasGuestlistCTA: boolean;
   hasTicketCTA: boolean;
@@ -23,11 +25,12 @@ interface Props {
 }
 
 export function EventCTASidebar({
-  eventId, venueId, eventName, venueName, venueEstType,
+  eventId, venueId, eventName, venueName, venueEstType, musicType,
   date, hasGuestlistCTA, hasTicketCTA, ticketUrl, hasReserveCTA,
   entryClosed, guestlistClosed, venueHasGuestlist,
 }: Props) {
   const [modal, setModal] = useState<"guestlist" | "reservation" | null>(null);
+  const [leadCapture, setLeadCapture] = useState<{ url: string; source: string } | null>(null);
   const d = new Date(date);
 
   return (
@@ -40,6 +43,17 @@ export function EventCTASidebar({
           eventName={eventName}
           venueName={venueName}
           onClose={() => setModal(null)}
+        />
+      )}
+      {leadCapture && (
+        <LeadCaptureModal
+          redirectUrl={leadCapture.url}
+          sourceType="ticket"
+          venueName={venueName}
+          venueType={venueEstType}
+          musicType={musicType}
+          eventName={eventName}
+          onClose={() => setLeadCapture(null)}
         />
       )}
 
@@ -72,11 +86,11 @@ export function EventCTASidebar({
                 </button>
               )}
               {hasTicketCTA && (
-                <a href={ticketUrl!} target="_blank" rel="noopener noreferrer" className="block" onClick={() => gtagEvent("begin_checkout", { item_name: eventName, item_category: "Tickets", venue: venueName, ticket_url: ticketUrl })}>
+                <button className="block w-full" onClick={() => { gtagEvent("begin_checkout", { item_name: eventName, item_category: "Tickets", venue: venueName, ticket_url: ticketUrl }); setLeadCapture({ url: ticketUrl!, source: "ticket" }); }}>
                   <GoldButton variant={hasGuestlistCTA || hasReserveCTA ? "ghost" : "solid"} className="w-full">
                     Get Tickets
                   </GoldButton>
-                </a>
+                </button>
               )}
               {!hasGuestlistCTA && !hasTicketCTA && !hasReserveCTA && !guestlistClosed && (
                 <p className="text-text-muted text-sm">Check back for availability.</p>
@@ -124,9 +138,9 @@ export function EventCTASidebar({
             </button>
           )}
           {hasTicketCTA && !hasGuestlistCTA && !hasReserveCTA && (
-            <a href={ticketUrl!} target="_blank" rel="noopener noreferrer" className="flex-1" onClick={() => gtagEvent("begin_checkout", { item_name: eventName, item_category: "Tickets", venue: venueName, source: "mobile_bar" })}>
+            <button className="flex-1" onClick={() => { gtagEvent("begin_checkout", { item_name: eventName, item_category: "Tickets", venue: venueName, source: "mobile_bar" }); setLeadCapture({ url: ticketUrl!, source: "ticket" }); }}>
               <GoldButton className="w-full">Get Tickets</GoldButton>
-            </a>
+            </button>
           )}
         </div>
       )}

@@ -16,7 +16,7 @@ from app.database import AsyncSessionLocal
 from app.models.admin_user import AdminUser
 from app.models.event import Event
 from app.models.notification_settings import NotificationSettings  # noqa: F401
-from app.routers import admin, analytics, blog, events, guestlist, music, reservations, seo, tonight, venues, webhooks
+from app.routers import admin, analytics, blog, events, guestlist, leads, music, reservations, seo, tonight, venues, webhooks
 from app.utils.notifications import load_db_notif_settings, send_email
 from app.utils.security import hash_password
 from app.utils.seed_venues import seed as seed_venues
@@ -159,6 +159,7 @@ app.include_router(guestlist.router)
 app.include_router(reservations.router)
 app.include_router(tonight.router)
 app.include_router(analytics.router)
+app.include_router(leads.router)
 app.include_router(admin.router)
 app.include_router(webhooks.router)
 app.include_router(seo.router)

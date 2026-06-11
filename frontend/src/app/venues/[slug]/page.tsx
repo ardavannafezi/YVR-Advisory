@@ -358,6 +358,7 @@ export default async function VenueDetailPage({ params }: { params: { slug: stri
             <div className="flex flex-col gap-4">
               <VenueCTAPanel
                 venueName={venue.name}
+                venueType={venue.establishment_type ?? undefined}
                 advisoryRating={venue.advisory_rating ?? undefined}
                 reservationLink={venue.reservation_link ?? undefined}
                 websiteUrl={venue.website_url ?? undefined}

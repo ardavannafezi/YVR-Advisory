@@ -1,7 +1,11 @@
 "use client";
 
+import { useState } from "react";
+import { LeadCaptureModal } from "@/components/ui/LeadCaptureModal";
+
 interface Props {
   venueName: string;
+  venueType?: string;
   advisoryRating?: number;
   reservationLink?: string;
   websiteUrl?: string;
@@ -36,10 +40,22 @@ function scrollToEvents() {
 }
 
 export function VenueCTAPanel({
-  venueName, advisoryRating, reservationLink, websiteUrl, instagramUrl, phone, lat, lng,
+  venueName, venueType, advisoryRating, reservationLink, websiteUrl, instagramUrl, phone, lat, lng,
   guestlistEnabled, bottleServiceEnabled,
 }: Props) {
+  const [leadCapture, setLeadCapture] = useState<string | null>(null);
+
   return (
+    <>
+    {leadCapture && (
+      <LeadCaptureModal
+        redirectUrl={leadCapture}
+        sourceType="external_reservation"
+        venueName={venueName}
+        venueType={venueType}
+        onClose={() => setLeadCapture(null)}
+      />
+    )}
     <div className="card-surface p-6 flex flex-col gap-4 sticky top-24">
       {advisoryRating != null && (
         <div className="text-center border-b border-white/5 pb-4">
@@ -89,10 +105,10 @@ export function VenueCTAPanel({
       )}
 
       {reservationLink && (
-        <a href={reservationLink} target="_blank" rel="noopener noreferrer"
+        <button onClick={() => setLeadCapture(reservationLink)}
           className="text-center text-xs uppercase tracking-widest text-text-muted hover:text-gold transition-colors">
           Book Directly
-        </a>
+        </button>
       )}
       {websiteUrl && (
         <a href={websiteUrl} target="_blank" rel="noopener noreferrer"
@@ -119,5 +135,6 @@ export function VenueCTAPanel({
         </div>
       )}
     </div>
+    </>
   );
 }
