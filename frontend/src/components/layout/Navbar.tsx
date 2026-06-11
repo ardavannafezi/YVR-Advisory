@@ -14,6 +14,8 @@ const links = [
   { href: "/about", label: "About" },
 ];
 
+const instagramUrl = "https://instagram.com/yvradvisory";
+
 export function Navbar() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
@@ -68,12 +70,24 @@ export function Navbar() {
           </ul>
 
           {/* Desktop CTA */}
-          <Link
-            href="/where-to-go"
-            className="hidden md:flex items-center text-[11px] uppercase tracking-[0.2em] bg-gold text-[#0a0a0a] px-5 py-2.5 font-semibold hover:bg-gold-light transition-colors"
-          >
-            Where to Go Tonight
-          </Link>
+          <div className="hidden md:flex items-center gap-3">
+            <Link
+              href={instagramUrl}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Visit YVR Advisory on Instagram"
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 px-3 py-2 text-[10px] uppercase tracking-[0.18em] text-text-muted transition-colors hover:border-gold/40 hover:text-text-primary"
+            >
+              <InstagramIcon />
+              <span>Instagram</span>
+            </Link>
+            <Link
+              href="/where-to-go"
+              className="flex items-center text-[11px] uppercase tracking-[0.2em] bg-gold text-[#0a0a0a] px-5 py-2.5 font-semibold hover:bg-gold-light transition-colors"
+            >
+              Where to Go Tonight
+            </Link>
+          </div>
 
           {/* Hamburger */}
           <button
@@ -149,6 +163,17 @@ export function Navbar() {
               </ul>
 
               <Link
+                href={instagramUrl}
+                target="_blank"
+                rel="noreferrer"
+                onClick={() => setMenuOpen(false)}
+                className="mt-6 inline-flex items-center justify-center gap-2 rounded-full border border-white/10 px-4 py-3 text-[10px] uppercase tracking-[0.18em] text-text-muted transition-colors hover:border-gold/40 hover:text-text-primary"
+              >
+                <InstagramIcon />
+                <span>Instagram</span>
+              </Link>
+
+              <Link
                 href="/where-to-go"
                 onClick={() => setMenuOpen(false)}
                 className="block w-full text-center text-[11px] uppercase tracking-[0.2em] bg-gold text-[#0a0a0a] px-5 py-4 font-semibold hover:bg-gold-light transition-colors mt-6"
@@ -161,5 +186,24 @@ export function Navbar() {
         )}
       </AnimatePresence>
     </>
+  );
+}
+
+function InstagramIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      className="h-3.5 w-3.5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect x="3.5" y="3.5" width="17" height="17" rx="4.5" />
+      <circle cx="12" cy="12" r="4" />
+      <circle cx="17.3" cy="6.7" r="1" fill="currentColor" stroke="none" />
+    </svg>
   );
 }

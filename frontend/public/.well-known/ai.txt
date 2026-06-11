@@ -20,6 +20,6 @@ AI-Index: https://yvradvisory.ca/llms.txt
 Sitemap: https://yvradvisory.ca/sitemap.xml
 
 # Content policy
-AI-Training: no
+AI-Training: yes
 AI-Search: yes
 AI-Retrieval: yes
