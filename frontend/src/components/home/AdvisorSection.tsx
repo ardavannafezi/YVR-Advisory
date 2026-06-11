@@ -60,7 +60,7 @@ export function AdvisorSection() {
             viewport={{ once: true }}
             className="text-text-muted text-base leading-relaxed lg:max-w-md"
           >
-            YVR Advisory is Vancouver&apos;s nightlife advisor. We scout, curate, and guide — helping you find the right venue for your night. We work with a select group of clubs to offer guestlist access, and cover the broader scene so you always have the full picture.
+            YVR Advisory is run by a team of promoters and adventure lovers who share their honest opinions and help you have more fun in Vancouver&apos;s nightlife. We cover venues, events, and guestlist access — and we tell you what&apos;s actually worth your night.
           </motion.p>
         </div>
 
