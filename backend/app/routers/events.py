@@ -9,6 +9,7 @@ from app.dependencies import get_db
 from app.models.event import Event
 from app.models.venue import Venue
 from app.schemas.event import EventList, EventOut, EventRecommendRequest
+from app.schemas.llms import EventLlmsItem, EventLlmsList
 from app.schemas.sitemap import SitemapItem, SitemapList
 
 router = APIRouter(prefix="/api/events", tags=["events"])
@@ -77,6 +78,51 @@ async def event_sitemap(
     items = [SitemapItem(slug=slug, last_modified=updated_at) for slug, updated_at in result.all()]
     total_count = total or 0
     return SitemapList(
+        items=items,
+        total=total_count,
+        page=page,
+        limit=limit,
+        has_next=page * limit < total_count,
+    )
+
+
+@router.get("/llms", response_model=EventLlmsList)
+async def event_llms(
+    page: int = Query(1, ge=1),
+    limit: int = Query(250, ge=1, le=1000),
+    db: AsyncSession = Depends(get_db),
+):
+    q = (
+        select(
+            Event.name,
+            Event.slug,
+            Event.description,
+            Event.date,
+            Event.music_type,
+            Venue.name.label("venue_name"),
+            Event.updated_at,
+        )
+        .outerjoin(Venue, Event.venue_id == Venue.id)
+        .where(Event.is_published == True)
+    )
+    total = await db.scalar(select(func.count()).select_from(q.subquery()))
+    result = await db.execute(
+        q.order_by(Event.date.desc(), Event.id.desc()).offset((page - 1) * limit).limit(limit)
+    )
+    items = [
+        EventLlmsItem(
+            name=name,
+            slug=slug,
+            description=description,
+            date=date,
+            music_type=music_type,
+            venue_name=venue_name,
+            updated_at=updated_at,
+        )
+        for name, slug, description, date, music_type, venue_name, updated_at in result.all()
+    ]
+    total_count = total or 0
+    return EventLlmsList(
         items=items,
         total=total_count,
         page=page,

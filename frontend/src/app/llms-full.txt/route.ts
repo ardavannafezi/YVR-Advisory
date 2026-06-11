@@ -1,15 +1,11 @@
 import { NextResponse } from "next/server";
-import { buildLlmsIndexText, fetchLlmsDirectory } from "@/lib/llms";
+import { buildLlmsFullText, fetchLlmsDirectory } from "@/lib/llms";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   const directory = await fetchLlmsDirectory();
-  const body = buildLlmsIndexText({
-    venues: directory.venues.length,
-    events: directory.events.length,
-    posts: directory.posts.length,
-  });
+  const body = buildLlmsFullText(directory);
 
   return new NextResponse(body, {
     headers: {

@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.dependencies import get_db
 from app.models.venue import Venue
+from app.schemas.llms import VenueLlmsItem, VenueLlmsList
 from app.models.venue_advisory_rating import VenueAdvisoryRating
 from app.models.venue_view import VenueView
 from app.schemas.sitemap import SitemapItem, SitemapList
@@ -107,6 +108,50 @@ async def venue_sitemap(
     items = [SitemapItem(slug=slug, last_modified=updated_at) for slug, updated_at in result.all()]
     total_count = total or 0
     return SitemapList(
+        items=items,
+        total=total_count,
+        page=page,
+        limit=limit,
+        has_next=page * limit < total_count,
+    )
+
+
+@router.get("/llms", response_model=VenueLlmsList)
+async def venue_llms(
+    page: int = Query(1, ge=1),
+    limit: int = Query(250, ge=1, le=1000),
+    db: AsyncSession = Depends(get_db),
+):
+    q = (
+        select(
+            Venue.name,
+            Venue.slug,
+            Venue.description,
+            Venue.neighbourhood,
+            Venue.establishment_type,
+            Venue.music_types,
+            Venue.updated_at,
+        )
+        .where(Venue.is_active == True)
+    )
+    total = await db.scalar(select(func.count()).select_from(q.subquery()))
+    result = await db.execute(
+        q.order_by(Venue.name.asc()).offset((page - 1) * limit).limit(limit)
+    )
+    items = [
+        VenueLlmsItem(
+            name=name,
+            slug=slug,
+            description=description,
+            neighbourhood=neighbourhood,
+            establishment_type=establishment_type,
+            music_types=music_types or [],
+            updated_at=updated_at,
+        )
+        for name, slug, description, neighbourhood, establishment_type, music_types, updated_at in result.all()
+    ]
+    total_count = total or 0
+    return VenueLlmsList(
         items=items,
         total=total_count,
         page=page,

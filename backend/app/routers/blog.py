@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.dependencies import get_db
 from app.models.blog import BlogPost
 from app.schemas.blog import BlogPostList, BlogPostOut
+from app.schemas.llms import BlogLlmsItem, BlogLlmsList
 from app.schemas.sitemap import SitemapItem, SitemapList
 
 router = APIRouter(prefix="/api/blog", tags=["blog"])
@@ -43,6 +44,52 @@ async def blog_sitemap(
     items = [SitemapItem(slug=slug, last_modified=updated_at) for slug, updated_at in result.all()]
     total_count = total or 0
     return SitemapList(
+        items=items,
+        total=total_count,
+        page=page,
+        limit=limit,
+        has_next=page * limit < total_count,
+    )
+
+
+@router.get("/llms", response_model=BlogLlmsList)
+async def blog_llms(
+    page: int = Query(1, ge=1),
+    limit: int = Query(250, ge=1, le=1000),
+    db: AsyncSession = Depends(get_db),
+):
+    q = (
+        select(
+            BlogPost.title,
+            BlogPost.slug,
+            BlogPost.summary,
+            BlogPost.music_type,
+            BlogPost.tags,
+            BlogPost.author,
+            BlogPost.published_at,
+            BlogPost.updated_at,
+        )
+        .where(BlogPost.is_published == True)
+    )
+    total = await db.scalar(select(func.count()).select_from(q.subquery()))
+    result = await db.execute(
+        q.order_by(BlogPost.published_at.desc(), BlogPost.id.desc()).offset((page - 1) * limit).limit(limit)
+    )
+    items = [
+        BlogLlmsItem(
+            title=title,
+            slug=slug,
+            summary=summary,
+            music_type=music_type,
+            tags=tags or [],
+            author=author,
+            published_at=published_at,
+            updated_at=updated_at,
+        )
+        for title, slug, summary, music_type, tags, author, published_at, updated_at in result.all()
+    ]
+    total_count = total or 0
+    return BlogLlmsList(
         items=items,
         total=total_count,
         page=page,

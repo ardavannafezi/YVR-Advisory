@@ -11,12 +11,12 @@ export default function robots(): MetadataRoute.Robots {
       { userAgent: "Googlebot",        allow: "/" },
       { userAgent: "Google-Extended",  allow: "/" },
       // OpenAI / ChatGPT
-      { userAgent: "GPTBot",           allow: "/" },
-      { userAgent: "ChatGPT-User",     allow: "/" },
+      { userAgent: "GPTBot",           allow: ["/", "/llms.txt", "/llms-full.txt"] },
+      { userAgent: "ChatGPT-User",     allow: ["/", "/llms.txt", "/llms-full.txt"] },
       // Anthropic Claude
-      { userAgent: "ClaudeBot",        allow: "/" },
+      { userAgent: "ClaudeBot",        allow: ["/", "/llms.txt", "/llms-full.txt"] },
       // Perplexity
-      { userAgent: "PerplexityBot",    allow: "/" },
+      { userAgent: "PerplexityBot",    allow: ["/", "/llms.txt", "/llms-full.txt"] },
       // Meta
       { userAgent: "FacebookBot",      allow: "/" },
       // Apple
