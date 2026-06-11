@@ -35,6 +35,11 @@ const sections = [
     description: "Approve or reject table reservation requests.",
   },
   {
+    href: "/admin/leads",
+    title: "Leads",
+    description: "Contacts captured from external ticket and booking links.",
+  },
+  {
     href: "/admin/settings",
     title: "Settings",
     description: "Configure email (SMTP) and Telegram notifications.",
