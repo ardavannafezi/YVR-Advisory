@@ -65,7 +65,7 @@ export function EventGallery({
 
   return (
     <div
-      className={`relative w-full overflow-hidden select-none ${aspectClass} bg-white/5`}
+      className={`relative w-full overflow-hidden select-none ${aspectClass} bg-white/[0.07] ${!loaded[0] ? "animate-pulse" : ""}`}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >

@@ -165,12 +165,17 @@ async def admin_update_venue_rating(venue_id: int, data: RatingUpdate, db: Async
     return {"venue_id": venue_id, "rating": data.rating}
 
 
+MAX_DIMENSION = 1920
+
 def _to_webp(content: bytes) -> bytes:
     img = Image.open(io.BytesIO(content))
     if img.mode not in ("RGB", "RGBA"):
         img = img.convert("RGBA" if "transparency" in img.info or img.mode in ("RGBA", "LA", "PA") else "RGB")
+    # Resize down if either dimension exceeds MAX_DIMENSION, preserve aspect ratio
+    if img.width > MAX_DIMENSION or img.height > MAX_DIMENSION:
+        img.thumbnail((MAX_DIMENSION, MAX_DIMENSION), Image.LANCZOS)
     buf = io.BytesIO()
-    img.save(buf, format="WEBP", quality=85, method=4)
+    img.save(buf, format="WEBP", quality=75, method=4)
     return buf.getvalue()
 
 
