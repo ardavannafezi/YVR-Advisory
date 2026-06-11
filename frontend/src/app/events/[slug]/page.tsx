@@ -12,6 +12,7 @@ import { EventSimilar } from "@/components/events/EventSimilar";
 import { EventCTASidebar } from "@/components/events/EventCTASidebar";
 import { EventPageTracker } from "@/components/events/EventPageTracker";
 import { EventDisclaimer } from "@/components/events/EventDisclaimer";
+import { fetchAllSitemapEntries } from "@/lib/sitemap";
 import type { Event } from "@/types";
 
 export const revalidate = 300;
@@ -19,11 +20,8 @@ export const dynamicParams = true;
 
 export async function generateStaticParams() {
   try {
-    const API = process.env.NEXT_PUBLIC_API_URL || "https://back.yvradvisory.ca";
-    const res = await fetch(`${API}/api/events?limit=500`, { cache: "no-store" });
-    if (!res.ok) return [];
-    const data = await res.json();
-    return (data.items || []).map((e: { slug: string }) => ({ slug: e.slug }));
+    const items = await fetchAllSitemapEntries("events");
+    return items.map((event) => ({ slug: event.slug }));
   } catch {
     return [];
   }

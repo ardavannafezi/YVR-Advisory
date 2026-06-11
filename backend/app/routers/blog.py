@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.dependencies import get_db
 from app.models.blog import BlogPost
 from app.schemas.blog import BlogPostList, BlogPostOut
+from app.schemas.sitemap import SitemapItem, SitemapList
 
 router = APIRouter(prefix="/api/blog", tags=["blog"])
 
@@ -26,6 +27,28 @@ async def list_posts(
     total = await db.scalar(select(func.count()).select_from(q.subquery()))
     result = await db.execute(q.order_by(BlogPost.published_at.desc()).offset((page - 1) * limit).limit(limit))
     return BlogPostList(items=result.scalars().all(), total=total or 0, page=page, limit=limit)
+
+
+@router.get("/sitemap", response_model=SitemapList)
+async def blog_sitemap(
+    page: int = Query(1, ge=1),
+    limit: int = Query(500, ge=1, le=1000),
+    db: AsyncSession = Depends(get_db),
+):
+    q = select(BlogPost.slug, BlogPost.updated_at).where(BlogPost.is_published == True)
+    total = await db.scalar(select(func.count()).select_from(q.subquery()))
+    result = await db.execute(
+        q.order_by(BlogPost.published_at.desc(), BlogPost.id.desc()).offset((page - 1) * limit).limit(limit)
+    )
+    items = [SitemapItem(slug=slug, last_modified=updated_at) for slug, updated_at in result.all()]
+    total_count = total or 0
+    return SitemapList(
+        items=items,
+        total=total_count,
+        page=page,
+        limit=limit,
+        has_next=page * limit < total_count,
+    )
 
 
 @router.get("/{slug}", response_model=BlogPostOut)

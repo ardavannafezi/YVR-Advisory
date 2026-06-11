@@ -9,6 +9,7 @@ from app.dependencies import get_db
 from app.models.event import Event
 from app.models.venue import Venue
 from app.schemas.event import EventList, EventOut, EventRecommendRequest
+from app.schemas.sitemap import SitemapItem, SitemapList
 
 router = APIRouter(prefix="/api/events", tags=["events"])
 
@@ -60,6 +61,28 @@ async def list_events(
     total = await db.scalar(select(func.count()).select_from(q.subquery()))
     result = await db.execute(q.order_by(Event.date).offset((page - 1) * limit).limit(limit))
     return EventList(items=result.scalars().all(), total=total or 0, page=page, limit=limit)
+
+
+@router.get("/sitemap", response_model=SitemapList)
+async def event_sitemap(
+    page: int = Query(1, ge=1),
+    limit: int = Query(500, ge=1, le=1000),
+    db: AsyncSession = Depends(get_db),
+):
+    q = select(Event.slug, Event.updated_at).where(Event.is_published == True)
+    total = await db.scalar(select(func.count()).select_from(q.subquery()))
+    result = await db.execute(
+        q.order_by(Event.updated_at.desc(), Event.id.desc()).offset((page - 1) * limit).limit(limit)
+    )
+    items = [SitemapItem(slug=slug, last_modified=updated_at) for slug, updated_at in result.all()]
+    total_count = total or 0
+    return SitemapList(
+        items=items,
+        total=total_count,
+        page=page,
+        limit=limit,
+        has_next=page * limit < total_count,
+    )
 
 
 @router.post("/recommend", response_model=dict)

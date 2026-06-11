@@ -7,6 +7,7 @@ from app.dependencies import get_db
 from app.models.venue import Venue
 from app.models.venue_advisory_rating import VenueAdvisoryRating
 from app.models.venue_view import VenueView
+from app.schemas.sitemap import SitemapItem, SitemapList
 from app.schemas.venue import VenueList, VenueOut
 
 router = APIRouter(prefix="/api/venues", tags=["venues"])
@@ -90,6 +91,28 @@ async def list_venues(
     rows = result.all()
     items = [_attach_rating(v, float(r) if r is not None else None) for v, r in rows]
     return VenueList(items=items, total=total or 0, page=page, limit=limit)
+
+
+@router.get("/sitemap", response_model=SitemapList)
+async def venue_sitemap(
+    page: int = Query(1, ge=1),
+    limit: int = Query(500, ge=1, le=1000),
+    db: AsyncSession = Depends(get_db),
+):
+    q = select(Venue.slug, Venue.updated_at).where(Venue.is_active == True)
+    total = await db.scalar(select(func.count()).select_from(q.subquery()))
+    result = await db.execute(
+        q.order_by(Venue.updated_at.desc(), Venue.id.desc()).offset((page - 1) * limit).limit(limit)
+    )
+    items = [SitemapItem(slug=slug, last_modified=updated_at) for slug, updated_at in result.all()]
+    total_count = total or 0
+    return SitemapList(
+        items=items,
+        total=total_count,
+        page=page,
+        limit=limit,
+        has_next=page * limit < total_count,
+    )
 
 
 @router.get("/{slug}", response_model=VenueOut)
