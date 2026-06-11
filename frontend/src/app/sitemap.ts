@@ -3,15 +3,26 @@ import type { MetadataRoute } from "next";
 export const dynamic = "force-dynamic";
 
 const SITE = process.env.NEXT_PUBLIC_SITE_URL || "https://yvradvisory.ca";
-const API = process.env.NEXT_PUBLIC_API_URL || "https://back.yvradvisory.ca";
+// Use public backend URL — NEXT_PUBLIC_API_URL may be an internal Railway URL unreachable server-side
+const API = "https://back.yvradvisory.ca";
 
 async function fetchSlugs(path: string): Promise<string[]> {
+  const url = `${API}${path}`;
   try {
-    const res = await fetch(`${API}${path}`, { cache: "no-store" });
-    if (!res.ok) return [];
+    const res = await fetch(url, {
+      cache: "no-store",
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!res.ok) {
+      console.error(`[sitemap] fetch failed ${url} → ${res.status}`);
+      return [];
+    }
     const data = await res.json();
-    return (data.items || []).map((item: any) => item.slug as string).filter(Boolean);
-  } catch {
+    const slugs = (data.items || []).map((item: { slug?: string }) => item.slug).filter(Boolean) as string[];
+    console.log(`[sitemap] ${url} → ${slugs.length} slugs`);
+    return slugs;
+  } catch (e) {
+    console.error(`[sitemap] fetch error ${url}`, e);
     return [];
   }
 }
