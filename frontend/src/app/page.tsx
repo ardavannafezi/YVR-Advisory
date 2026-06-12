@@ -1,9 +1,38 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { HeroSection } from "@/components/home/HeroSection";
 import { FeaturedVenues } from "@/components/home/FeaturedVenues";
 import { UpcomingEvents } from "@/components/home/UpcomingEvents";
 import { AdvisorSection } from "@/components/home/AdvisorSection";
 import { CtaBanner } from "@/components/home/CtaBanner";
+
+function EventsSkeleton() {
+  return (
+    <section className="py-24 border-t border-white/[0.05]">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="h-10 w-52 bg-white/[0.05] animate-pulse mb-12 rounded-sm" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="h-56 bg-white/[0.05] animate-pulse" />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function VenuesSkeleton() {
+  return (
+    <section className="max-w-7xl mx-auto px-6 py-16">
+      <div className="h-10 w-44 bg-white/[0.05] animate-pulse mb-12 rounded-sm" />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="h-64 bg-white/[0.05] animate-pulse" />
+        ))}
+      </div>
+    </section>
+  );
+}
 
 export const revalidate = 3600;
 
@@ -41,9 +70,15 @@ export default function HomePage() {
   return (
     <>
       <HeroSection />
-      <UpcomingEvents />
-      <FeaturedVenues category="nightclub" title="Nightclubs" eyebrow="Vancouver's Best" />
-      <FeaturedVenues category="lounge" title="Lounges & Bars" eyebrow="Elevated Escapes" />
+      <Suspense fallback={<EventsSkeleton />}>
+        <UpcomingEvents />
+      </Suspense>
+      <Suspense fallback={<VenuesSkeleton />}>
+        <FeaturedVenues category="nightclub" title="Nightclubs" eyebrow="Vancouver's Best" />
+      </Suspense>
+      <Suspense fallback={<VenuesSkeleton />}>
+        <FeaturedVenues category="lounge" title="Lounges & Bars" eyebrow="Elevated Escapes" />
+      </Suspense>
       <AdvisorSection />
       <CtaBanner />
     </>

@@ -1,4 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
 from sqlalchemy import func, select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -10,6 +12,10 @@ from app.models.venue_advisory_rating import VenueAdvisoryRating
 from app.models.venue_view import VenueView
 from app.schemas.sitemap import SitemapItem, SitemapList
 from app.schemas.venue import VenueList, VenueOut
+from app.utils.cache import _cache
+
+_FEATURED_TTL = 300  # 5 min
+_CACHE_CONTROL_FEATURED = "public, max-age=300, s-maxage=300, stale-while-revalidate=60"
 
 router = APIRouter(prefix="/api/venues", tags=["venues"])
 
@@ -20,11 +26,16 @@ def _attach_rating(venue: Venue, rating_val: float | None) -> VenueOut:
     return out
 
 
-@router.get("/featured", response_model=list[VenueOut])
+@router.get("/featured")
 async def get_featured(
     category: str | None = Query(None),
     db: AsyncSession = Depends(get_db),
 ):
+    cache_key = f"venues:featured:{category}"
+    cached = _cache.get(cache_key, _FEATURED_TTL)
+    if cached is not None:
+        return JSONResponse(content=cached, headers={"Cache-Control": _CACHE_CONTROL_FEATURED})
+
     filters = [Venue.is_active == True, Venue.is_featured == True]
     if category:
         filters.append(Venue.primary_categories.any(category))
@@ -36,7 +47,10 @@ async def get_featured(
         .limit(4)
     )
     rows = result.all()
-    return [_attach_rating(v, float(r) if r is not None else None) for v, r in rows]
+    items = [_attach_rating(v, float(r) if r is not None else None) for v, r in rows]
+    serialized = jsonable_encoder(items)
+    _cache.set(cache_key, serialized)
+    return JSONResponse(content=serialized, headers={"Cache-Control": _CACHE_CONTROL_FEATURED})
 
 
 @router.get("", response_model=VenueList)

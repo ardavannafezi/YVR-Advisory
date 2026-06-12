@@ -6,7 +6,7 @@ import type { Event } from "@/types";
 
 async function getUpcomingEvents(): Promise<Event[]> {
   try {
-    return await api.get<Event[]>("/api/events/upcoming", { next: { revalidate: 300 } });
+    return await api.get<Event[]>("/api/events/upcoming", { next: { revalidate: 900 } });
   } catch {
     return [];
   }

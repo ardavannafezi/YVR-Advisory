@@ -13,6 +13,7 @@ from app.models.event import Event
 from app.models.venue import Venue
 from app.models.blog import BlogPost
 from app.schemas.webhook import BlogWebhookResponse, N8nBlogPayload, N8nEventPayload, WebhookResponse
+from app.utils.cache import _cache
 from app.utils.slugify import slugify
 from datetime import datetime, timezone
 
@@ -96,6 +97,7 @@ async def n8n_webhook(payload: N8nEventPayload, db: AsyncSession = Depends(get_d
         existing_event.source = "n8n"
         _apply_payload(existing_event, payload, venue.id)
         await db.commit()
+        _cache.delete("events:upcoming")
         return WebhookResponse(status="ok", action="updated", event_id=existing_event.id)
 
     slug_base = slugify(f"{payload.event_name} {payload.date.strftime('%Y-%m-%d')}")
@@ -110,6 +112,7 @@ async def n8n_webhook(payload: N8nEventPayload, db: AsyncSession = Depends(get_d
     db.add(new_event)
     await db.commit()
     await db.refresh(new_event)
+    _cache.delete("events:upcoming")
     return WebhookResponse(status="ok", action="created", event_id=new_event.id)
 
 

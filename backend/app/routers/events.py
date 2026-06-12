@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -11,12 +13,21 @@ from app.models.venue import Venue
 from app.schemas.event import EventList, EventOut, EventRecommendRequest
 from app.schemas.llms import EventLlmsItem, EventLlmsList
 from app.schemas.sitemap import SitemapItem, SitemapList
+from app.utils.cache import _cache
 
 router = APIRouter(prefix="/api/events", tags=["events"])
 
+_UPCOMING_TTL = 300  # 5 min
+_CACHE_CONTROL_UPCOMING = "public, max-age=300, s-maxage=300, stale-while-revalidate=60"
+_UPCOMING_CACHE_KEY = "events:upcoming"
 
-@router.get("/upcoming", response_model=list[EventOut])
+
+@router.get("/upcoming")
 async def get_upcoming(db: AsyncSession = Depends(get_db)):
+    cached = _cache.get(_UPCOMING_CACHE_KEY, _UPCOMING_TTL)
+    if cached is not None:
+        return JSONResponse(content=cached, headers={"Cache-Control": _CACHE_CONTROL_UPCOMING})
+
     now = datetime.now(timezone.utc)
     result = await db.execute(
         select(Event)
@@ -25,7 +36,10 @@ async def get_upcoming(db: AsyncSession = Depends(get_db)):
         .order_by(Event.date)
         .limit(6)
     )
-    return result.scalars().all()
+    items = result.scalars().all()
+    serialized = jsonable_encoder([EventOut.model_validate(e) for e in items])
+    _cache.set(_UPCOMING_CACHE_KEY, serialized)
+    return JSONResponse(content=serialized, headers={"Cache-Control": _CACHE_CONTROL_UPCOMING})
 
 
 @router.get("", response_model=EventList)
