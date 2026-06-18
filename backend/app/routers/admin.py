@@ -8,7 +8,7 @@ from PIL import Image
 
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
 from pydantic import BaseModel
-from sqlalchemy import func, select
+from sqlalchemy import delete, func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -270,6 +270,8 @@ async def admin_list_events(
 
 @router.post("/events", response_model=EventOut, status_code=status.HTTP_201_CREATED, dependencies=[Depends(get_current_admin)])
 async def admin_create_event(data: EventCreate, db: AsyncSession = Depends(get_db)):
+    if data.date and data.date < datetime.now(timezone.utc):
+        raise HTTPException(status_code=400, detail="Event date is in the past")
     base_slug = slugify(f"{data.name} {data.date.strftime('%Y-%m-%d')}")
     slug = base_slug
     # resolve slug collisions
@@ -318,6 +320,19 @@ async def admin_delete_event(event_id: int, db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Event not found")
     await db.delete(event)
     await db.commit()
+
+
+@router.delete("/events-past", dependencies=[Depends(get_current_admin)])
+async def admin_delete_past_events(db: AsyncSession = Depends(get_db)):
+    now_utc = datetime.now(timezone.utc)
+    result = await db.execute(select(Event).where(Event.date < now_utc))
+    past_events = result.scalars().all()
+    if not past_events:
+        return {"deleted": 0}
+    ids = [e.id for e in past_events]
+    await db.execute(delete(Event).where(Event.id.in_(ids)))
+    await db.commit()
+    return {"deleted": len(ids)}
 
 
 # ─── Blog ────────────────────────────────────────────────────────────────────

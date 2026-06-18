@@ -321,6 +321,7 @@ export default function AdminEventsPage() {
   const [editError, setEditError] = useState<string | null>(null);
   const [socialEdits, setSocialEdits] = useState<Record<number, string>>({});
   const [socialSaving, setSocialSaving] = useState<Record<number, boolean>>({});
+  const [deletingPast, setDeletingPast] = useState(false);
 
   async function load() {
     try {
@@ -332,6 +333,17 @@ export default function AdminEventsPage() {
     } catch (e: any) { setError(e.message); }
   }
 
+  async function deletePastEvents() {
+    if (!confirm("Delete all past events? This cannot be undone.")) return;
+    setDeletingPast(true);
+    try {
+      const res = await adminFetch<{ deleted: number }>("/api/admin/events-past", { method: "DELETE" });
+      alert(`Deleted ${res.deleted} past event${res.deleted !== 1 ? "s" : ""}.`);
+      load();
+    } catch (e: any) { alert("Failed: " + e.message); }
+    finally { setDeletingPast(false); }
+  }
+
   async function deleteEvent(id: number) {
     if (!confirm("Delete this event? This cannot be undone.")) return;
     try { await adminFetch(`/api/admin/events/${id}`, { method: "DELETE" }); load(); } catch {}
@@ -339,6 +351,9 @@ export default function AdminEventsPage() {
 
   async function createEvent(e: React.FormEvent) {
     e.preventDefault();
+    if (createForm.date && new Date(createForm.date) < new Date()) {
+      setCreateError("Event date is in the past."); return;
+    }
     setCreateSaving(true); setCreateError(null);
     try {
       await adminFetch("/api/admin/events", { method: "POST", body: JSON.stringify(buildPayload(createForm)) });
@@ -384,10 +399,16 @@ export default function AdminEventsPage() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <h1 className="font-serif text-3xl text-text-primary">Events</h1>
-        <button onClick={() => { setShowCreate(true); setCreateError(null); setCreateForm({ ...EMPTY_FORM }); }}
-          className="text-sm border border-gold/40 text-gold px-4 py-2 hover:bg-gold/10 transition-colors">
-          + New Event
-        </button>
+        <div className="flex gap-3">
+          <button onClick={deletePastEvents} disabled={deletingPast}
+            className="text-sm border border-red-500/40 text-red-400 px-4 py-2 hover:bg-red-500/10 transition-colors disabled:opacity-50">
+            {deletingPast ? "Deleting…" : "Delete Past Events"}
+          </button>
+          <button onClick={() => { setShowCreate(true); setCreateError(null); setCreateForm({ ...EMPTY_FORM }); }}
+            className="text-sm border border-gold/40 text-gold px-4 py-2 hover:bg-gold/10 transition-colors">
+            + New Event
+          </button>
+        </div>
       </div>
 
       {showCreate && (

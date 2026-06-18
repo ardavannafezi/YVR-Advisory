@@ -9,5 +9,5 @@ export const ORGANIZATION = {
   instagramHandle: "@yvradvisory",
   location: "Vancouver, BC, Canada",
   description:
-    "YVR Advisory is an independent Vancouver nightlife guide covering curated venues, events, guestlist access, and nightlife recommendations across the city.",
+    "YVR Advisory is an independent Vancouver nightlife guide run by a team of promoters and adventure lovers sharing honest opinions, local nightlife knowledge, and better ways to have fun across the city.",
 };

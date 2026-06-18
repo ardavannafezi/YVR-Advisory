@@ -50,13 +50,13 @@ export default function AboutPage() {
 
       <div className="space-y-6 text-text-muted leading-relaxed text-base mb-14">
         <p>
-          {ORGANIZATION.name} is an independent Vancouver nightlife guide publishing curated venue coverage, event listings, guestlist access, and honest recommendations across the city&apos;s clubs, bars, and lounges.
+          {ORGANIZATION.name} is an independent Vancouver nightlife guide run by a team of promoters and adventure lovers publishing curated venue coverage, event listings, guestlist access, and honest recommendations across the city&apos;s clubs, bars, and lounges.
         </p>
         <p>
-          Our team focuses on the full spectrum of Vancouver nightlife: from high-energy clubs in the Granville Entertainment District to cocktail bars in Gastown and rooftop lounges downtown. Our goal is to make nightlife research easier, clearer, and more useful for locals and visitors.
+          Our team brings promoter insight, local nightlife experience, and real on-the-ground knowledge of Vancouver&apos;s venues. We focus on the full spectrum of the city&apos;s nightlife: from high-energy clubs in the Granville Entertainment District to cocktail bars in Gastown and rooftop lounges downtown.
         </p>
         <p>
-          Whether you&apos;re choosing a spot for tonight or planning a larger night out, YVR Advisory aims to provide current, accountable editorial guidance rooted in Vancouver, BC.
+          Whether you&apos;re choosing a spot for tonight or planning a larger night out, we aim to give honest opinions and help make Vancouver&apos;s nightlife less boring and more fun with clearer, more useful guidance.
         </p>
       </div>
 
